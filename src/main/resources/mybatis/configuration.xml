@@ -5,6 +5,8 @@
 
 <configuration>
     <mappers>
-    	<mapper resource="mybatis/mappers/jmuser.xml" />
+    	<mapper resource="mybatis/mappers/Announcement.xml" />
+    	<mapper resource="mybatis/mappers/Rates.xml" />
+    	
     </mappers>
 </configuration>

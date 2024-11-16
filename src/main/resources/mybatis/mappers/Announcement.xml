@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="announcement">
+
+    <!-- 결과 매핑 정의 -->
+    <resultMap id="AnnouncementResultMap" type="com.javaex.vo.AnnouncementVo">
+        <id property="announceNum" column="announceNum"/>
+        <result property="roomNum" column="roomNum"/>
+        <result property="place" column="place"/>
+        <result property="title" column="title"/>
+        <result property="announceAddedBy" column="announceAddedBy"/>
+        <result property="announcement" column="announcement"/>
+        <result property="announceTime" column="announceTime"/>
+        <result property="enteredUserNum" column="enteredUserNum"/>
+        <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
+		<result property="userNum" column="userNum"/>
+		<result property="enteredUserAuth" column="enteredUserAuth"/>
+    </resultMap>
+
+    <select id ="selectEnteredUserList" parameterType = "int" resultType = "com.javaex.vo.AnnouncementVo">
+    	<![CDATA[
+    		SELECT eu.userNum
+			FROM enteredUser eu
+			JOIN users u ON eu.userNum = u.userNum
+			WHERE eu.roomNum = #{roomNum};
+    	]]>
+    </select>
+    
+    <select id ="selectEnteredUserAuth" parameterType = "com.javaex.vo.AnnouncementVo" resultType = "com.javaex.vo.AnnouncementVo">
+    	<![CDATA[
+    		SELECT eu.enteredUserAuth
+			FROM enteredUser eu
+			JOIN users u ON eu.userNum = u.userNum
+			WHERE eu.roomNum = #{roomNum} and u.userNum = #{userNum}
+    	]]>
+    </select>
+    
+    <!-- 방의 모든 공지사항 가져오기 -->
+    <select id="getRoomAnnouncements" parameterType="int" resultType="com.javaex.vo.AnnouncementVo">
+        <![CDATA[
+            SELECT *
+            FROM announcement
+            WHERE roomNum = #{roomNum}
+        ]]>
+    </select>
+    
+    <!-- 공지사항 삭제 -->
+    <delete id="deleteAnnouncement" parameterType="int">
+        <![CDATA[
+            DELETE FROM announcement
+            WHERE announceNum = #{announceNum}
+        ]]>
+    </delete>
+    
+    <!-- 공지사항 수정 -->
+    <update id="editAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
+        <![CDATA[
+            UPDATE announcement
+            SET title = #{title}, announcement = #{announcement}, place = #{place}
+            WHERE announceNum = #{announceNum}
+        ]]>
+    </update>
+    
+    <!-- 공지사항 추가 -->
+    <insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
+        <![CDATA[
+            INSERT INTO announcement (roomNum, title, announcement, place, announceTime, announceAddedBy)
+            VALUES (#{roomNum}, #{title}, #{announcement}, #{place}, now(), #{announceAddedBy})
+        ]]>
+    </insert>
+
+</mapper>
