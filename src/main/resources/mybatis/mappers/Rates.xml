@@ -216,7 +216,7 @@ FROM (
             AND e.submitUser = #{userNum}
             AND e.evalType = '승인'
     JOIN 
-        roomStatus rs ON r.roomStatusNum = rs.roomStatusNum  -- 추가된 조인
+        roomStatus rs ON r.roomStatusNum = rs.roomStatusNum  
     WHERE 
         eu.userNum = #{userNum}
         AND rs.roomStatusName = '종료'  -- roomStatus 테이블에서 roomStatusName을 참조

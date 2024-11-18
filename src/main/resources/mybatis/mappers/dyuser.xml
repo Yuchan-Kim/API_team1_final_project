@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="dyuser">
+	<!-- 쿼리문작성 -->
+
+	<!-- 회원가입 -->
+	<insert id="insert" parameterType="com.javaex.vo.DyUserVo">
+		<![CDATA[
+			insert into users (`userNum`, `regionNum`, `userEmail`, `userPw`, `userName`) 
+			values(null, 1, #{userEmail}, #{userPw}, #{userName})
+		]]>
+	</insert>
+	
+	
+	<!-- 이메일 중복체크 api -->						<!-- count의 결과는 int -->
+	<select id="selectByEmail" parameterType="String" resultType="int">
+		<![CDATA[
+			select count(*)
+			from users
+			where userEmail = #{userEmail}
+		]]>
+	</select>
+	
+		<!-- 닉네임 중복체크 api -->						<!-- count의 결과는 int -->
+	<select id="selectByName" parameterType="String" resultType="int">
+		<![CDATA[
+			select count(*)
+			from users
+			where userName = #{userName}
+		]]>
+	</select>
+
+
+	<!-- 로그인 -->
+	<select id="selectByEmailPw" parameterType="com.javaex.vo.DyUserVo" resultType="com.javaex.vo.DyUserVo">
+		<![CDATA[
+			select userNum
+	 			 , userName
+			from users
+			where userEmail = #{userEmail}
+			and userPw = #{userPw}
+		]]>
+	</select>
+	
+	
+
+</mapper>

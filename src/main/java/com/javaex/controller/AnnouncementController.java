@@ -26,23 +26,20 @@ public class AnnouncementController {
     @Autowired
     private AnnouncementService announcementService;
 
-    //방 참여 인원 체크
+ // 방 참여 인원 체크
     @GetMapping("/{roomNum}")
     public JsonResult userChecker(@PathVariable int roomNum, HttpServletRequest request) {
         System.out.println("AnnouncementController.userChecker()");
         
         int userNum = JwtUtil.getNoFromHeader(request);
         
-        List<AnnouncementVo> enteredUserList = announcementService.getEnteredUserList(roomNum);
+        List<Integer> enteredUserList = announcementService.getEnteredUserList(roomNum);
         
         if (enteredUserList.contains(userNum)) {
-        	return JsonResult.success(true);
-        }else if(enteredUserList.contains(userNum) == false) {
-        	return JsonResult.success(false);
-        }else {
-        	return JsonResult.fail("오류 발생");
+            return JsonResult.success(true);
+        } else {
+            return JsonResult.success(false);
         }
-        
     }
     
     @GetMapping("/user/{roomNum}")
@@ -77,21 +74,30 @@ public class AnnouncementController {
         return JsonResult.success("공지사항이 삭제되었습니다.");
     }
     
-    // 공지사항 수정
-    @PutMapping("/edit/{noticeId}")
-    public JsonResult editAnnouncement(@PathVariable int noticeId, @RequestBody AnnouncementVo announcementVo) {
+    @PutMapping("/edit/{editingNoticeId}")
+    public JsonResult editAnnouncement(@PathVariable int editingNoticeId, @RequestBody AnnouncementVo announcementVo, HttpServletRequest request) {
         System.out.println("AnnouncementController.editAnnouncement()");
-        announcementService.editAnnouncement(noticeId, announcementVo);
+        int userNum = JwtUtil.getNoFromHeader(request);
+        announcementVo.setAnnounceAddedBy(userNum);
+        announcementVo.setAnnounceNum(editingNoticeId);
+        announcementService.editAnnouncement(announcementVo);
         return JsonResult.success("공지사항이 수정되었습니다.");
     }
+
     
     // 공지사항 추가
     @PostMapping("/addannounce")
-    public JsonResult addAnnouncement(@RequestBody AnnouncementVo announcementVo) {
+    public JsonResult addAnnouncement(@RequestBody AnnouncementVo announcementVo, HttpServletRequest request) {
         System.out.println("AnnouncementController.addAnnouncement()");
+        
+        // JWT 토큰에서 사용자 번호 추출
+        int userNum = JwtUtil.getNoFromHeader(request);
+        announcementVo.setAnnounceAddedBy(userNum);
+        // roomNum은 URL 파라미터나 announcementVo에서 이미 설정되었는지 확인
         announcementService.addAnnouncement(announcementVo);
-        return JsonResult.success("공지사항이 추가되었습니다.");
+        return JsonResult.success(announcementVo);
     }
+
 
     
 }

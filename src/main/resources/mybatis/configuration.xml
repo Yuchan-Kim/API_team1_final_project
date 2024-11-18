@@ -7,6 +7,6 @@
     <mappers>
     	<mapper resource="mybatis/mappers/Announcement.xml" />
     	<mapper resource="mybatis/mappers/Rates.xml" />
-    	
+    	<mapper resource="mybatis/mappers/dyuser.xml" />
     </mappers>
 </configuration>

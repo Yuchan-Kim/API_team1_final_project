@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.javaex.vo.AnnouncementVo;
 
 @Repository
-public class AnnouncementDAO {
+public class AnnouncementDao {
     
     @Autowired
     private SqlSession sqlSession;
@@ -17,18 +17,19 @@ public class AnnouncementDAO {
     private String namespace = "announcement"; // MyBatis 매퍼 네임스페이스 설정
     
     /* 모든 공지사항 조회 (특정 방 번호로 필터링 가능) */
-    public List<AnnouncementVo> getEnteredUserList(int roomNum) {
+    public List<Integer> getEnteredUserList(int roomNum) {
         System.out.println("AnnouncementDAO.getEnteredUserList()");
         return sqlSession.selectList(namespace + ".selectEnteredUserList", roomNum);
     }
     
     public int getEnteredUserAuth(int roomNum, int userNum) {
-        System.out.println("AnnouncementDAO.getEnteredUserList()");
+        System.out.println("AnnouncementDAO.getEnteredUserAuth()");
         AnnouncementVo announcementvo = new AnnouncementVo();
         announcementvo.setRoomNum(roomNum);
         announcementvo.setUserNum(userNum);
-        return sqlSession.selectOne(namespace + ".selectEneteredUserAuth", announcementvo);
+        return sqlSession.selectOne(namespace + ".selectEnteredUserAuth", announcementvo); // 오타 수정
     }
+
     
     // 방의 모든 공지사항 가져오기
     public List<AnnouncementVo> getRoomAnnouncements(int roomNum) {
@@ -42,12 +43,11 @@ public class AnnouncementDAO {
         sqlSession.delete(namespace + ".deleteAnnouncement", noticeId);
     }
     
-    // 공지사항 수정
-    public void editAnnouncement(int noticeId, AnnouncementVo announcementVo) {
+    public void editAnnouncement(AnnouncementVo announcementVo) {
         System.out.println("AnnouncementDAO.editAnnouncement()");
-        announcementVo.setAnnounceNum(noticeId);
         sqlSession.update(namespace + ".editAnnouncement", announcementVo);
     }
+
     
     // 공지사항 추가
     public void addAnnouncement(AnnouncementVo announcementVo) {

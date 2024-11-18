@@ -14,34 +14,38 @@
         <result property="announceTime" column="announceTime"/>
         <result property="enteredUserNum" column="enteredUserNum"/>
         <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
-		<result property="userNum" column="userNum"/>
-		<result property="enteredUserAuth" column="enteredUserAuth"/>
+        <result property="userNum" column="userNum"/>
+        <result property="enteredUserAuth" column="enteredUserAuth"/>
+        <result property="isModified" column="isModified"/> <!-- 수정됨 여부 -->
     </resultMap>
 
-    <select id ="selectEnteredUserList" parameterType = "int" resultType = "com.javaex.vo.AnnouncementVo">
-    	<![CDATA[
-    		SELECT eu.userNum
-			FROM enteredUser eu
-			JOIN users u ON eu.userNum = u.userNum
-			WHERE eu.roomNum = #{roomNum};
-    	]]>
+    <!-- 사용자 번호만 선택하도록 수정 -->
+    <select id="selectEnteredUserList" parameterType="int" resultType="Integer">
+        <![CDATA[
+            SELECT eu.userNum
+            FROM enteredUser eu
+            JOIN users u ON eu.userNum = u.userNum
+            WHERE eu.roomNum = #{roomNum};
+        ]]>
     </select>
     
-    <select id ="selectEnteredUserAuth" parameterType = "com.javaex.vo.AnnouncementVo" resultType = "com.javaex.vo.AnnouncementVo">
-    	<![CDATA[
-    		SELECT eu.enteredUserAuth
-			FROM enteredUser eu
-			JOIN users u ON eu.userNum = u.userNum
-			WHERE eu.roomNum = #{roomNum} and u.userNum = #{userNum}
-    	]]>
+    <select id="selectEnteredUserAuth" parameterType="com.javaex.vo.AnnouncementVo" resultType="int">
+        <![CDATA[
+            SELECT eu.enteredUserAuth
+            FROM enteredUser eu
+            JOIN users u ON eu.userNum = u.userNum
+            WHERE eu.roomNum = #{roomNum} and u.userNum = #{userNum}
+        ]]>
     </select>
-    
+
+
     <!-- 방의 모든 공지사항 가져오기 -->
-    <select id="getRoomAnnouncements" parameterType="int" resultType="com.javaex.vo.AnnouncementVo">
+    <select id="getRoomAnnouncements" parameterType="int" resultMap="AnnouncementResultMap">
         <![CDATA[
             SELECT *
             FROM announcement
-            WHERE roomNum = #{roomNum}
+            WHERE roomNum = #{roomNum} 
+            ORDER BY announceTime DESC
         ]]>
     </select>
     
@@ -57,17 +61,27 @@
     <update id="editAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
         <![CDATA[
             UPDATE announcement
-            SET title = #{title}, announcement = #{announcement}, place = #{place}
+            SET title = #{title}, announcement = #{announcement}, place = #{place}, isModified = true
             WHERE announceNum = #{announceNum}
         ]]>
     </update>
+
     
     <!-- 공지사항 추가 -->
-    <insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
+    <insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo" useGeneratedKeys="true" keyProperty="announceNum">
         <![CDATA[
-            INSERT INTO announcement (roomNum, title, announcement, place, announceTime, announceAddedBy)
-            VALUES (#{roomNum}, #{title}, #{announcement}, #{place}, now(), #{announceAddedBy})
+            INSERT INTO announcement (roomNum, title, announcement, place, announceTime, announceAddedBy, isModified)
+            VALUES (#{roomNum}, #{title}, #{announcement}, #{place}, now(), #{announceAddedBy}, false)
         ]]>
     </insert>
+
+    <!-- 공지사항 ID로 공지사항 가져오기 -->
+    <select id="getAnnouncementById" parameterType="int" resultMap="AnnouncementResultMap">
+        <![CDATA[
+            SELECT *
+            FROM announcement
+            WHERE announceNum = #{announceNum}
+        ]]>
+    </select>
 
 </mapper>
