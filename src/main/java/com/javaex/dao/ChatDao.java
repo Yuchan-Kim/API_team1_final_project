@@ -27,4 +27,6 @@ public class ChatDao {
     public void insertMessage(ChatVo chatVo) {
         sqlSession.insert(namespace + ".insertMessage", chatVo);
     }
+    
+    
 }

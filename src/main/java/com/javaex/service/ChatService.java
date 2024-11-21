@@ -25,4 +25,6 @@ public class ChatService {
     public void sendMessage(ChatVo chatVo) {
         chatDao.insertMessage(chatVo);
     }
+    
+    
 }

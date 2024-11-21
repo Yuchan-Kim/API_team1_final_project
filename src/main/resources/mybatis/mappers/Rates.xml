@@ -4,188 +4,249 @@
 
 <mapper namespace="Rates">
 
-    <select id="getTopUsers" parameterType="int" resultType="com.javaex.vo.RatesVo">
-        <![CDATA[
-        SELECT u.userNum,
-               u.usingProfilePic,
-               u.userName,
-               r.roomNum,
-               ROUND(
-                   (COUNT(e.evalNum) / 
-                   (SELECT COUNT(*)
-                    FROM challenges c
-                    JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
-                    WHERE rd.roomNum = r.roomNum)
-                   ) * 100, 2
-               ) AS achievementRate
-        FROM users u
-        JOIN enteredUser eu ON u.userNum = eu.userNum
-        JOIN roomInfo r ON eu.roomNum = r.roomNum
-        LEFT JOIN challenges c ON c.roomDayNum IN (
-            SELECT rd.roomDayNum
-            FROM roomDay rd
-            WHERE rd.roomNum = r.roomNum
-        )
-        LEFT JOIN evaluation e ON e.missionNum = c.missionNum AND e.evalType = '승인'
-        WHERE r.roomNum = #{roomNum}
-        GROUP BY u.userNum, r.roomNum, u.usingProfilePic, u.userName
-        ORDER BY achievementRate DESC
-        LIMIT 5;
-        ]]>
-    </select>
-    
-    <!-- 전체 달성률 통계 쿼리 -->
-    <select id="getOverallStatsbyDates" parameterType="int" resultType="com.javaex.vo.RatesVo">
+
+ 	<!-- 특정 roomNum의 미션 달성률 조회 -->
+    <select id="getMissionAchievement" parameterType="int" resultType="com.javaex.vo.RatesVo">
         <![CDATA[
         SELECT
-            main.submitDate AS date,
-            ROUND(
-                (SUM(main.evalCount) OVER (ORDER BY main.submitDate) / 
-                 (NULLIF(uc.userCount, 0) * SUM(main.total_missions) OVER (ORDER BY main.submitDate))) * 100,
-                2
-            ) AS percentage
+            c.missionName,
+            IFNULL(SUM(CASE WHEN e.evalType = '승인' THEN 1 ELSE 0 END), 0) / c.missionGoal * 100 AS achievementRate
         FROM
-            (
-                SELECT
-                    e.submitDate,
-                    COUNT(CASE WHEN e.evalType = '승인' THEN 1 END) AS evalCount,
-                    COUNT(DISTINCT c.missionNum) AS total_missions
-                FROM
-                    evaluation e
-                JOIN
-                    challenges c ON e.missionNum = c.missionNum
-                JOIN
-                    roomDay rd ON c.roomDayNum = rd.roomDayNum
-                WHERE
-                    rd.roomNum = #{roomNum}
-                GROUP BY
-                    e.submitDate
-            ) main
-        CROSS JOIN
-            (
-                SELECT COUNT(*) AS userCount
-                FROM enteredUser eu
-                WHERE eu.roomNum = #{roomNum}
-            ) uc
-        ORDER BY
-            main.submitDate ASC;
+            roomInfo ri
+        JOIN
+            roomDay rd ON ri.roomNum = rd.roomNum
+        JOIN
+            challenges c ON rd.roomDayNum = c.roomDayNum
+        LEFT JOIN
+            evaluation e ON c.missionNum = e.missionNum AND c.missionAI = TRUE
+        WHERE
+            ri.roomNum = #{roomNum}
+            AND c.missionTypeNum = 3
+        GROUP BY
+            c.missionNum, c.missionName, c.missionGoal
+        ]]>
+    </select>
+
+	<!-- 특정 방의 top 5 달성률을 가진 유저 -->
+    <select id="getTopUsers" parameterType="int" resultType="com.javaex.vo.RatesVo">
+        <![CDATA[
+        SELECT 
+		    u.userNum,
+		    u.usingProfilePic,
+		    u.userName,
+		    r.roomNum,
+		    ROUND(
+		        COALESCE(COUNT(e.evalNum), 0) / (
+		            -- 분모 계산
+		            (SELECT COUNT(*) 
+		             FROM roomDay rd 
+		             WHERE rd.roomNum = r.roomNum)
+		            *
+		            (SELECT COUNT(DISTINCT c.missionName)
+		             FROM challenges c
+		             JOIN roomDay rd2 ON c.roomDayNum = rd2.roomDayNum
+		             WHERE rd2.roomNum = r.roomNum)
+		            *
+		            (p.periodType / 7)
+		        ) * 100, 
+		        2
+		    ) AS achievementRate
+		FROM users u
+		JOIN enteredUser eu ON u.userNum = eu.userNum
+		JOIN roomInfo r ON eu.roomNum = r.roomNum
+		JOIN period p ON r.periodNum = p.periodNum
+		LEFT JOIN roomDay rd ON rd.roomNum = r.roomNum
+		LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+		LEFT JOIN evaluation e 
+		    ON e.missionNum = c.missionNum 
+		    AND e.evalType = '승인' 
+		    AND e.submitUser = u.userNum
+		WHERE r.roomNum = #{roomNum}
+		GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum, p.periodType
+		ORDER BY achievementRate DESC
+		limit 5;
+        
+        
         ]]>
     </select>
     
-    <!-- 전체 유저 목록 가져오기 쿼리 (달성률 순)-->
+    <!-- 특정 방의 전체 유저 목록 가져오기 쿼리 (달성률 순)-->
     <select id="getAllUsers" parameterType="int" resultType="com.javaex.vo.RatesVo">
         <![CDATA[
         SELECT 
-            u.userNum,
-            u.usingProfilePic,
-            u.userName,
-            r.roomNum,
-            ROUND(
-                (COUNT(e.evalNum) / 
-                (SELECT COUNT(*)
-                 FROM challenges c
-                 JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
-                 WHERE rd.roomNum = r.roomNum)
-                ) * 100, 2
-            ) AS achievementRate
-        FROM users u
-        JOIN enteredUser eu ON u.userNum = eu.userNum
-        JOIN roomInfo r ON eu.roomNum = r.roomNum
-        LEFT JOIN challenges c ON c.roomDayNum IN (
-            SELECT rd.roomDayNum
-            FROM roomDay rd
-            WHERE rd.roomNum = r.roomNum
-        )
-        LEFT JOIN evaluation e ON e.missionNum = c.missionNum AND e.evalType = '승인'
-        WHERE r.roomNum = #{roomNum}
-        GROUP BY u.userNum, r.roomNum, u.usingProfilePic, u.userName
-        ORDER BY achievementRate DESC;
+		    u.userNum,
+		    u.usingProfilePic,
+		    u.userName,
+		    r.roomNum,
+		    ROUND(
+		        COALESCE(COUNT(e.evalNum), 0) / (
+		            -- 분모 계산
+		            (SELECT COUNT(*) 
+		             FROM roomDay rd 
+		             WHERE rd.roomNum = r.roomNum)
+		            *
+		            (SELECT COUNT(DISTINCT c.missionName)
+		             FROM challenges c
+		             JOIN roomDay rd2 ON c.roomDayNum = rd2.roomDayNum
+		             WHERE rd2.roomNum = r.roomNum)
+		            *
+		            (p.periodType / 7)
+		        ) * 100, 
+		        2
+		    ) AS achievementRate
+		FROM users u
+		JOIN enteredUser eu ON u.userNum = eu.userNum
+		JOIN roomInfo r ON eu.roomNum = r.roomNum
+		JOIN period p ON r.periodNum = p.periodNum
+		LEFT JOIN roomDay rd ON rd.roomNum = r.roomNum
+		LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+		LEFT JOIN evaluation e 
+		    ON e.missionNum = c.missionNum 
+		    AND e.evalType = '승인' 
+		    AND e.submitUser = u.userNum
+		WHERE r.roomNum = 1
+		GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum, p.periodType
+		ORDER BY achievementRate DESC;
         ]]>
     </select>
     
-    <!-- 미션 승인 횟수 가져오기 (새로운 쿼리) -->
+    <!--특정 방안에서 특정 유저의 달성률 -->
+    <select id="getUserAchievementDetails" parameterType="map" resultType="com.javaex.vo.RatesVo">
+	    <![CDATA[
+			    SELECT 
+			    u.userNum,
+			    u.usingProfilePic,
+			    u.userName,
+			    r.roomNum,
+			    ROUND(
+			        COALESCE(COUNT(e.evalNum), 0) / NULLIF(
+			            (
+			                SELECT COUNT(*) 
+			                FROM roomDay rd 
+			                WHERE rd.roomNum = r.roomNum
+			            ) *
+			            (
+			                SELECT COUNT(DISTINCT c.missionName)
+			                FROM challenges c
+			                JOIN roomDay rd2 ON c.roomDayNum = rd2.roomDayNum
+			                WHERE rd2.roomNum = r.roomNum
+			            ) *
+			            (
+			                SELECT p.periodType / 7
+			                FROM roomInfo r2
+			                JOIN period p ON r2.periodNum = p.periodNum
+			                WHERE r2.roomNum = r.roomNum
+			            ),
+			            0
+			        ) * 100, 
+			        2
+				    ) AS achievementRate
+				FROM users u
+				JOIN enteredUser eu ON u.userNum = eu.userNum
+				JOIN roomInfo r ON eu.roomNum = r.roomNum
+				LEFT JOIN roomDay rd ON rd.roomNum = r.roomNum
+				LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+				LEFT JOIN evaluation e 
+				    ON e.missionNum = c.missionNum 
+				    AND e.evalType = '승인' 
+				    AND e.submitUser = u.userNum
+				WHERE r.roomNum = #{roomNum}  -- 특정 방 번호로 변경
+				  AND u.userNum = #{userNum}  -- 특정 사용자 번호로 변경
+				GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum
+		
+		    ]]>
+	</select>
+    
+    <!-- 특정 방 전체 유저의 달성률 평균 -->
+    <select id="getOverallStatsbyDates" parameterType="int" resultType="com.javaex.vo.RatesVo">
+        <![CDATA[
+        -- 1. 분모 계산: 해당 방의 총 roomDays, 고유 missionNames, periodType, 참여 유저 수
+			WITH denominator AS (
+			    SELECT
+			        r.roomNum,
+			        COUNT(rd.roomDayNum) AS totalRoomDays,
+			        COUNT(DISTINCT c.missionName) AS totalMissions,
+			        p.periodType,
+			        COUNT(DISTINCT eu.userNum) AS totalUsers
+			    FROM roomInfo r
+			    JOIN roomDay rd ON rd.roomNum = r.roomNum
+			    JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+			    JOIN period p ON r.periodNum = p.periodNum
+			    JOIN enteredUser eu ON eu.roomNum = r.roomNum
+			    WHERE r.roomNum = #{roomNum}
+			    GROUP BY r.roomNum, p.periodType
+			),
+			
+			-- 2. 날짜별 승인된 평가 수 계산
+			date_evals AS (
+			    SELECT
+			        e.submitDate,
+			        COUNT(e.evalNum) AS daily_approved_evals
+			    FROM evaluation e
+			    JOIN challenges c ON e.missionNum = c.missionNum
+			    JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+			    JOIN roomInfo r ON rd.roomNum = r.roomNum
+			    WHERE r.roomNum = 1
+			        AND e.evalType = '승인'
+			    GROUP BY e.submitDate
+			),
+			
+			-- 3. 날짜별 누적 승인된 평가 수 계산
+			cumulative_evals AS (
+			    SELECT
+			        de.submitDate,
+			        SUM(de.daily_approved_evals) OVER (ORDER BY de.submitDate) AS cumulative_evals
+			    FROM date_evals de
+			)
+			
+			-- 4. 날짜별 평균 achievementRate 계산
+			SELECT
+			    ce.submitDate,
+			    ROUND(
+			        (ce.cumulative_evals / NULLIF(
+			            d.totalRoomDays * d.totalMissions * (d.periodType / 7) * d.totalUsers,
+			            0
+			        )) * 100,
+			        2
+			    ) AS averageAchievementRate
+			FROM cumulative_evals ce
+			CROSS JOIN denominator d
+			ORDER BY ce.submitDate;
+        ]]>
+    </select>
+    
+    
+    
+    <!-- 특정 방에서 미션별 승인 받은 횟수  -->
     <select id="getMissionApprovals" parameterType="int" resultType="map">
         <![CDATA[
-        SELECT 
-            c.missionName,
-            COUNT(e.evalNum) AS approvalCount
-        FROM challenges c
-        JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
-        LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.evalType = '승인'
-        WHERE rd.roomNum = #{roomNum}
-        GROUP BY c.missionName
-        ORDER BY approvalCount DESC;
+       SELECT c.missionName, COUNT(e.evalNum) AS approvalCount
+			FROM challenges c
+			JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+			LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.evalType = '승인'
+			WHERE rd.roomNum = #{roomNum} AND c.missionTypeNum = 1
+			GROUP BY c.missionName
+			ORDER BY approvalCount DESC;
+
         ]]>
     </select>
     
-     <!-- Get User Achievement Details -->
-<select id="getUserAchievementDetails" parameterType="map" resultType="com.javaex.vo.RatesVo">
-    <![CDATA[
-    SELECT
-        u.userNum,
-        u.userName,
-        u.usingProfilePic,
-        r.roomNum,
-        ROUND(
-            (COUNT(e.evalNum) / COUNT(c.missionNum)) * 100,
-            2
-        ) AS achievementRate,
-        COUNT(e.evalNum) AS approvedMissions,
-        COUNT(c.missionNum) AS totalMissions,
-        r.roomEnterPoint
-    FROM
-        users u
-    JOIN
-        enteredUser eu ON u.userNum = eu.userNum
-    JOIN
-        roomInfo r ON eu.roomNum = r.roomNum
-    JOIN
-        roomDay rd ON r.roomNum = rd.roomNum
-    JOIN
-        challenges c ON rd.roomDayNum = c.roomDayNum
-    LEFT JOIN
-        evaluation e ON c.missionNum = e.missionNum AND e.submitUser = u.userNum AND e.evalType = '승인'
-    WHERE
-        r.roomNum = #{roomNum}
-        AND u.userNum = #{userNum}
-    GROUP BY
-        u.userNum, u.userName, u.usingProfilePic, r.roomNum, r.roomEnterPoint;
-    ]]>
-</select>
+     
 
 
 
-    <!-- Get User Mission Details -->
-<select id="getUserMissionDetails" parameterType="map" resultType="com.javaex.vo.RatesVo">
-    <![CDATA[
-    SELECT
-        c.missionName,
-        COUNT(e.evalNum) AS approvedCount,
-        COUNT(*) AS totalCount
-    FROM
-        challenges c
-    JOIN
-        roomDay rd ON c.roomDayNum = rd.roomDayNum
-    JOIN
-        roomInfo r ON rd.roomNum = r.roomNum
-    JOIN
-        users u ON u.userNum = #{userNum}
-    LEFT JOIN
-        evaluation e ON e.missionNum = c.missionNum AND e.submitUser = u.userNum AND e.evalType = '승인'
-    WHERE
-        r.roomNum = #{roomNum}
-        AND u.userNum = #{userNum}
-    GROUP BY
-        c.missionName;
-    ]]>
-</select>
+
+ 
 
 
    
     
-    <!-- 사용자 기본 정보 조회 -->
+    
+    
+    
+    <!-- 프로필 모달 전용 사용자 기본 정보 조회 -->
     <select id="getUserBasicInfo" parameterType="int" resultType="com.javaex.vo.UserProfileVo">
-        SELECT 
+        <![CDATA[SELECT 
             userNum,
             userName,
             usingProfilePic
@@ -193,36 +254,60 @@
             users
         WHERE 
             userNum = #{userNum}
-        LIMIT 1
+        LIMIT 1 ]]>
     </select>
 
-    <!-- 평균 달성률 조회 -->
+    <!-- 사용자의 전체 평균 달성률 조회 -->
     <select id="getAverageAchievementRate" parameterType="int" resultType="double">
-       SELECT 
-    AVG(sub.achievementRate)
-FROM (
-    SELECT 
-        ROUND((COUNT(e.evalNum) / COUNT(c.missionNum)) * 100, 2) AS achievementRate
-    FROM 
-        challenges c
-    JOIN 
-        roomDay rd ON c.roomDayNum = rd.roomDayNum
-    JOIN 
-        roomInfo r ON rd.roomNum = r.roomNum
-    JOIN 
-        enteredUser eu ON r.roomNum = eu.roomNum
-    LEFT JOIN 
-        evaluation e ON c.missionNum = e.missionNum 
-            AND e.submitUser = #{userNum}
-            AND e.evalType = '승인'
-    JOIN 
-        roomStatus rs ON r.roomStatusNum = rs.roomStatusNum  
-    WHERE 
-        eu.userNum = #{userNum}
-        AND rs.roomStatusName = '종료'  -- roomStatus 테이블에서 roomStatusName을 참조
-    GROUP BY 
-        r.roomNum
-) sub;
+       <![CDATA[-- 1. 종료된 방의 분모 값 계산
+		WITH terminated_rooms AS (
+		    SELECT
+		        r.roomNum,
+		        COUNT(rd.roomDayNum) AS totalRoomDays,
+		        COUNT(DISTINCT c.missionName) AS totalMissions,
+		        p.periodType
+		    FROM roomInfo r
+		    JOIN roomDay rd ON rd.roomNum = r.roomNum
+		    JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+		    JOIN period p ON r.periodNum = p.periodNum
+		    JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+		    WHERE rs.roomStatusName = '종료'  -- 방 상태가 '종료'인 방만 선택
+		    GROUP BY r.roomNum, p.periodType
+		),
+		
+		-- 2. 각 사용자-방 쌍에 대한 승인된 평가 수 계산
+		user_evals AS (
+		    SELECT
+		        eu.userNum,
+		        eu.roomNum,
+		        COUNT(e.evalNum) AS approved_evals
+		    FROM enteredUser eu
+		    JOIN roomInfo r ON eu.roomNum = r.roomNum
+		    JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+		    LEFT JOIN roomDay rd ON rd.roomNum = r.roomNum
+		    LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+		    LEFT JOIN evaluation e 
+		        ON e.missionNum = c.missionNum 
+		        AND e.evalType = '승인' 
+		        AND e.submitUser = eu.userNum
+		    WHERE rs.roomStatusName = '종료'  -- 방 상태가 '종료'인 방만 선택
+		    GROUP BY eu.userNum, eu.roomNum
+		)
+		
+		-- 3. 각 사용자-방 쌍에 대한 achievementRate 계산 및 평균 내기
+		SELECT
+		    ROUND(
+		        AVG(
+		            COALESCE(user_evals.approved_evals, 0) / NULLIF(
+		                tr.totalRoomDays * tr.totalMissions * (tr.periodType / 7),
+		                0
+		            ) * 100
+		        ),
+		        2
+		    ) AS averageAchievementRate
+		FROM user_evals
+		JOIN terminated_rooms tr ON user_evals.roomNum = tr.roomNum; ]]>
+ 
     </select>
 
     <!-- 포인트 랭킹 조회 -->
@@ -242,23 +327,84 @@ FROM (
 
     <!-- 참여 중인 챌린지 수 조회 -->
     <select id="getActiveChallenges" parameterType="int" resultType="int">
-        SELECT COUNT(*)
+        <![CDATA[ SELECT COUNT(*)
         FROM enteredUser eu
         JOIN roomInfo r ON eu.roomNum = r.roomNum
         JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
         WHERE eu.userNum = #{userNum} 
-          AND rs.roomStatusName != '종료'
+          AND rs.roomStatusName != '종료' ]]>
     </select>
 
     <!-- 완료된 챌린지 수 조회 -->
     <select id="getCompletedChallenges" parameterType="int" resultType="int">
-        SELECT COUNT(*)
+       <![CDATA[ SELECT COUNT(*)
         FROM enteredUser eu
         JOIN roomInfo r ON eu.roomNum = r.roomNum
         JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
         WHERE eu.userNum = #{userNum} 
-          AND rs.roomStatusName = '종료'
+          AND rs.roomStatusName = '종료' ]]>
     </select>
+    <!-- MyBatis 매퍼 파일에 추가 -->
+<select id="getUserMissionDetails" parameterType="map" resultType="map">
+    SELECT 
+        c.missionName, 
+        COUNT(DISTINCT c.missionNum) AS totalAssigned,
+        COUNT(DISTINCT e.evalNum) AS completedCount
+    FROM challenges c
+    JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+    LEFT JOIN evaluation e 
+        ON c.missionNum = e.missionNum 
+        AND e.evalType = '승인' 
+        AND e.submitUser = #{userNum}
+    WHERE rd.roomNum = #{roomNum} AND c.missionTypeNum = 1
+    GROUP BY c.missionName
+</select>
+
+<select id="getUserTotalMissions" parameterType="map" resultType="map">
+    SELECT 
+        COUNT(DISTINCT c.missionNum) AS totalAssigned,
+        COUNT(DISTINCT e.evalNum) AS completedCount
+    FROM challenges c
+    JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+    LEFT JOIN evaluation e 
+        ON c.missionNum = e.missionNum 
+        AND e.evalType = '승인' 
+        AND e.submitUser = #{userNum}
+    WHERE rd.roomNum = #{roomNum} AND c.missionTypeNum = 1
+</select>
+    <!-- MyBatis 매퍼 파일에 추가 -->
+<select id="getGroupChallengeAchievement" parameterType="int" resultType="map">
+    SELECT
+        c.missionName,
+        IFNULL(SUM(CASE WHEN e.evalType = '승인' THEN 1 ELSE 0 END), 0) / c.missionGoal * 100 AS achievementRate
+    FROM
+        roomInfo ri
+    JOIN
+        roomDay rd ON ri.roomNum = rd.roomNum
+    JOIN
+        challenges c ON rd.roomDayNum = c.roomDayNum
+    LEFT JOIN
+        evaluation e ON c.missionNum = e.missionNum AND c.missionAI = TRUE
+    WHERE
+        ri.roomNum = #{roomNum}
+        AND c.missionTypeNum = 3
+    GROUP BY
+        c.missionNum, c.missionName, c.missionGoal
+</select>
+    <!-- MyBatis 매퍼 파일에 추가 -->
+<select id="getRoomEnterPoint" parameterType="int" resultType="int">
+    SELECT roomEnterPoint FROM roomInfo WHERE roomNum = #{roomNum}
+</select>
+    <!-- MyBatis 매퍼 파일에 추가 -->
+<select id="getChallengeRewardEligibility" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM evaluation e
+    JOIN challenges c ON e.missionNum = c.missionNum
+    JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+    WHERE rd.roomNum = #{roomNum}
+      AND c.missionTypeNum = 2
+      AND e.evalType = '승인'
+      AND e.submitUser = #{userNum}
+</select>
     
 
 </mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="challenge">
+
+    <!-- 특정 roomNum의 모든 방 정보 조회 -->
+    <select id="selectRoomInfo" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+        SELECT 
+            ri.roomNum,
+            ri.roomTitle,
+            ri.roomDescription,
+            ri.roomStartDate,
+            ri.roomStatusNum,
+            p.periodType, <!-- period 테이블에서 periodType 가져오기 -->
+            rt.roomTypeName,
+            c.categoryName,
+            ri.roomKeyword,
+            r.regionName
+        FROM roomInfo ri
+        JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+        JOIN categories c ON ri.categoryNum = c.categoryNum
+        JOIN regions r ON ri.regionNum = r.regionNum
+        JOIN period p ON ri.periodNum = p.periodNum <!-- period 테이블과 조인 -->
+        WHERE ri.roomNum = #{roomNum};
+    </select>
+
+    <!-- 방 헤더 정보 조회 -->
+    <select id="selectRoomHeaderInfo" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+        SELECT 
+            ri.roomTitle,
+            ri.roomDescription,
+            ri.roomStartDate,
+            ri.roomStatusNum,
+            p.periodType, <!-- period 테이블에서 periodType 가져오기 -->
+            rt.roomTypeName,
+            c.categoryName,
+            ri.roomKeyword,
+            r.regionName
+        FROM roomInfo ri
+        JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+        JOIN categories c ON ri.categoryNum = c.categoryNum
+        JOIN regions r ON ri.regionNum = r.regionNum
+        JOIN period p ON ri.periodNum = p.periodNum <!-- period 테이블과 조인 -->
+        WHERE ri.roomNum = #{roomNum};
+    </select>
+
+    <!-- 사용자 권한 조회 -->
+    <select id="selectUserAuth" parameterType="map" resultType="int">
+        SELECT enteredUserAuth FROM enteredUser 
+        WHERE roomNum = #{roomNum} AND userNum = #{userNum};
+    </select>
+    
+    <!-- 방 시작 시간 업데이트 -->
+    <update id="updateRoomStartDate" parameterType="map">
+        UPDATE roomInfo
+        SET roomStartDate = #{roomStartDate}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 챌린지 시작: roomStartDate를 현재 시간으로 설정하고 roomStatusNum을 3으로 변경 -->
+    <update id="startChallenge" parameterType="map">
+        UPDATE roomInfo
+        SET roomStartDate = NOW(),
+            roomStatusNum = 3
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 방 상태 업데이트 (roomStatusNum) -->
+    <update id="updateRoomStatus" parameterType="map">
+        UPDATE roomInfo
+        SET roomStatusNum = #{roomStatusNum}
+        WHERE roomNum = #{roomNum};
+    </update>
+    
+    <select id="getUserAuth" parameterType="map" resultType="int">
+        SELECT enteredUserAuth FROM enteredUser
+        WHERE roomNum = #{roomNum} AND userNum = #{userNum}
+    </select>
+
+    <!-- 사용자 참가 여부 확인 -->
+    <select id="checkUserJoined" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM enteredUser
+        WHERE roomNum = #{roomNum} AND userNum = #{userNum};
+    </select>
+
+    <!-- 사용자 참가 처리 -->
+    <insert id="joinRoom" parameterType="map">
+        INSERT INTO enteredUser (roomNum, userNum, enteredUserStatusNum, enteredUserAuth)
+        VALUES (#{roomNum}, #{userNum}, #{enteredUserStatusNum}, #{enteredUserAuth});
+    </insert>
+
+    <!-- 방 삭제: enteredUser 데이터 삭제 -->
+    <delete id="deleteEnteredUsers" parameterType="int">
+        DELETE FROM enteredUser
+        WHERE roomNum = #{roomNum};
+    </delete>
+
+    <!-- 방 삭제: roomInfo 데이터 삭제 -->
+    <delete id="deleteRoom" parameterType="int">
+        DELETE FROM roomInfo
+        WHERE roomNum = #{roomNum};
+    </delete>
+    
+    <!-- 참여자 수 조회 -->
+<select id="getParticipantCount" parameterType="int" resultType="int">
+    SELECT COUNT(*) FROM enteredUser
+    WHERE roomNum = #{roomNum} AND enteredUserStatusNum != 2;
+</select>
+
+<!-- 다음 유저의 userNum 조회 -->
+<select id="getNextUserNum" parameterType="map" resultType="int">
+    SELECT userNum FROM enteredUser
+    WHERE roomNum = #{roomNum} AND userNum != #{currentUserNum} AND enteredUserStatusNum != 2
+    ORDER BY enteredUserNum ASC LIMIT 1;
+</select>
+
+<!-- enteredUserAuth 업데이트 -->
+<update id="updateEnteredUserAuth" parameterType="map">
+    UPDATE enteredUser
+    SET enteredUserAuth = #{enteredUserAuth}
+    WHERE roomNum = #{roomNum} AND userNum = #{userNum};
+</update>
+
+<!-- enteredUserStatusNum 업데이트 -->
+<update id="updateEnteredUserStatus" parameterType="map">
+    UPDATE enteredUser
+    SET enteredUserStatusNum = #{enteredUserStatusNum}
+    WHERE roomNum = #{roomNum} AND userNum = #{userNum};
+</update>
+    
+</mapper>

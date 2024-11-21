@@ -17,6 +17,11 @@ public class RatesDao {
     private SqlSessionTemplate sqlSession;
 
     private String namespace = "Rates"; // MyBatis 매퍼 네임스페이스 설정
+    
+ // 새로운 DAO 메서드 추가
+    public List<RatesVo> getMissionAchievement(int roomNum) {
+        return sqlSession.selectList(namespace + ".getMissionAchievement", roomNum);
+    }
 
     public List<RatesVo> getTopUsers(int roomNum) {
         return sqlSession.selectList(namespace + ".getTopUsers", roomNum);
@@ -27,17 +32,17 @@ public class RatesDao {
         return sqlSession.selectList(namespace + ".getOverallStatsbyDates", roomNum);
     }
     
-    // 전체 유저 목록 가져오기 (추가)
+    // 전체 유저 목록 가져오기 
     public List<RatesVo> getAllUsers(int roomNum) {
         return sqlSession.selectList(namespace + ".getAllUsers", roomNum);
     }
     
-    // 미션 승인 횟수 가져오기 (새로운 메소드)
+    // 미션 승인 횟수 가져오기 
     public List<Map<String, Object>> getMissionApprovals(int roomNum) {
         return sqlSession.selectList(namespace + ".getMissionApprovals", roomNum);
     }
     
- // Get User Achievement Details
+    // Get User Achievement Details
     public RatesVo getUserAchievementDetails(int roomNum, int userNum) {
         Map<String, Object> params = new HashMap<>();
         params.put("roomNum", roomNum);
@@ -45,15 +50,9 @@ public class RatesDao {
         return sqlSession.selectOne(namespace + ".getUserAchievementDetails", params);
     }
 
-    // Get User Mission Details
-    public List<RatesVo> getUserMissionDetails(int roomNum, int userNum) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("roomNum", roomNum);
-        params.put("userNum", userNum);
-        return sqlSession.selectList(namespace + ".getUserMissionDetails", params);
-    }
     
- // 사용자 기본 정보 조회
+    
+    // 사용자 기본 정보 조회
     public UserProfileVo getUserBasicInfo(int userNum) {
         return sqlSession.selectOne(namespace + ".getUserBasicInfo", userNum);
     }
@@ -77,4 +76,38 @@ public class RatesDao {
     public Integer getCompletedChallenges(int userNum) {
         return sqlSession.selectOne(namespace + ".getCompletedChallenges", userNum);
     }
+    
+ // RatesDao.java
+    public List<Map<String, Object>> getUserMissionDetails(int roomNum, int userNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("userNum", userNum);
+        return sqlSession.selectList(namespace + ".getUserMissionDetails", params);
+    }
+
+    public Map<String, Object> getUserTotalMissions(int roomNum, int userNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("userNum", userNum);
+        return sqlSession.selectOne(namespace + ".getUserTotalMissions", params);
+    }
+    
+ // RatesDao.java
+    public List<Map<String, Object>> getGroupChallengeAchievement(int roomNum) {
+        return sqlSession.selectList(namespace + ".getGroupChallengeAchievement", roomNum);
+    }
+ // RatesDao.java
+    public Integer getRoomEnterPoint(int roomNum) {
+        return sqlSession.selectOne(namespace + ".getRoomEnterPoint", roomNum);
+    }
+
+    public boolean isEligibleForChallengeReward(int roomNum, int userNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("userNum", userNum);
+        Integer count = sqlSession.selectOne(namespace + ".getChallengeRewardEligibility", params);
+        return count != null && count > 0;
+    }
+
+
 }

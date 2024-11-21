@@ -14,36 +14,40 @@ import com.javaex.vo.UserProfileVo;
 public class RatesService {
 	@Autowired
     private RatesDao ratesdao;
+	
+	// 새로운 서비스 메서드 추가
+    public List<RatesVo> getMissionAchievement(int roomNum) {
+        return ratesdao.getMissionAchievement(roomNum);
+    }
 
     public List<RatesVo> getTopUsers(int roomNum) {
         return ratesdao.getTopUsers(roomNum);
     }
     
     // 전체 달성률 통계 가져오기
-    public List<RatesVo> getOverallStats(int roomNum) { // 반환 타입 수정
+    public List<RatesVo> getOverallStats(int roomNum) { 
         return ratesdao.getOverallStats(roomNum);
     }
 
-    // 전체 유저 목록 가져오기 (추가)
+    // 전체 유저 목록 가져오기 
     public List<RatesVo> getAllUsers(int roomNum) {
         return ratesdao.getAllUsers(roomNum);
     }
     
-    // 미션 승인 횟수 가져오기 (새로운 메소드)
+    // 미션 승인 횟수 가져오기 
     public List<Map<String, Object>> getMissionApprovals(int roomNum) {
         return ratesdao.getMissionApprovals(roomNum);
     }
+    
+   
     
     // Get User Achievement Details
     public RatesVo getUserAchievementDetails(int roomNum, int userNum) {
         return ratesdao.getUserAchievementDetails(roomNum, userNum);
     }
-
-    // Get User Mission Details
-    public List<RatesVo> getUserMissionDetails(int roomNum, int userNum) {
-        return ratesdao.getUserMissionDetails(roomNum, userNum);
-    }
     
+    
+    // 프로필 모달 전용 
     public UserProfileVo getUserProfileDetails(int userNum) {
         UserProfileVo profile = ratesdao.getUserBasicInfo(userNum);
         if (profile != null) {
@@ -54,4 +58,25 @@ public class RatesService {
         }
         return profile;
     }
+ // RatesService.java
+    public List<Map<String, Object>> getUserMissionDetails(int roomNum, int userNum) {
+        return ratesdao.getUserMissionDetails(roomNum, userNum);
+    }
+
+    public Map<String, Object> getUserTotalMissions(int roomNum, int userNum) {
+        return ratesdao.getUserTotalMissions(roomNum, userNum);
+    }
+ // RatesService.java
+    public List<Map<String, Object>> getGroupChallengeAchievement(int roomNum) {
+        return ratesdao.getGroupChallengeAchievement(roomNum);
+    }
+ // RatesService.java
+    public Integer getRoomEnterPoint(int roomNum) {
+        return ratesdao.getRoomEnterPoint(roomNum);
+    }
+
+    public boolean isEligibleForChallengeReward(int roomNum, int userNum) {
+        return ratesdao.isEligibleForChallengeReward(roomNum, userNum);
+    }
+
 }

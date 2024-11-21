@@ -8,5 +8,7 @@
     	<mapper resource="mybatis/mappers/Announcement.xml" />
     	<mapper resource="mybatis/mappers/Rates.xml" />
     	<mapper resource="mybatis/mappers/dyuser.xml" />
+    	<mapper resource="mybatis/mappers/Chat.xml" />
+    	<mapper resource="mybatis/mappers/challenge.xml" />
     </mappers>
 </configuration>

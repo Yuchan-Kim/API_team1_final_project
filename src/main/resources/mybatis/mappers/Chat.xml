@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Chat">
+
+    <!-- 특정 roomNum의 모든 채팅 메시지 조회 -->
+    <select id="getChatMessages" parameterType="int" resultType="com.javaex.vo.ChatVo">
+        SELECT 
+        c.chatNum,
+        c.roomNum,
+        c.chatContent,
+        c.chatTime,
+        c.chatter,
+        u.userNum,
+        u.userName,
+        u.usingProfilePic
+		    FROM 
+		        roomChat c
+		    JOIN 
+		        users u ON c.chatter = u.userNum
+		    WHERE 
+		        c.roomNum = #{roomNum}
+		    ORDER BY 
+		        c.chatTime ASC;
+    </select>
+    
+    <!-- 새로운 채팅 메시지 삽입 -->
+    <insert id="insertMessage" parameterType="com.javaex.vo.ChatVo">
+        INSERT INTO roomChat (roomNum, chatContent, chatTime, chatter)
+        VALUES (#{roomNum}, #{chatContent}, NOW(), #{chatter});
+    </insert>
+    
+    <select id="getUserByNum" parameterType="int" resultType="com.javaex.vo.ChatVo">
+        SELECT 
+            userNum,
+            userName,
+            usingProfilePic
+        FROM 
+            users
+        WHERE 
+            userNum = #{userNum}
+        LIMIT 1;
+    </select>
+    
+</mapper>

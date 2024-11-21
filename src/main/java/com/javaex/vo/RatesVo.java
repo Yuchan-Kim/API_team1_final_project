@@ -12,9 +12,19 @@ public class RatesVo {
     private int approvedMissions;
     private int totalMissions;
     private int roomEnterPoint;
+    
+    private String missionName;
 
 	public RatesVo() {
 	}
+	
+	public String getMissionName() {
+        return missionName;
+    }
+
+    public void setMissionName(String missionName) {
+        this.missionName = missionName;
+    }
 
 	public int getUserNum() {
 		return userNum;
@@ -96,12 +106,12 @@ public class RatesVo {
 	}
 
 	@Override
-	public String toString() {
-		return "RatesVo [userNum=" + userNum + ", usingProfilePic=" + usingProfilePic + ", userName=" + userName
-				+ ", roomNum=" + roomNum + ", achievementRate=" + achievementRate + ", date=" + date + ", percentage="
-				+ percentage + ", approvedMissions=" + approvedMissions + ", totalMissions=" + totalMissions
-				+ ", roomEnterPoint=" + roomEnterPoint + "]";
-	}
+    public String toString() {
+        return "RatesVo [userNum=" + userNum + ", usingProfilePic=" + usingProfilePic + ", userName=" + userName
+                + ", roomNum=" + roomNum + ", achievementRate=" + achievementRate + ", date=" + date + ", percentage="
+                + percentage + ", approvedMissions=" + approvedMissions + ", totalMissions=" + totalMissions
+                + ", roomEnterPoint=" + roomEnterPoint + ", missionName=" + missionName + "]";
+    }
 
 		
 	
