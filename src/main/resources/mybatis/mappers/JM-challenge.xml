@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="challenge">
+
+	<!-- 방 설명 -->
+	<select id="getRoomInfo" resultType="com.javaex.vo.UserVo">
+		<![CDATA[ 
+			select roomDescription as roomInfo
+			from roomInfo
+			where roomNum = #{roomNum}
+		]]>
+	</select>
+	
+	<!-- 방 공지사항 1개 가져오기 -->
+	<select id="getRoomAnnouncement" resultType="com.javaex.vo.UserVo">
+		<![CDATA[ 
+			SELECT 
+			    announceNum,
+			    roomNum,
+			    title,
+			    announcement,
+			    announceAddedBy,
+			    announceTime
+			FROM 
+			    announcement
+			WHERE 
+			    roomNum = 1
+			ORDER BY 
+			    announceTime DESC
+			LIMIT #{roomNum}
+		]]>
+	</select>
+
+
+	<!-- 방 참가유저 리스트 -->
+	<select id="getUsersByRoomNum" resultType="com.javaex.vo.UserVo">
+        <![CDATA[ 
+	        SELECT 
+			    u.userNum AS userNum,
+			    u.userName AS userName,
+			    u.userEmail AS userEmail,
+			    u.userStatus AS userStatus,
+			    eu.enteredUserAuth AS userAuth,
+			    eu.enteredUserStatusNum AS userStatusNum,
+			    es.enteredUserStatus AS statusDescription
+			FROM 
+			    enteredUser eu
+			JOIN 
+			    users u ON eu.userNum = u.userNum
+			JOIN 
+			    enteredUserStatus es ON eu.enteredUserStatusNum = es.enteredUserStatusNum
+			WHERE 
+			    eu.roomNum = #{roomNum}
+        ]]>
+    </select>
+    
+    <!-- 유의사항 업데이트 -->
+    <update id="ruleUpdate" parameterType="com.javaex.vo.UserVo">
+    	<![CDATA[ 
+    		UPDATE roomInfo
+			SET missionInstruction = #{missionInstruction}
+			WHERE roomNum = #{roomNum}
+    	]]>
+    </update>
+    
+    <!-- 유의사항 가져오기 -->
+    <select id="getRule" resultType="com.javaex.vo.UserVo">
+    	<![CDATA[ 
+    		SELECT  missionInstruction
+    		FROM roomInfo
+    		WHERE roomNum = #{roomNum}
+    	]]>
+    </select>
+    
+    <!-- 방 미션 리스트 -->
+    <select id="getMissionByRoomNum2" resultType="com.javaex.vo.UserVo">
+    	<![CDATA[
+    		SELECT 
+			    c.missionNum AS missionNum,
+			    c.missionName AS missionName,
+			    c.missionMethod AS missionMethod,
+			    m.missionType AS missionType,
+			    m.missionPoint AS missionPoint
+			FROM 
+			    challenges c
+			JOIN 
+			    missionType m ON c.missionTypeNum = m.missionTypeNum
+			JOIN 
+			    roomDay rd ON c.roomDayNum = rd.roomDayNum
+			JOIN 
+			    day d ON rd.dateNum = d.dateNum
+			WHERE 
+			    rd.roomNum = #{roomNum}
+			    AND m.missionType = '일반'
+			    AND d.dateNum = DAYNAME(NOW())+1
+		]]>
+	 </select>
+    
+    <!-- 방 미션 리스트 + 유저 제출여부 -->
+    <select id="getMissionByRoomNum" resultType="com.javaex.vo.UserVo">
+    	<![CDATA[ 
+    		SELECT 
+			    c.missionNum AS missionNum,
+			    c.missionName AS missionName,
+			    c.missionMethod AS missionMethod,
+			    e.submitDate AS submitDate,
+			    e.evalNum AS evalNum
+			FROM 
+			    challenges c
+			JOIN 
+			    missionType m ON c.missionTypeNum = m.missionTypeNum
+			JOIN 
+			    roomDay rd ON c.roomDayNum = rd.roomDayNum
+			JOIN 
+			    day d ON rd.dateNum = d.dateNum
+			LEFT JOIN 
+			    evaluation e ON c.missionNum = e.missionNum 
+			    AND e.submitUser = #{userNum}
+			    AND e.submitDate = CURDATE()
+			WHERE 
+			    rd.roomNum = #{roomNum}
+			    AND m.missionType = '일반'
+			    AND d.dateNum = DAYNAME(NOW())+1
+    	]]>
+    </select>
+    
+    <!-- 미션 히스토리 -->
+    <select id="getMissionByUser" resultType="com.javaex.vo.UserVo">
+    	<![CDATA[ 
+    		WITH RankedMissions AS (
+			    SELECT 
+			        u.userNum,
+			        u.userName,
+			        e.missionNum,
+			        c.missionName,
+			        e.evalNum,
+			        e.evalType,
+			        e.submitComment,
+			        e.submitDate,
+			        u2.userNum AS evalUserNum,
+			        u2.userName AS evalUserName,
+			        e.evalDate,
+			        GROUP_CONCAT(ei.evalImgRoute SEPARATOR ', ') AS evalImgRoutes,  -- 이미지 경로 연결
+			        GROUP_CONCAT(ei.evalImgName SEPARATOR ', ') AS evalImgName,    -- 이미지 이름 연결
+			        ROW_NUMBER() OVER (
+			            PARTITION BY u.userNum, e.submitDate, e.missionNum 
+			            ORDER BY e.evalDate DESC
+			        ) AS rn
+			    FROM 
+			        evaluation e
+			    JOIN 
+			        users u ON e.submitUser = u.userNum
+			    LEFT JOIN 
+			        users u2 ON e.evalUser = u2.userNum
+			    JOIN 
+			        challenges c ON e.missionNum = c.missionNum
+			    JOIN 
+			        missionType mt ON c.missionTypeNum = mt.missionTypeNum
+			    LEFT JOIN 
+			        evaluationImg ei ON e.evalNum = ei.evalNum
+			    JOIN 
+			        roomDay rd ON c.roomDayNum = rd.roomDayNum
+			    JOIN 
+			        roomInfo ri ON rd.roomNum = ri.roomNum
+			    WHERE 
+			        ri.roomNum = #{roomNum}  -- 특정 방 번호 필터링
+			      AND 
+			        mt.missionType = '일반'
+			    GROUP BY 
+			        e.evalNum  -- 평가 번호별로 그룹화하여 각 평가의 모든 이미지를 가져옴
+			)
+			SELECT *
+			FROM RankedMissions
+			WHERE rn = 1  -- 최신 평가만 가져오기
+			ORDER BY submitDate ${order}, userNum ASC, missionNum ASC;
+    	]]>	
+    </select>
+    
+    <!-- 미션 제출 -->
+    <insert id="evalInsert" parameterType="com.javaex.vo.UserVo" useGeneratedKeys="true" keyProperty="evalNum">
+    	<![CDATA[
+    		INSERT INTO evaluation (missionNum, evalType, submitDate, submitComment, submitUser)
+        	VALUES (#{missionNum}, "승인대기", now(), #{submitComment}, #{submitUser} )
+    	]]>
+    </insert>
+    
+    <!-- 제출한 미션에 이미지 넣기 -->
+    <insert id="infoImageInsert" parameterType="com.javaex.vo.UserVo">
+    	<![CDATA[
+    		INSERT INTO evaluationImg (evalNum, evalImgName)
+    		VALUES (#{evalNum}, #{evalImgName})
+    		
+    	]]>
+    </insert>
+    
+    <!-- 미션평가 업데이트 -->
+    <update id="updateEval" parameterType="com.javaex.vo.UserVo">
+    	<![CDATA[ 
+    		UPDATE evaluation
+			SET evalType = #{evalType},
+			    evalDate = NOW(),
+			    evalUser = #{userNum}
+			WHERE evalNum = #{evalNum}
+    	]]>
+    </update>
+    
+</mapper>

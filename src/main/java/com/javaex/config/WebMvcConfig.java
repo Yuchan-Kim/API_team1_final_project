@@ -28,14 +28,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		 * 각자 저장할 로컬 위치 넣어서 테스트 해야합니다. aws 연결후에 강사님 께서 알려주신 방법으로 클라우드 서버 이용해서 업로드 테스트 해보겠습니다.
 		 */
 		if (osName.contains("windows")) {
-			saveDir = "/app/upload/";
+			//saveDir = "/app/upload/";
+			saveDir = "/Users/jiminpark/Desktop/upload/";
 			registry.addResourceHandler("/upload/**")
             //.addResourceLocations("file:C:\\javaStudy\\upload\\");
             .addResourceLocations("file:" + saveDir);
 
 			
 		}else {
-			saveDir = "/app/upload/";
+			//saveDir = "/app/upload/";
+			saveDir = "/Users/jiminpark/Desktop/upload/";
 			//saveDir = "/home/ec2-user/";
 			registry.addResourceHandler("/upload/**")
 			.addResourceLocations("file:" + saveDir);
