@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="naveruser">
+
+	<!-- 네이버 회원 가입 -->
+	<insert id="insertNaver"
+		parameterType="com.javaex.vo.HmkNaverUserVo">
+    <![CDATA[
+        INSERT INTO users (regionNum, userEmail, userName, socialLogin)
+        VALUES (#{regionNum}, #{userEmail}, #{userName}, #{socialLogin})
+    ]]>
+	</insert>
+	
+	<!-- 네이버 회원 정보 찾기 -->
+	<select id="selectByEmailOnly" parameterType="String"
+		resultType="com.javaex.vo.HmkNaverUserVo">
+    <![CDATA[
+        SELECT userNum, userName, userEmail
+        FROM users
+        WHERE userEmail = #{userEmail}
+    ]]>
+	</select>
+
+
+</mapper>
