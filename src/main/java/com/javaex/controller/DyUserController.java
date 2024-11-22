@@ -1,14 +1,18 @@
 package com.javaex.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.javaex.service.DyUserService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
 import com.javaex.vo.DyUserVo;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController	
@@ -32,6 +36,21 @@ public class DyUserController {
 		
 	}
 	
+	
+	/* 카카오 회원가입 */
+	@PostMapping("/api/kakao/users")
+	public JsonResult kakaoJoin(@RequestBody DyUserVo dyUserVo) {	
+		System.out.println("DyUserController.kakaoJoin()");
+		
+		int count = dyUserService.exeKakaoJoin(dyUserVo);
+		
+		if(count != 1) { 		//등록안됨
+			return JsonResult.fail("회원등록에 실패했습니다.");
+		}else { 				//등록됨
+			return JsonResult.success(count);
+		}
+		
+	}
 	
 
 	/* 이메일 중복체크 */
@@ -83,6 +102,17 @@ public class DyUserController {
 			return JsonResult.fail("이메일 또는 비밀번호가 잘못되었습니다.");
 		}
 		
+	}
+	
+	
+	/* 헤더에 유저 포인트 */
+	@GetMapping("/api/user/points")
+	public JsonResult UserPoints(@RequestParam(value = "userNum") int userNum) {
+		System.out.println("DyUserController.UserPoints()");
+	    int historyPoint = dyUserService.getUserPoints(userNum);
+
+	    // 포인트 정보 반환
+	    return JsonResult.success(historyPoint);
 	}
 	
 	

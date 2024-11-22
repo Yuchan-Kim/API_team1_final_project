@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="Mypage">
+   <!-- 사용자 정보 -->
+   <select id="getUserInfo" parameterType="int"
+      resultType="com.javaex.vo.HmkUserVo">
+    <![CDATA[
+        SELECT 
+            u.userNum,
+            u.userEmail,
+            u.userName as nickname,
+            u.usingProfilePic as profileImage,
+            u.userStatus,
+            u.socialLogin,
+            r.regionName as region,
+            u.userPw as currentPassword,
+            
+            -- 회원 소유 프로필 이미지 목록을 JSON 배열로 반환
+            (
+                SELECT JSON_ARRAYAGG(i.itemImg) 
+                FROM purchaseHistory ph
+                JOIN item i ON ph.itemNum = i.itemNum
+                WHERE ph.userNum = u.userNum
+                AND ph.purchasedStatus = '꾸미기'
+            ) AS ownedProfileImages
+            
+        FROM 
+            users u
+            LEFT JOIN regions r ON u.regionNum = r.regionNum
+        WHERE 
+            u.userNum = #{userNum}
+    ]]>
+   </select>
+
+   <!-- 사용자의 챌린지 통계(count) 조회 -->
+   <select id="getUserChallengeStats" parameterType="int"
+      resultType="com.javaex.vo.HmkUserVo">
+    <![CDATA[
+        SELECT 
+            t1.ongoing_challenges as ongoingChallenges,
+            t1.upcoming_challenges as upcomingChallenges,
+            t1.completed_challenges as completedChallenges,
+            t2.achievement_rate as participationScore
+        FROM (
+            -- <<챌린지 상태별 카운트>>
+            SELECT 
+                SUM(CASE WHEN rs.roomStatusName = '시작' THEN 1 ELSE 0 END) as ongoing_challenges,
+                SUM(CASE WHEN rs.roomStatusName IN ('모집 전', '모집 중') THEN 1 ELSE 0 END) as upcoming_challenges,
+                SUM(CASE WHEN rs.roomStatusName = '종료' THEN 1 ELSE 0 END) as completed_challenges
+            FROM roomInfo ri
+            JOIN roomStatus rs ON ri.roomStatusNum = rs.roomStatusNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            WHERE eu.userNum = #{userNum}
+            AND eu.enteredUserStatusNum = 1
+        ) t1,
+        (
+            -- <<종합 달성률 계산>>
+            SELECT 
+                ROUND(
+                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    NULLIF(COUNT(*), 0), 
+                    2
+                ) as achievement_rate
+            FROM challenges c
+            JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+            JOIN roomInfo ri ON rd.roomNum = ri.roomNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum 
+                                AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND eu.enteredUserStatusNum = 1
+        ) t2
+        ]]>
+   </select>
+
+
+   <!-- 프로필 이미지 업데이트 -->
+   <update id="updateProfileImage"
+      parameterType="com.javaex.vo.HmkUserVo">
+    <![CDATA[
+        UPDATE users 
+        SET usingProfilePic = #{profileImage}
+        WHERE userNum = #{userNum}
+    ]]>
+   </update>
+
+   <!-- 닉네임 중복 체크 -->
+   <select id="checkNickname" parameterType="string"
+      resultType="int">
+       <![CDATA[
+       SELECT COUNT(*) FROM users WHERE userName = #{nickname}
+       ]]>
+   </select>
+
+   <!-- 닉네임 업데이트 -->
+   <update id="updateNickname"
+      parameterType="com.javaex.vo.HmkUserVo">
+    <![CDATA[
+        UPDATE users 
+        SET userName = #{nickname}
+        WHERE userNum = #{userNum}
+    ]]>
+   </update>
+
+   <!-- 지역 업데이트 -->
+   <update id="updateAddress"
+      parameterType="com.javaex.vo.HmkUserVo">
+    <![CDATA[
+        UPDATE users 
+        SET regionNum = (SELECT regionNum FROM regions WHERE regionName = #{region})
+        WHERE userNum = #{userNum}
+    ]]>
+   </update>
+
+   <!-- 자동완성 지역 검색 쿼리 -->
+   <select id="findRegionsByName" parameterType="string"
+      resultType="string">
+    <![CDATA[
+        SELECT regionName
+        FROM regions
+        WHERE regionName LIKE #{query}
+    ]]>
+   </select>
+
+   <!-- 비밀번호 업데이트 -->
+   <update id="updatePassword"
+      parameterType="com.javaex.vo.HmkUserVo">
+    <![CDATA[
+        UPDATE users
+        SET userPw = #{newPassword}
+        WHERE userNum = #{userNum}
+    ]]>
+   </update>
+
+   <!-- 차트 데이터 조회 -->
+   <select id="getCharts" parameterType="int"
+      resultType="com.javaex.vo.HmkChartDataVo">
+    <![CDATA[
+        SELECT 
+            chart_data.chart_title as chartTitle,
+            chart_data.attended_count as attendedCount,
+            chart_data.total_count as totalCount,
+            chart_data.ratio_display as ratioDisplay,
+            chart_data.percentage as percentage
+        FROM (
+            -- 1. 일반방 미션 수행률
+            SELECT 
+                '일반방 미션 수행률' as chart_title,
+                COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END) as attended_count,
+                COUNT(DISTINCT c.missionNum) as total_count,
+                CONCAT(
+                    COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END),
+                    '/',
+                    COUNT(DISTINCT c.missionNum)
+                ) as ratio_display,
+                ROUND(
+                    (COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END) * 100.0) / 
+                    NULLIF(COUNT(DISTINCT c.missionNum), 0), 
+                    1
+                ) as percentage
+            FROM roomInfo ri
+            JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+            JOIN roomDay rd ON ri.roomNum = rd.roomNum
+            JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND rt.roomTypeName = '일반'
+            AND ri.roomStatusNum = 3
+
+            UNION ALL
+
+            -- 2. 챌린지방 미션 수행률
+            SELECT 
+                '챌린지방 미션 수행률' as chart_title,
+                COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END) as attended_count,
+                COUNT(DISTINCT c.missionNum) as total_count,
+                CONCAT(
+                    COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END),
+                    '/',
+                    COUNT(DISTINCT c.missionNum)
+                ) as ratio_display,
+                ROUND(
+                    (COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END) * 100.0) / 
+                    NULLIF(COUNT(DISTINCT c.missionNum), 0), 
+                    1
+                ) as percentage
+            FROM roomInfo ri
+            JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+            JOIN roomDay rd ON ri.roomNum = rd.roomNum
+            JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND rt.roomTypeName = '챌린지'
+            AND ri.roomStatusNum = 3
+
+            UNION ALL
+
+            -- 3. 전체 미션 수행률
+            SELECT 
+                '전체 미션 수행률' as chart_title,
+                COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END) as attended_count,
+                COUNT(DISTINCT c.missionNum) as total_count,
+                CONCAT(
+                    COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END),
+                    '/',
+                    COUNT(DISTINCT c.missionNum)
+                ) as ratio_display,
+                ROUND(
+                    (COUNT(DISTINCT CASE WHEN e.submitDate IS NOT NULL THEN c.missionNum END) * 100.0) / 
+                    NULLIF(COUNT(DISTINCT c.missionNum), 0), 
+                    1
+                ) as percentage
+            FROM roomInfo ri
+            JOIN roomDay rd ON ri.roomNum = rd.roomNum
+            JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND ri.roomStatusNum = 3
+
+            UNION ALL
+
+            -- 4. 일반방 미션 달성률
+            SELECT 
+                '일반방 미션 달성률' as chart_title,
+                COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) as attended_count,
+                COUNT(c.missionNum) as total_count,
+                CONCAT(
+                    COUNT(CASE WHEN e.evalType = '인증' THEN 1 END),
+                    '/',
+                    COUNT(c.missionNum)
+                ) as ratio_display,
+                ROUND(
+                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    NULLIF(COUNT(c.missionNum), 0), 
+                    1
+                ) as percentage
+            FROM roomInfo ri
+            JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+            JOIN roomDay rd ON ri.roomNum = rd.roomNum
+            JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND rt.roomTypeName = '일반'
+            AND ri.roomStatusNum = 3
+
+            UNION ALL
+
+            -- 5. 챌린지방 미션 달성률
+            SELECT 
+                '챌린지방 미션 달성률' as chart_title,
+                COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) as attended_count,
+                COUNT(c.missionNum) as total_count,
+                CONCAT(
+                    COUNT(CASE WHEN e.evalType = '인증' THEN 1 END),
+                    '/',
+                    COUNT(c.missionNum)
+                ) as ratio_display,
+                ROUND(
+                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    NULLIF(COUNT(c.missionNum), 0), 
+                    1
+                ) as percentage
+            FROM roomInfo ri
+            JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+            JOIN roomDay rd ON ri.roomNum = rd.roomNum
+            JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND rt.roomTypeName = '챌린지'
+            AND ri.roomStatusNum = 3
+
+            UNION ALL
+
+            -- 6. 전체 미션 달성률
+            SELECT 
+                '전체 미션 달성률' as chart_title,
+                COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) as attended_count,
+                COUNT(c.missionNum) as total_count,
+                CONCAT(
+                    COUNT(CASE WHEN e.evalType = '인증' THEN 1 END),
+                    '/',
+                    COUNT(c.missionNum)
+                ) as ratio_display,
+                ROUND(
+                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    NULLIF(COUNT(c.missionNum), 0), 
+                    1
+                ) as percentage
+            FROM roomInfo ri
+            JOIN roomDay rd ON ri.roomNum = rd.roomNum
+            JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND ri.roomStatusNum = 3
+        ) chart_data
+        ORDER BY 
+            CASE chart_title
+                WHEN '일반방 미션 수행률' THEN 1
+                WHEN '챌린지방 미션 수행률' THEN 2
+                WHEN '전체 미션 수행률' THEN 3
+                WHEN '일반방 미션 달성률' THEN 4
+                WHEN '챌린지방 미션 달성률' THEN 5
+                WHEN '전체 미션 달성률' THEN 6
+            END
+            ]]>
+   </select>
+
+   <!-- 진행 중인 챌린지 목록 -->
+   <select id="getOngoingChallenges" parameterType="int"
+      resultType="com.javaex.vo.HmkChallengeVo">
+    <![CDATA[
+        WITH MemberRole AS (
+            SELECT 
+                eu.roomNum,
+                eu.userNum,
+                eu.enteredUserAuth,
+                ROW_NUMBER() OVER (
+                    PARTITION BY eu.roomNum, eu.userNum 
+                    ORDER BY eu.enteredUserAuth DESC
+                ) as role_rank
+            FROM enteredUser eu
+        )
+        SELECT DISTINCT
+            r.roomNum,
+            r.roomTitle,
+            r.roomThumbNail,
+            r.roomStartDate
+        FROM roomInfo r
+        JOIN MemberRole mr ON r.roomNum = mr.roomNum
+        JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+        WHERE mr.userNum = #{userNum}
+        AND mr.role_rank = 1
+        AND rs.roomStatusName = '시작'
+        ORDER BY r.roomStartDate DESC
+        ]]>
+   </select>
+
+   <!-- 시작 예정 챌린지 목록 -->
+   <select id="getUpcomingChallenges" parameterType="int"
+      resultType="com.javaex.vo.HmkChallengeVo">
+    <![CDATA[
+        WITH MemberRole AS (
+            SELECT 
+                eu.roomNum,
+                eu.userNum,
+                eu.enteredUserAuth,
+                ROW_NUMBER() OVER (
+                    PARTITION BY eu.roomNum, eu.userNum 
+                    ORDER BY eu.enteredUserAuth DESC
+                ) as role_rank
+            FROM enteredUser eu
+        )
+        SELECT DISTINCT
+            r.roomNum,
+            r.roomTitle,
+            r.roomThumbNail,
+            r.roomStartDate
+        FROM roomInfo r
+        JOIN MemberRole mr ON r.roomNum = mr.roomNum
+        JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+        WHERE mr.userNum = #{userNum}
+        AND mr.role_rank = 1
+        AND rs.roomStatusName IN ('모집 전', '모집 중')
+        ORDER BY r.roomStartDate ASC
+        ]]>
+   </select>
+
+   <!-- 완료된 챌린지 목록 -->
+   <select id="getCompletedChallenges" parameterType="int"
+      resultType="com.javaex.vo.HmkChallengeVo">
+    <![CDATA[
+        WITH MemberRole AS (
+            SELECT 
+                eu.roomNum,
+                eu.userNum,
+                eu.enteredUserAuth,
+                ROW_NUMBER() OVER (
+                    PARTITION BY eu.roomNum, eu.userNum 
+                    ORDER BY eu.enteredUserAuth DESC
+                ) as role_rank
+            FROM enteredUser eu
+        )
+        SELECT DISTINCT
+            r.roomNum,
+            r.roomTitle,
+            r.roomThumbNail,
+            r.roomStartDate,
+            DATE_ADD(r.roomStartDate, INTERVAL p.periodType DAY) as endDate
+        FROM roomInfo r
+        JOIN MemberRole mr ON r.roomNum = mr.roomNum
+        JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+        JOIN period p ON r.periodNum = p.periodNum
+        WHERE mr.userNum = #{userNum}
+        AND mr.role_rank = 1
+        AND rs.roomStatusName = '종료'
+        ORDER BY r.roomStartDate DESC
+        ]]>
+   </select>
+
+   <!-- 회원 보관함 기프티콘 리스트 조회 -->
+   <select id="getUserGiftCards" parameterType="int"
+      resultType="com.javaex.vo.HmkGiftVo">
+        <![CDATA[
+            SELECT 
+                i.itemNum AS id,
+                i.itemName AS name,
+                i.itemImg AS image,
+                ib.itemBrandName AS description,
+                CASE 
+                    WHEN ph.purchasedStatus = '사용완료' THEN TRUE 
+                    ELSE FALSE 
+                END AS isUsed
+            FROM 
+                users u
+            JOIN 
+                purchaseHistory ph ON u.userNum = ph.userNum
+            JOIN 
+                item i ON ph.itemNum = i.itemNum
+            JOIN 
+                itemBrand ib ON i.itemBrandNum = ib.itemBrandNum
+            WHERE 
+                u.userNum = #{userNum}
+                AND ph.purchasedStatus IN ('사용가능', '사용완료');
+        ]]>
+   </select>
+
+   <!-- 포인트 요약 정보 조회 -->
+   <select id="getPointSummary" parameterType="int"
+      resultType="com.javaex.vo.HmkPointSummaryVo">
+    <![CDATA[
+    SELECT 
+        COALESCE(SUM(CASE WHEN historyInfo = '+' THEN historyPoint ELSE 0 END), 0) as pointsEarned,
+        COALESCE(SUM(CASE WHEN historyInfo = '-' THEN historyPoint ELSE 0 END), 0) as pointsSpent,
+        COALESCE(SUM(CASE WHEN historyInfo = '+' THEN historyPoint ELSE 0 END) - 
+                 SUM(CASE WHEN historyInfo = '-' THEN historyPoint ELSE 0 END), 0) as totalPoints
+    FROM pointHistory
+    WHERE userNum = #{userNum}
+    ]]>
+   </select>
+
+   <!-- 포인트 상세 내역 조회 -->
+   <select id="getPointHistory" parameterType="map"
+      resultType="com.javaex.vo.HmkPointHistoryVo">
+    <![CDATA[
+    SELECT 
+        DATE_FORMAT(ph.historyDate, '%Y-%m-%d') as date,
+        pp.purposeName,
+        ph.historyPoint,
+        ph.historyInfo,
+        (
+            SELECT COALESCE(
+                SUM(CASE 
+                    WHEN ph2.historyInfo = '+' THEN ph2.historyPoint 
+                    WHEN ph2.historyInfo = '-' THEN -ph2.historyPoint 
+                    ELSE 0 
+                END), 0
+            )
+            FROM pointHistory ph2
+            WHERE ph2.userNum = ph.userNum
+            AND (ph2.historyDate < ph.historyDate 
+                OR (ph2.historyDate = ph.historyDate 
+                    AND ph2.historyNum <= ph.historyNum)
+            )
+        ) as total
+    FROM pointHistory ph
+    JOIN pointPurpose pp ON ph.pointPurposeNum = pp.pointPurposeNum
+    WHERE ph.userNum = #{userNum}
+    ]]>
+
+      <if test="startDate != null">
+        <![CDATA[
+        AND ph.historyDate >= #{startDate}
+        ]]>
+      </if>
+
+      <if test="endDate != null">
+        <![CDATA[
+        AND ph.historyDate <= #{endDate}
+        ]]>
+      </if>
+    
+    <![CDATA[
+    ORDER BY ph.historyDate DESC, ph.historyNum DESC
+    ]]>
+   </select>
+
+</mapper>

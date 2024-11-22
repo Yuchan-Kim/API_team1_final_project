@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="dypointstore">
+	<!-- 쿼리문작성 -->
+
+	<!-- 포인트상점 폼  -->
+	<select id="selectList" resultType="com.javaex.vo.DyItemVo">
+		<![CDATA[
+			select i.itemNum,
+					i.itemBrandNum,
+					ib.itemBrandName,
+					i.itemCost,
+					i.itemName,
+					i.itemImg
+			from item as i
+			inner join itemBrand as ib
+			on i.itemBrandNum = ib.itemBrandNum
+			order by i.itemNum asc
+		]]>
+	</select>
+	
+	
+	<!-- 포인트상점 상품디테일 -->
+<!-- 	<select id="selectRead" parameterType="int" resultType="com.javaex.vo.DyItemVo">
+		<![CDATA[
+			select i.itemNum,
+					i.itemBrandNum,
+					ib.itemBrandName,
+					i.itemCost,
+					i.itemName,
+					i.itemImg
+			from item as i
+			inner join itemBrand as ib
+			on i.itemBrandNum = ib.itemBrandNum
+			where i.itemNum = #{itemNum}
+		]]>
+	</select> -->
+	
+	
+    <!-- 출석체크 -->
+    <insert id="insertCheckin" parameterType="com.javaex.vo.DyCheckinVo">
+    	<![CDATA[
+	        INSERT INTO checkin (userNum, checkinDate)
+	        VALUES (#{userNum}, #{checkinDate})
+        ]]>
+    </insert>
+    
+    <!-- 출석체크 중복체크 -->
+	<select id="isAlreadyCheckedIn" parameterType="com.javaex.vo.DyCheckinVo" resultType="int">
+	    <![CDATA[
+	        SELECT COUNT(*) 
+	        FROM checkin 
+	        WHERE userNum = #{userNum} AND checkinDate = #{checkinDate}
+	    ]]>
+	</select>
+	
+	<!-- 출석체크 포인트 내역 -->
+    <insert id="insertPointHistory" parameterType="com.javaex.vo.DyPointHistoryVo">
+        <![CDATA[
+            INSERT INTO pointHistory (userNum, pointPurposeNum, historyDate, historyPoint, historyInfo)
+            VALUES (#{userNum}, 7, #{historyDate}, 50, "+")
+        ]]>
+    </insert>
+    
+
+    <!-- 포인트 교환 기록 삽입 -->
+    <insert id="insertPurchaseHistory" parameterType="com.javaex.vo.DyPurchaseHistoryVo">
+    	<![CDATA[
+	        INSERT INTO purchaseHistory (itemNum, userNum, purchasedDate, purchasedStatus)
+	        VALUES (#{itemNum}, #{userNum}, #{purchasedDate}, #{purchasedStatus})
+        ]]>
+    </insert>
+    
+    <!-- 아이템 교환 포인트 내역 -->
+    <insert id="insertPointHistory2" parameterType="com.javaex.vo.DyPointHistoryVo">
+	    <![CDATA[
+	        INSERT INTO pointHistory (userNum, pointPurposeNum, historyDate, historyPoint, historyInfo)
+	        VALUES (#{userNum}, #{pointPurposeNum}, #{historyDate}, #{historyPoint}, #{historyInfo})
+	    ]]>
+	</insert>
+
+
+</mapper>
