@@ -21,10 +21,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DyKakaoLogin {
    
    @Autowired
-   private DyUserService dyUserService;
+   private DyUserService dyUserService;  
 
    @Autowired
-   private DyKakaoService dyKakaoService;
+   private DyKakaoService dyKakaoService; 
 
    /* 카카오 로그인 액세스 토큰 가져오기 */
    @PostMapping("/api/auth/kakao")
