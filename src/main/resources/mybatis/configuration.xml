@@ -11,5 +11,8 @@
     	<mapper resource="mybatis/mappers/Chat.xml" />
     	<mapper resource="mybatis/mappers/YC-challenge.xml" />
     	<mapper resource="mybatis/mappers/JM-challenge.xml" />
+    	<mapper resource="mybatis/mappers/dypointstore.xml" />
+		<mapper resource="mybatis/mappers/mypage.xml" />
+		<mapper resource="mybatis/mappers/naveruser.xml" /> 
     </mappers>
 </configuration>
