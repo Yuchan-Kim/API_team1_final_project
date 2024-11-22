@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 
-<mapper namespace="challenge">
+<mapper namespace="JM-challenge">
 
 	<!-- 방 설명 -->
 	<select id="getRoomInfo" resultType="com.javaex.vo.ChallengeVo">
@@ -53,7 +53,20 @@
 			    enteredUserStatus es ON eu.enteredUserStatusNum = es.enteredUserStatusNum
 			WHERE 
 			    eu.roomNum = #{roomNum}
+			AND eu.enteredUserStatusNum = 1 
+			ORDER BY
+				eu.enteredUserNum ASC;
         ]]>
+    </select>
+    
+    <!-- 유저권한 가져오기 -->
+    <select id="getUserAuth" parameterType="com.javaex.vo.ChallengeVo" resultType="int">
+    	<![CDATA[ 
+    		SELECT enteredUserAuth AS userAuth
+    		FROM enteredUser
+    		WHERE roomNum = #{roomNum}
+    		AND userNum = #{userNum}
+    	]]>
     </select>
     
     <!-- 유의사항 업데이트 -->
@@ -194,6 +207,14 @@
     		
     	]]>
     </insert>
+    
+    <!-- 방 평가타입 가져오기 -->
+    <select id="getRoomEvalType" parameterType="int" resultType="int">
+    	<![CDATA[ 
+    		select evaluationType from roomInfo
+			where roomNum = #{roomNum}
+    	]]>
+    </select>
     
     <!-- 미션평가 업데이트 -->
     <update id="updateEval" parameterType="com.javaex.vo.ChallengeVo">
