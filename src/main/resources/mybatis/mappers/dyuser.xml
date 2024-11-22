@@ -14,6 +14,15 @@
 	</insert>
 	
 	
+	<!-- 카카오 회원가입 -->
+	<insert id="kakaoinsert" parameterType="com.javaex.vo.DyUserVo">
+		<![CDATA[
+			insert into users (`userNum`, `regionNum`, `userEmail`, `userName`, `socialLogin`) 
+			values(null, 1, #{userEmail}, #{userName}, "kakao")
+		]]>
+	</insert>
+	
+	
 	<!-- 이메일 중복체크 api -->						<!-- count의 결과는 int -->
 	<select id="selectByEmail" parameterType="String" resultType="int">
 		<![CDATA[
@@ -45,5 +54,24 @@
 	</select>
 	
 	
-
+	<!-- 헤더에 유저 포인트 -->
+    <select id="getUserPoints" parameterType="int" resultType="int">
+        SELECT SUM(CASE WHEN historyInfo = '+' THEN historyPoint
+                        WHEN historyInfo = '-' THEN -historyPoint
+                        ELSE 0 END) 
+        FROM pointHistory
+        WHERE userNum = #{userNum}
+    </select>
+	
+	
+	<!-- 이메일로 사용자 조회 -->
+    <select id="selectUserByUserEmail" parameterType="String" resultType="com.javaex.vo.DyUserVo">       
+       	select userNum
+ 			 , userName
+ 			 , userEmail
+		from users
+		where userEmail = #{userEmail}
+    </select>
+	
+	
 </mapper>
