@@ -74,7 +74,7 @@ public class NaverSearchResponse {
         }
 
         public String getRoadAddress() {
-            return roadAddress;
+            return roadAddress; 
         }
 
         public void setRoadAddress(String roadAddress) {
