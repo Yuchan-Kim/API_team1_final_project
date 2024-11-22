@@ -5,21 +5,34 @@
 
     <!-- 결과 매핑 정의 -->
     <resultMap id="AnnouncementResultMap" type="com.javaex.vo.AnnouncementVo">
-        <id property="announceNum" column="announceNum"/>
-        <result property="roomNum" column="roomNum"/>
-        <result property="place" column="place"/>
-        <result property="title" column="title"/>
-        <result property="announceAddedBy" column="announceAddedBy"/>
-        <result property="announcement" column="announcement"/>
-        <result property="announceTime" column="announceTime"/>
-        <result property="enteredUserNum" column="enteredUserNum"/>
-        <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
-        <result property="userNum" column="userNum"/>
-        <result property="enteredUserAuth" column="enteredUserAuth"/>
-        <result property="isModified" column="isModified"/> <!-- 수정됨 여부 -->
-    </resultMap>
+	    <id property="announceNum" column="announceNum"/>
+	    <result property="roomNum" column="roomNum"/>
+	    <result property="place" column="place"/>
+	    <result property="title" column="title"/>
+	    <result property="announceAddedBy" column="announceAddedBy"/>
+	    <result property="announcement" column="announcement"/>
+	    <result property="announceTime" column="announceTime"/>
+	    <result property="enteredUserNum" column="enteredUserNum"/>
+	    <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
+	    <result property="userNum" column="userNum"/>
+	    <result property="enteredUserAuth" column="enteredUserAuth"/>
+	    <result property="isModified" column="isModified"/> <!-- 수정됨 여부 -->
+	    <result property="address" column="address"/> <!-- 추가 -->
+	    <result property="latitude" column="latitude"/> <!-- 추가 -->
+	    <result property="longitude" column="longitude"/> <!-- 추가 -->
+	</resultMap>
 
-    <!-- 사용자 번호만 선택하도록 수정 -->
+
+    <!-- 방의 모든 공지사항 가져오기 -->
+<select id="getRoomAnnouncements" parameterType="int" resultMap="AnnouncementResultMap">
+    <![CDATA[
+        SELECT *
+        FROM announcement
+        WHERE roomNum = #{roomNum} 
+        ORDER BY announceTime DESC
+    ]]>
+</select>
+<!-- 사용자 번호만 선택하도록 수정 -->
     <select id="selectEnteredUserList" parameterType="int" resultType="Integer">
         <![CDATA[
             SELECT eu.userNum
@@ -28,6 +41,7 @@
             WHERE eu.roomNum = #{roomNum};
         ]]>
     </select>
+    
     
     <select id="selectEnteredUserAuth" parameterType="com.javaex.vo.AnnouncementVo" resultType="int">
         <![CDATA[
@@ -39,15 +53,6 @@
     </select>
 
 
-    <!-- 방의 모든 공지사항 가져오기 -->
-    <select id="getRoomAnnouncements" parameterType="int" resultMap="AnnouncementResultMap">
-        <![CDATA[
-            SELECT *
-            FROM announcement
-            WHERE roomNum = #{roomNum} 
-            ORDER BY announceTime DESC
-        ]]>
-    </select>
     
     <!-- 공지사항 삭제 -->
     <delete id="deleteAnnouncement" parameterType="int">
@@ -57,23 +62,27 @@
         ]]>
     </delete>
     
-    <!-- 공지사항 수정 -->
-    <update id="editAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
-        <![CDATA[
-            UPDATE announcement
-            SET title = #{title}, announcement = #{announcement}, place = #{place}, isModified = true
-            WHERE announceNum = #{announceNum}
-        ]]>
-    </update>
+    <!-- AnnouncementMapper.xml -->
+<update id="editAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
+    <![CDATA[
+        UPDATE announcement
+        SET title = #{title}, 
+            announcement = #{announcement}, 
+            place = #{place}, 
+            latitude = #{latitude}, 
+            longitude = #{longitude}, 
+            isModified = true
+        WHERE announceNum = #{announceNum}
+    ]]>
+</update>
 
-    
-    <!-- 공지사항 추가 -->
-    <insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo" useGeneratedKeys="true" keyProperty="announceNum">
-        <![CDATA[
-            INSERT INTO announcement (roomNum, title, announcement, place, announceTime, announceAddedBy, isModified)
-            VALUES (#{roomNum}, #{title}, #{announcement}, #{place}, now(), #{announceAddedBy}, false)
-        ]]>
-    </insert>
+<insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo" useGeneratedKeys="true" keyProperty="announceNum">
+    <![CDATA[
+        INSERT INTO announcement (roomNum, title, announcement, place, latitude, longitude, announceTime, announceAddedBy, isModified)
+        VALUES (#{roomNum}, #{title}, #{announcement}, #{place}, #{latitude}, #{longitude}, now(), #{announceAddedBy}, false)
+    ]]>
+</insert>
+
 
     <!-- 공지사항 ID로 공지사항 가져오기 -->
     <select id="getAnnouncementById" parameterType="int" resultMap="AnnouncementResultMap">
