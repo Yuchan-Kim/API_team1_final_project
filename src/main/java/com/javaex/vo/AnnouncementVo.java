@@ -16,8 +16,35 @@ public class AnnouncementVo {
     private int userNum;
     private int enteredUserAuth;
     private boolean isModified;      // 공지사항 수정 여부
+    private String address; // 장소의 주소
+    private double latitude; // 위도
+    private double longitude; // 경도
     
-    // Constructor
+    public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	// Constructor
     public AnnouncementVo() {
     }
 

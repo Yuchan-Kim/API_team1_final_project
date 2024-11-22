@@ -5,7 +5,7 @@
 <mapper namespace="challenge">
 
 	<!-- 방 설명 -->
-	<select id="getRoomInfo" resultType="com.javaex.vo.UserVo">
+	<select id="getRoomInfo" resultType="com.javaex.vo.ChallengeVo">
 		<![CDATA[ 
 			select roomDescription as roomInfo
 			from roomInfo
@@ -14,7 +14,7 @@
 	</select>
 	
 	<!-- 방 공지사항 1개 가져오기 -->
-	<select id="getRoomAnnouncement" resultType="com.javaex.vo.UserVo">
+	<select id="getRoomAnnouncement" resultType="com.javaex.vo.ChallengeVo">
 		<![CDATA[ 
 			SELECT 
 			    announceNum,
@@ -35,7 +35,7 @@
 
 
 	<!-- 방 참가유저 리스트 -->
-	<select id="getUsersByRoomNum" resultType="com.javaex.vo.UserVo">
+	<select id="getUsersByRoomNum" resultType="com.javaex.vo.ChallengeVo">
         <![CDATA[ 
 	        SELECT 
 			    u.userNum AS userNum,
@@ -57,7 +57,7 @@
     </select>
     
     <!-- 유의사항 업데이트 -->
-    <update id="ruleUpdate" parameterType="com.javaex.vo.UserVo">
+    <update id="ruleUpdate" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[ 
     		UPDATE roomInfo
 			SET missionInstruction = #{missionInstruction}
@@ -66,7 +66,7 @@
     </update>
     
     <!-- 유의사항 가져오기 -->
-    <select id="getRule" resultType="com.javaex.vo.UserVo">
+    <select id="getRule" resultType="com.javaex.vo.ChallengeVo">
     	<![CDATA[ 
     		SELECT  missionInstruction
     		FROM roomInfo
@@ -75,7 +75,7 @@
     </select>
     
     <!-- 방 미션 리스트 -->
-    <select id="getMissionByRoomNum2" resultType="com.javaex.vo.UserVo">
+    <select id="getMissionByRoomNum2" resultType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
     		SELECT 
 			    c.missionNum AS missionNum,
@@ -99,7 +99,7 @@
 	 </select>
     
     <!-- 방 미션 리스트 + 유저 제출여부 -->
-    <select id="getMissionByRoomNum" resultType="com.javaex.vo.UserVo">
+    <select id="getMissionByRoomNum" resultType="com.javaex.vo.ChallengeVo">
     	<![CDATA[ 
     		SELECT 
 			    c.missionNum AS missionNum,
@@ -127,7 +127,7 @@
     </select>
     
     <!-- 미션 히스토리 -->
-    <select id="getMissionByUser" resultType="com.javaex.vo.UserVo">
+    <select id="getMissionByUser" resultType="com.javaex.vo.ChallengeVo">
     	<![CDATA[ 
     		WITH RankedMissions AS (
 			    SELECT 
@@ -179,7 +179,7 @@
     </select>
     
     <!-- 미션 제출 -->
-    <insert id="evalInsert" parameterType="com.javaex.vo.UserVo" useGeneratedKeys="true" keyProperty="evalNum">
+    <insert id="evalInsert" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="evalNum">
     	<![CDATA[
     		INSERT INTO evaluation (missionNum, evalType, submitDate, submitComment, submitUser)
         	VALUES (#{missionNum}, "승인대기", now(), #{submitComment}, #{submitUser} )
@@ -187,7 +187,7 @@
     </insert>
     
     <!-- 제출한 미션에 이미지 넣기 -->
-    <insert id="infoImageInsert" parameterType="com.javaex.vo.UserVo">
+    <insert id="infoImageInsert" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
     		INSERT INTO evaluationImg (evalNum, evalImgName)
     		VALUES (#{evalNum}, #{evalImgName})
@@ -196,7 +196,7 @@
     </insert>
     
     <!-- 미션평가 업데이트 -->
-    <update id="updateEval" parameterType="com.javaex.vo.UserVo">
+    <update id="updateEval" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[ 
     		UPDATE evaluation
 			SET evalType = #{evalType},
