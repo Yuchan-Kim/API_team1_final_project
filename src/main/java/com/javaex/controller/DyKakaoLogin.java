@@ -24,7 +24,7 @@ public class DyKakaoLogin {
    private DyUserService dyUserService;
 
    @Autowired
-   private DyKakaoService dyKakaoService;
+   private DyKakaoService dyKakaoService; 
 
    /* 카카오 로그인 액세스 토큰 가져오기 */
    @PostMapping("/api/auth/kakao")
