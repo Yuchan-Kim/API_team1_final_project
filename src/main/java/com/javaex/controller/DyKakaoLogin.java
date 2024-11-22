@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DyKakaoLogin {
    
    @Autowired
-   private DyUserService dyUserService;
+   private DyUserService dyUserService;  
 
    @Autowired
    private DyKakaoService dyKakaoService; 
