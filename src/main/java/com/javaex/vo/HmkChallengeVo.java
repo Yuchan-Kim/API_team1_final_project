@@ -8,19 +8,19 @@ public class HmkChallengeVo {
 	private String roomTitle;
 	private String roomStartDate;
 	private String endDate;
-	private String roomThubNail;
+	private String roomThumbNail;
 	
 	//생성자
 	public HmkChallengeVo() {
 		super();
 	}
-	public HmkChallengeVo(int roomNum, String roomTitle, String roomStartDate, String endDate, String roomThubNail) {
+	public HmkChallengeVo(int roomNum, String roomTitle, String roomStartDate, String endDate, String roomThumbNail) {
 		super();
 		this.roomNum = roomNum;
 		this.roomTitle = roomTitle;
 		this.roomStartDate = roomStartDate;
 		this.endDate = endDate;
-		this.roomThubNail = roomThubNail;
+		this.roomThumbNail = roomThumbNail;
 	}
 	// getter - setter
 	public int getRoomNum() {
@@ -47,11 +47,11 @@ public class HmkChallengeVo {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-	public String getRoomThubNail() {
-		return roomThubNail;
+	public String getRoomThumbNail() {
+		return roomThumbNail;
 	}
-	public void setRoomThubNail(String roomThubNail) {
-		this.roomThubNail = roomThubNail;
+	public void setRoomThumbNail(String roomThumbNail) {
+		this.roomThumbNail = roomThumbNail;
 	}
 	
 	//일반 메소드
@@ -59,7 +59,7 @@ public class HmkChallengeVo {
 	@Override
 	public String toString() {
 		return "ChallengeVo [roomNum=" + roomNum + ", roomTitle=" + roomTitle + ", roomStartDate=" + roomStartDate
-				+ ", endDate=" + endDate + ", roomThubNail=" + roomThubNail + "]";
+				+ ", endDate=" + endDate + ", roomThumbNail=" + roomThumbNail + "]";
 	}
 	
 

@@ -7,19 +7,18 @@ import org.springframework.stereotype.Repository;
 import com.javaex.vo.HmkSocialUserVo;
 
 @Repository
-public class NaverUserDao {
-	
+public class GoogleUserDao {
+
 	@Autowired
 	private SqlSession sqlSession;
-	
-	/* 네이버 회원 가입 */
-	public int insertNaverUser(HmkSocialUserVo userVo) {
-		return sqlSession.insert("naveruser.insertNaver", userVo);
-	}
-	
-	/* 디비에서 이메일 존재 확인 */
-	public HmkSocialUserVo selectUserByEmail(String email) {
-		return sqlSession.selectOne("naveruser.selectByEmailOnly", email);
+
+	/* 구글 회원 가입 */
+	public int insertGoogleUser(HmkSocialUserVo userVo) {
+		return sqlSession.insert("googleuser.insertGoogle", userVo);
 	}
 
+	/* 디비에서 이메일 있나 확인 */
+	public HmkSocialUserVo selectUserByEmail(String email) {
+		return sqlSession.selectOne("googleuser.selectByEmailOnly", email);
+	}
 }

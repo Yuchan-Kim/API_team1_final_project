@@ -11,9 +11,11 @@ public class HmkUserVo {
     private String userStatus;
     private String socialLogin;
     private String region;
+    private String userPw;
     private String currentPassword;
     private String newPassword;
-    private String ownedProfileImages;
+    
+	private String ownedProfileImages;
  // 소유한 프로필 이미지 리스트
     
 
@@ -80,6 +82,15 @@ public class HmkUserVo {
 	public void setProfileImage(String profileImage) {
 		this.profileImage = profileImage;
 	}
+	
+	public String getUserPw() {
+		return userPw;
+	}
+
+	public void setUserPw(String userPw) {
+		this.userPw = userPw;
+	}
+
 
 	public String getUserStatus() {
 		return userStatus;
@@ -163,14 +174,15 @@ public class HmkUserVo {
 
 	@Override
 	public String toString() {
-		return "UserVo [userNum=" + userNum + ", userEmail=" + userEmail + ", nickname=" + nickname + ", profileImage="
-				+ profileImage + ", userStatus=" + userStatus + ", socialLogin=" + socialLogin + ", region=" + region
-				+ ", currentPassword=" + currentPassword + ", newPassword=" + newPassword + ", ownedProfileImages="
-				+ ownedProfileImages + ", ongoingChallenges=" + ongoingChallenges + ", upcomingChallenges="
-				+ upcomingChallenges + ", completedChallenges=" + completedChallenges + ", participationScore="
-				+ participationScore + "]";
+		return "HmkUserVo [userNum=" + userNum + ", userEmail=" + userEmail + ", nickname=" + nickname
+				+ ", profileImage=" + profileImage + ", userStatus=" + userStatus + ", socialLogin=" + socialLogin
+				+ ", region=" + region + ", userPw=" + userPw + ", currentPassword=" + currentPassword
+				+ ", newPassword=" + newPassword + ", ownedProfileImages=" + ownedProfileImages + ", ongoingChallenges="
+				+ ongoingChallenges + ", upcomingChallenges=" + upcomingChallenges + ", completedChallenges="
+				+ completedChallenges + ", participationScore=" + participationScore + "]";
 	}
 
+	
 	
 
     

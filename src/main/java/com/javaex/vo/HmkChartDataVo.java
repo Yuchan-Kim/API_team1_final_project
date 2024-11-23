@@ -11,7 +11,7 @@ public class HmkChartDataVo {
     private double percentage;      // 백분율
 	
     /**
-     * 차트에 표시할 데이터 포맷팅 
+     * 차트에 표시할 데이터 포맷팅
      */
     public String getDisplayValue() {
         return String.format("%.1f%%", percentage);

@@ -5,9 +5,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 <mapper namespace="Mypage">
-   <!-- 사용자 정보 -->
-   <select id="getUserInfo" parameterType="int"
-      resultType="com.javaex.vo.HmkUserVo">
+	<!-- 사용자 정보 -->
+	<select id="getUserInfo" parameterType="int"
+		resultType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         SELECT 
             u.userNum,
@@ -34,11 +34,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE 
             u.userNum = #{userNum}
     ]]>
-   </select>
+	</select>
 
-   <!-- 사용자의 챌린지 통계(count) 조회 -->
-   <select id="getUserChallengeStats" parameterType="int"
-      resultType="com.javaex.vo.HmkUserVo">
+	<!-- 사용자의 챌린지 통계(count) 조회 -->
+	<select id="getUserChallengeStats" parameterType="int"
+		resultType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         SELECT 
             t1.ongoing_challenges as ongoingChallenges,
@@ -75,70 +75,70 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND eu.enteredUserStatusNum = 1
         ) t2
         ]]>
-   </select>
+	</select>
 
 
-   <!-- 프로필 이미지 업데이트 -->
-   <update id="updateProfileImage"
-      parameterType="com.javaex.vo.HmkUserVo">
+	<!-- 프로필 이미지 업데이트 -->
+	<update id="updateProfileImage"
+		parameterType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         UPDATE users 
         SET usingProfilePic = #{profileImage}
         WHERE userNum = #{userNum}
     ]]>
-   </update>
+	</update>
 
-   <!-- 닉네임 중복 체크 -->
-   <select id="checkNickname" parameterType="string"
-      resultType="int">
-       <![CDATA[
-       SELECT COUNT(*) FROM users WHERE userName = #{nickname}
-       ]]>
-   </select>
+	<!-- 닉네임 중복 체크 -->
+	<select id="checkNickname" parameterType="string"
+		resultType="int">
+	    <![CDATA[
+	    SELECT COUNT(*) FROM users WHERE userName = #{nickname}
+	    ]]>
+	</select>
 
-   <!-- 닉네임 업데이트 -->
-   <update id="updateNickname"
-      parameterType="com.javaex.vo.HmkUserVo">
+	<!-- 닉네임 업데이트 -->
+	<update id="updateNickname"
+		parameterType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         UPDATE users 
         SET userName = #{nickname}
         WHERE userNum = #{userNum}
     ]]>
-   </update>
+	</update>
 
-   <!-- 지역 업데이트 -->
-   <update id="updateAddress"
-      parameterType="com.javaex.vo.HmkUserVo">
+	<!-- 지역 업데이트 -->
+	<update id="updateAddress"
+		parameterType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         UPDATE users 
         SET regionNum = (SELECT regionNum FROM regions WHERE regionName = #{region})
         WHERE userNum = #{userNum}
     ]]>
-   </update>
+	</update>
 
-   <!-- 자동완성 지역 검색 쿼리 -->
-   <select id="findRegionsByName" parameterType="string"
-      resultType="string">
-    <![CDATA[
+	<!-- 자동완성 지역 검색 쿼리 -->
+	<select id="findRegionsByName" parameterType="string"
+		resultType="string">
+ 	<![CDATA[
         SELECT regionName
         FROM regions
         WHERE regionName LIKE #{query}
     ]]>
-   </select>
+	</select>
 
-   <!-- 비밀번호 업데이트 -->
-   <update id="updatePassword"
-      parameterType="com.javaex.vo.HmkUserVo">
+	<!-- 비밀번호 업데이트 -->
+	<update id="updatePassword"
+		parameterType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         UPDATE users
         SET userPw = #{newPassword}
         WHERE userNum = #{userNum}
     ]]>
-   </update>
+	</update>
 
-   <!-- 차트 데이터 조회 -->
-   <select id="getCharts" parameterType="int"
-      resultType="com.javaex.vo.HmkChartDataVo">
+	<!-- 차트 데이터 조회 -->
+	<select id="getCharts" parameterType="int"
+		resultType="com.javaex.vo.HmkChartDataVo">
     <![CDATA[
         SELECT 
             chart_data.chart_title as chartTitle,
@@ -313,11 +313,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 WHEN '전체 미션 달성률' THEN 6
             END
             ]]>
-   </select>
+	</select>
 
-   <!-- 진행 중인 챌린지 목록 -->
-   <select id="getOngoingChallenges" parameterType="int"
-      resultType="com.javaex.vo.HmkChallengeVo">
+	<!-- 진행 중인 챌린지 목록 -->
+	<select id="getOngoingChallenges" parameterType="int"
+		resultType="com.javaex.vo.HmkChallengeVo">
     <![CDATA[
         WITH MemberRole AS (
             SELECT 
@@ -343,11 +343,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         AND rs.roomStatusName = '시작'
         ORDER BY r.roomStartDate DESC
         ]]>
-   </select>
+	</select>
 
-   <!-- 시작 예정 챌린지 목록 -->
-   <select id="getUpcomingChallenges" parameterType="int"
-      resultType="com.javaex.vo.HmkChallengeVo">
+	<!-- 시작 예정 챌린지 목록 -->
+	<select id="getUpcomingChallenges" parameterType="int"
+		resultType="com.javaex.vo.HmkChallengeVo">
     <![CDATA[
         WITH MemberRole AS (
             SELECT 
@@ -373,11 +373,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         AND rs.roomStatusName IN ('모집 전', '모집 중')
         ORDER BY r.roomStartDate ASC
         ]]>
-   </select>
+	</select>
 
-   <!-- 완료된 챌린지 목록 -->
-   <select id="getCompletedChallenges" parameterType="int"
-      resultType="com.javaex.vo.HmkChallengeVo">
+	<!-- 완료된 챌린지 목록 -->
+	<select id="getCompletedChallenges" parameterType="int"
+		resultType="com.javaex.vo.HmkChallengeVo">
     <![CDATA[
         WITH MemberRole AS (
             SELECT 
@@ -405,11 +405,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         AND rs.roomStatusName = '종료'
         ORDER BY r.roomStartDate DESC
         ]]>
-   </select>
+	</select>
 
-   <!-- 회원 보관함 기프티콘 리스트 조회 -->
-   <select id="getUserGiftCards" parameterType="int"
-      resultType="com.javaex.vo.HmkGiftVo">
+	<!-- 회원 보관함 기프티콘 리스트 조회 -->
+	<select id="getUserGiftCards" parameterType="int"
+		resultType="com.javaex.vo.HmkGiftVo">
         <![CDATA[
             SELECT 
                 i.itemNum AS id,
@@ -432,11 +432,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 u.userNum = #{userNum}
                 AND ph.purchasedStatus IN ('사용가능', '사용완료');
         ]]>
-   </select>
+	</select>
 
-   <!-- 포인트 요약 정보 조회 -->
-   <select id="getPointSummary" parameterType="int"
-      resultType="com.javaex.vo.HmkPointSummaryVo">
+	<!-- 포인트 요약 정보 조회 -->
+	<select id="getPointSummary" parameterType="int"
+		resultType="com.javaex.vo.HmkPointSummaryVo">
     <![CDATA[
     SELECT 
         COALESCE(SUM(CASE WHEN historyInfo = '+' THEN historyPoint ELSE 0 END), 0) as pointsEarned,
@@ -446,11 +446,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     FROM pointHistory
     WHERE userNum = #{userNum}
     ]]>
-   </select>
+	</select>
 
-   <!-- 포인트 상세 내역 조회 -->
-   <select id="getPointHistory" parameterType="map"
-      resultType="com.javaex.vo.HmkPointHistoryVo">
+	<!-- 포인트 상세 내역 조회 -->
+	<select id="getPointHistory" parameterType="map"
+		resultType="com.javaex.vo.HmkPointHistoryVo">
     <![CDATA[
     SELECT 
         DATE_FORMAT(ph.historyDate, '%Y-%m-%d') as date,
@@ -477,21 +477,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     WHERE ph.userNum = #{userNum}
     ]]>
 
-      <if test="startDate != null">
+		<if test="startDate != null">
         <![CDATA[
         AND ph.historyDate >= #{startDate}
         ]]>
-      </if>
+		</if>
 
-      <if test="endDate != null">
+		<if test="endDate != null">
         <![CDATA[
         AND ph.historyDate <= #{endDate}
         ]]>
-      </if>
+		</if>
     
     <![CDATA[
     ORDER BY ph.historyDate DESC, ph.historyNum DESC
     ]]>
-   </select>
+	</select>
 
 </mapper>

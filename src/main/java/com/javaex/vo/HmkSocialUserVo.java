@@ -1,6 +1,6 @@
 package com.javaex.vo;
 
-public class HmkNaverUserVo {
+public class HmkSocialUserVo {
 	//필드
 	private int userNum;
 	private int regionNum;
@@ -8,10 +8,10 @@ public class HmkNaverUserVo {
 	private String userEmail;
 	private String socialLogin;
 	//생성자
-	public HmkNaverUserVo() {
+	public HmkSocialUserVo() {
 		super();
 	}
-	public HmkNaverUserVo(int userNum, int regionNum, String userName, String userEmail, String socialLogin) {
+	public HmkSocialUserVo(int userNum, int regionNum, String userName, String userEmail, String socialLogin) {
 		super();
 		this.userNum = userNum;
 		this.regionNum = regionNum;

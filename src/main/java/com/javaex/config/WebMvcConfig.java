@@ -17,7 +17,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				.allowedMethods("GET", "POST", "PUT", "DELETE")
 				.allowedOrigins("http://localhost:3000", "http://localhost:9000")
 				.allowedHeaders("*") // 모든 요청해더
-			    .exposedHeaders("Authorization")//노출시킬헤더
+                .exposedHeaders("Authorization", "Cross-Origin-Opener-Policy")  //노출시킬헤더, // COOP 헤더 추가
 			    .allowCredentials(true); // 쿠키허용
 	}
 	
@@ -42,9 +42,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
 			
 		}else {
-			saveDir = "/app/upload/";
+//			saveDir = "/app/upload/";
 			//saveDir = "/Users/jiminpark/Desktop/upload/";
-			//saveDir = "/home/ec2-user/";
+			saveDir = "/home/ec2-user/upload/";
 			registry.addResourceHandler("/upload/**")
 			.addResourceLocations("file:" + saveDir);
 			
