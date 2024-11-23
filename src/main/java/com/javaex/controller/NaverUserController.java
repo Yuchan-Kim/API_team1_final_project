@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.javaex.service.NaverUserService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
-import com.javaex.vo.HmkNaverUserVo;
+import com.javaex.vo.HmkSocialUserVo;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -34,13 +34,13 @@ public class NaverUserController {
         JSONObject naverResponse = userInfo.getJSONObject("response");
         
         // 사용자 정보 추출
-        HmkNaverUserVo userVo = new HmkNaverUserVo();
+        HmkSocialUserVo userVo = new HmkSocialUserVo();
         userVo.setUserEmail(naverResponse.getString("email"));
         userVo.setUserName(naverResponse.getString("nickname"));
         userVo.setSocialLogin("naver");
         
         // DB 처리
-        HmkNaverUserVo authUser = userService.SetNaverUser(userVo);
+        HmkSocialUserVo authUser = userService.SetNaverUser(userVo);
         
         if(authUser != null) {
             JwtUtil.createTokenAndSetHeader(response, ""+authUser.getUserNum());

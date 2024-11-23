@@ -56,8 +56,8 @@ public class HmkMypageController {
 		// ownedProfileImages가 null인 경우를 체크하여 기본값을 설정하는 코드
 		userInfoMap.put("ownedProfileImages",
 				userInfo.getOwnedProfileImages() != null ? userInfo.getOwnedProfileImages() : "[]");
-		System.out.println("너 얼굴좀 보자: " + userInfo.getProfileImage());
-		System.out.println("사진첩에 모 가지고 있니: " + userInfo.getOwnedProfileImages());
+		System.out.println("너 프로필좀 보자: " + userInfo.getProfileImage());
+		System.out.println("프로필 보관함에 모 가지고 있니: " + userInfo.getOwnedProfileImages());
 		// statsVo가 null이 아닐 때만 데이터 추가
 		if (statsVo != null) {
 			// 통계 정보 추가(count)

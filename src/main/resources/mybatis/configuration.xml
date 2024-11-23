@@ -12,6 +12,7 @@
 		<mapper resource="mybatis/mappers/mypage.xml" />
 		<mapper resource="mybatis/mappers/dyuser.xml" />
 		<mapper resource="mybatis/mappers/naveruser.xml" />  
+		<mapper resource="mybatis/mappers/googleuser.xml" />  
 		<!-- <mapper resource="mybatis/mappers/dypointstore.xml" /> -->
 	
 	</mappers>
