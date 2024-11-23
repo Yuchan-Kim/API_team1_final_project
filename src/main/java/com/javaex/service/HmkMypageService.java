@@ -147,6 +147,24 @@ public class HmkMypageService {
 	public List<HmkGiftVo> getUserGiftCards(int userNum) {
 		return mypageDao.getUserGiftCards(userNum);
 	}
+	
+	public boolean checkGiftcardOwnership(int purchaseNum, int userNum) {
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("purchaseNum", purchaseNum);
+	    params.put("userNum", userNum);
+	    return mypageDao.checkGiftcardOwnership(params);
+	}
+	
+	public boolean useGiftcard(int purchaseNum) {
+        try {
+            // 기프티콘 상태 업데이트
+            int result = mypageDao.updateGiftcardStatus(purchaseNum);
+            return result > 0;
+        } catch (Exception e) {
+            logger.error("기프티콘 사용 처리 중 오류 발생 - purchaseNum: {}", purchaseNum, e);
+            return false;
+        }
+    }
 
 	// ** 포인트 요약 정보 조회**
     public HmkPointSummaryVo getPointSummary(int userNum) {

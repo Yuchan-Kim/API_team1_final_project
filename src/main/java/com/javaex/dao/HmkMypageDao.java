@@ -95,6 +95,19 @@ public class HmkMypageDao {
 	public List<HmkGiftVo> getUserGiftCards(int userNum) {
 		return sqlSession.selectList("Mypage.getUserGiftCards", userNum);
 	}
+	
+	public boolean checkGiftcardOwnership(Map<String, Object> params) {
+	    try {
+	        return sqlSession.selectOne("Mypage.checkGiftcardOwnership", params);
+	    } catch (Exception e) {
+	        logger.error("기프티콘 소유권 확인 중 오류 발생", e);
+	        return false;
+	    }
+	}
+	
+	public int updateGiftcardStatus(int purchaseNum) {
+        return sqlSession.update("Mypage.updateGiftcardStatus", purchaseNum);
+    }
 
 	// ** 포인트 요약 정보 조회**
 	public HmkPointSummaryVo getPointSummary(int userNum) {

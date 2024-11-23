@@ -151,33 +151,32 @@ public class HmkMypageController {
 
 	// 프로필 이미지 업데이트
 	@PutMapping("/{userNum}/update-profile")
-    public ResponseEntity<JsonResult> updateProfileImage(
-            @PathVariable("userNum") Integer userNum,
-            @RequestBody HmkUserVo userVo) {
+	public ResponseEntity<JsonResult> updateProfileImage(@PathVariable("userNum") Integer userNum,
+			@RequestBody HmkUserVo userVo) {
 
-        // 사용자 번호 유효성 검사
-        if (userNum == null || userNum <= 0) {
-            return ResponseEntity.badRequest().body(JsonResult.fail("유효하지 않은 사용자 번호입니다."));
-        }
+		// 사용자 번호 유효성 검사
+		if (userNum == null || userNum <= 0) {
+			return ResponseEntity.badRequest().body(JsonResult.fail("유효하지 않은 사용자 번호입니다."));
+		}
 
-        userVo.setUserNum(userNum);
+		userVo.setUserNum(userNum);
 
-        try {
-            boolean success = mypageService.updateProfileImage(userVo);
-            if (success) {
-                // 업데이트된 사용자 정보를 다시 조회하여 반환 (보안 고려)
-                HmkUserVo updatedUser = mypageService.getUserInfo(userNum);
-                System.out.println("업데이트된거가 머?: " + updatedUser);
-                return ResponseEntity.ok(JsonResult.success(updatedUser));
-            } else {
-                return ResponseEntity.status(500).body(JsonResult.fail("프로필 이미지 업데이트에 실패했습니다."));
-            }
-        } catch (Exception e) {
-            // 로깅 및 구체적인 에러 메시지 반환
-            e.printStackTrace(); // 실제 서비스에서는 로깅 프레임워크 사용 권장
-            return ResponseEntity.status(500).body(JsonResult.fail("서버 오류로 인해 프로필 이미지 업데이트에 실패했습니다."));
-        }
-    }
+		try {
+			boolean success = mypageService.updateProfileImage(userVo);
+			if (success) {
+				// 업데이트된 사용자 정보를 다시 조회하여 반환 (보안 고려)
+				HmkUserVo updatedUser = mypageService.getUserInfo(userNum);
+				System.out.println("업데이트된거가 머?: " + updatedUser);
+				return ResponseEntity.ok(JsonResult.success(updatedUser));
+			} else {
+				return ResponseEntity.status(500).body(JsonResult.fail("프로필 이미지 업데이트에 실패했습니다."));
+			}
+		} catch (Exception e) {
+			// 로깅 및 구체적인 에러 메시지 반환
+			e.printStackTrace(); // 실제 서비스에서는 로깅 프레임워크 사용 권장
+			return ResponseEntity.status(500).body(JsonResult.fail("서버 오류로 인해 프로필 이미지 업데이트에 실패했습니다."));
+		}
+	}
 
 	// 닉네임 변경
 	@PutMapping("/{userNum}/updateNickname")
@@ -227,5 +226,36 @@ public class HmkMypageController {
 	public JsonResult getUserGiftCards(@PathVariable int userNum) {
 		List<HmkGiftVo> giftCards = mypageService.getUserGiftCards(userNum);
 		return JsonResult.success(giftCards);
+	}
+
+	@PutMapping("/giftcards/use/{purchaseNum}")
+	public JsonResult useGiftcard(@PathVariable int purchaseNum, HttpServletRequest request) {
+
+		// JWT 토큰에서 사용자 번호 추출
+		Integer userNum = JwtUtil.getNoFromHeader(request);
+		if (userNum == null) {
+			return JsonResult.fail("인증되지 않은 사용자입니다.");
+		}
+
+		try {
+			// 기프티콘 소유권 확인
+			boolean isOwner = mypageService.checkGiftcardOwnership(purchaseNum, userNum);
+			if (!isOwner) {
+				return JsonResult.fail("해당 기프티콘에 대한 권한이 없습니다.");
+			}
+
+			// 기프티콘 사용 처리
+			boolean success = mypageService.useGiftcard(purchaseNum);
+
+			if (success) {
+				return JsonResult.success("기프티콘이 성공적으로 사용 처리되었습니다.");
+			} else {
+				return JsonResult.fail("기프티콘 사용 처리에 실패했습니다.");
+			}
+
+		} catch (Exception e) {
+			logger.error("기프티콘 사용 처리 중 오류 발생", e);
+			return JsonResult.fail("서버 오류로 인해 기프티콘 사용 처리에 실패했습니다.");
+		}
 	}
 }
