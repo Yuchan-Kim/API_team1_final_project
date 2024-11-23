@@ -32,7 +32,7 @@ public class AnnouncementVo {
 		return address;
 	}
 
-	public void setAddress(String address) {
+	public void setAddress(String address) { 
 		this.address = address;
 	}
 
