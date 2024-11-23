@@ -525,52 +525,5 @@
 		]]>
 	</select>
 
-	<!-- 사용 가능한 기프티콘 조회 쿼리 -->
-	<select id="getAvailableGiftCards" parameterType="int"
-		resultType="com.javaex.vo.HmkGiftVo">
-		<![CDATA[
-		    SELECT
-		        ph.purchaseNum,
-		        i.itemNum AS id,
-		        i.itemName AS name,
-		        i.itemImg AS image,
-		        ph.purchasedStatus,
-		        ib.itemBrandName AS description,
-		        FALSE AS isUsed
-		    FROM
-		        purchaseHistory ph
-		        JOIN item i ON ph.itemNum = i.itemNum
-		        JOIN itemBrand ib ON i.itemBrandNum = ib.itemBrandNum
-		    WHERE
-		        ph.userNum = #{userNum}
-		        AND ph.purchasedStatus = '사용가능'
-		    ORDER BY
-		        ph.purchasedDate DESC;
-		]]>
-		</select>
-
-	<!-- 사용 완료된 기프티콘 조회 쿼리 -->
-	<select id="getCompletedGiftCards" parameterType="int"
-		resultType="com.javaex.vo.HmkGiftVo">
-		<![CDATA[
-		    SELECT
-		        ph.purchaseNum,
-		        i.itemNum AS id,
-		        i.itemName AS name,
-		        i.itemImg AS image,
-		        ph.purchasedStatus,
-		        ib.itemBrandName AS description,
-		        TRUE AS isUsed
-		    FROM
-		        purchaseHistory ph
-		        JOIN item i ON ph.itemNum = i.itemNum
-		        JOIN itemBrand ib ON i.itemBrandNum = ib.itemBrandNum
-		    WHERE
-		        ph.userNum = #{userNum}
-		        AND ph.purchasedStatus = '사용완료'
-		    ORDER BY
-		        ph.usedDate DESC;
-		]]>
-	</select>
 
 </mapper>

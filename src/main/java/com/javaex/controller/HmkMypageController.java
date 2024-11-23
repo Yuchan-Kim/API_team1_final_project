@@ -228,6 +228,7 @@ public class HmkMypageController {
 		return JsonResult.success(giftCards);
 	}
 
+	// 기프티콘 사용하기 버튼 클릭하면 발생하는 이벤트
 	@PutMapping("/giftcards/use/{purchaseNum}")
 	public JsonResult useGiftcard(@PathVariable int purchaseNum, HttpServletRequest request) {
 

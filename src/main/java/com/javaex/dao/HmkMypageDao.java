@@ -96,6 +96,7 @@ public class HmkMypageDao {
 		return sqlSession.selectList("Mypage.getUserGiftCards", userNum);
 	}
 	
+	// 기프티콘 소유권 확인
 	public boolean checkGiftcardOwnership(Map<String, Object> params) {
 	    try {
 	        return sqlSession.selectOne("Mypage.checkGiftcardOwnership", params);
@@ -104,7 +105,7 @@ public class HmkMypageDao {
 	        return false;
 	    }
 	}
-	
+	// 기프트콘 사용 업데이트
 	public int updateGiftcardStatus(int purchaseNum) {
         return sqlSession.update("Mypage.updateGiftcardStatus", purchaseNum);
     }

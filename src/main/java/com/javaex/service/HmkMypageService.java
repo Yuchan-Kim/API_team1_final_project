@@ -147,14 +147,14 @@ public class HmkMypageService {
 	public List<HmkGiftVo> getUserGiftCards(int userNum) {
 		return mypageDao.getUserGiftCards(userNum);
 	}
-	
+	// 기프티콘 소유권 확인
 	public boolean checkGiftcardOwnership(int purchaseNum, int userNum) {
 	    Map<String, Object> params = new HashMap<>();
 	    params.put("purchaseNum", purchaseNum);
 	    params.put("userNum", userNum);
 	    return mypageDao.checkGiftcardOwnership(params);
 	}
-	
+	// 기프티콘 사용 하기
 	public boolean useGiftcard(int purchaseNum) {
         try {
             // 기프티콘 상태 업데이트
