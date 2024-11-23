@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="naveruser">
-	<!-- 네이버 회원 가입 -->
+
+	<!-- 네이버 회원 가입 --> 
 	<insert id="insertNaver"
 		parameterType="com.javaex.vo.HmkSocialUserVo">
     <![CDATA[
@@ -19,6 +20,7 @@
         FROM users
         WHERE userEmail = #{userEmail}
     ]]>
+     
 	</select>
 	
 </mapper>
