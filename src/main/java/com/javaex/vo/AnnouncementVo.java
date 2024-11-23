@@ -4,23 +4,31 @@ import java.time.LocalDateTime;
 
 // 작성자: 김유찬 
 public class AnnouncementVo {
-    private int announceNum;          // 공지사항 고유 번호 (PK)
-    private int roomNum;              // 방 번호 (FK)
-    private String place;             // 장소 정보 (NOT NULL)
-    private String title;             // 공지사항 제목 (NOT NULL)
-    private int announceAddedBy;      // 공지사항 추가한 사용자 번호 (FK)
-    private String announcement;      // 공지사항 내용
-    private LocalDateTime announceTime;   // 공지사항 추가 날짜 및 시간
-    private int enteredUserNum;
-    private int enteredUserStatusNum;
-    private int userNum;
-    private int enteredUserAuth;
-    private boolean isModified;      // 공지사항 수정 여부
-    private String address; // 장소의 주소
-    private double latitude; // 위도
-    private double longitude; // 경도
+	 	private int announceNum;          // 공지사항 고유 번호 (PK)
+	    private int roomNum;              // 방 번호 (FK)
+	    private String placeTitle;        // 장소 제목 (NOT NULL)
+	    private String address;           // 장소 주소
+	    private double latitude;          // 위도
+	    private double longitude;         // 경도
+	    private String title;             // 공지사항 제목 (NOT NULL)
+	    private int announceAddedBy;      // 공지사항 추가한 사용자 번호 (FK)
+	    private String announcement;      // 공지사항 내용
+	    private LocalDateTime announceTime;   // 공지사항 추가 날짜 및 시간
+	    private int enteredUserNum;
+	    private int enteredUserStatusNum;
+	    private int userNum;
+	    private int enteredUserAuth;
+	    private boolean isModified;      // 공지사항 수정 여부
     
-    public String getAddress() {
+    public String getPlaceTitle() {
+			return placeTitle;
+		}
+
+		public void setPlaceTitle(String placeTitle) {
+			this.placeTitle = placeTitle;
+		}
+
+	public String getAddress() {
 		return address;
 	}
 
@@ -66,13 +74,7 @@ public class AnnouncementVo {
         this.roomNum = roomNum;
     }
 
-    public String getPlace() {
-        return place;
-    }
-
-    public void setPlace(String place) {
-        this.place = place;
-    }
+    
 
     public String getTitle() {
         return title;
@@ -148,7 +150,7 @@ public class AnnouncementVo {
 
     @Override
     public String toString() {
-        return "AnnouncementVo [announceNum=" + announceNum + ", roomNum=" + roomNum + ", place=" + place + ", title="
+        return "AnnouncementVo [announceNum=" + announceNum + ", roomNum=" + roomNum + ", title="
                 + title + ", announceAddedBy=" + announceAddedBy + ", announcement=" + announcement + ", announceTime="
                 + announceTime + ", enteredUserNum=" + enteredUserNum + ", enteredUserStatusNum=" + enteredUserStatusNum
                 + ", userNum=" + userNum + ", enteredUserAuth=" + enteredUserAuth + ", isModified="
