@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="jmsearch">
+
+	<!-- 방 전체 리스트 가져오기 -->
+	<select id="getRoomList" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			select
+				r.roomNum AS roomNum, -- 룸넘버
+			    rs.roomStatusNum AS roomStatusNum, -- 방 상태 넘버
+				rt.roomTypeName AS roomTypeName,  -- 룸 유형
+			    r.roomThumbNail AS roomThumbNail,  -- 룸 대표이미지
+			    r.roomTitle AS roomTitle,  -- 룸 제목
+			    r.roomStartDate AS roomStartDate, -- 시작날짜
+				p.periodNum AS periodType,  -- 기간
+			    r.roomMinNum AS roomMinNum,  -- 최소인원
+			    r.roomMaxNum AS roomMaxNum,  -- 최대인원
+			    r.roomEnterPoint AS roomPoint, -- 입장포인트
+			    r.roomEnterRate AS roomRate, -- 입장성실도
+			    c.categoryName AS categoryName, -- 카테고리
+			    r.roomKEyword AS roomKeyword, -- 키워드
+			    re.regionName AS regionName -- 지역
+			from roomInfo r
+			join roomStatus rs on rs.roomStatusNum = r.roomStatusNum
+			join roomType rt on r.roomTypeNum = rt.roomTypeNum
+			join period p on p.periodNum = r.periodNum
+			join categories c on c.categoryNum = r.categoryNum
+			join regions re on re.regionNum = r.regionNum
+			where rs.roomStatusNum = 2;
+		]]>
+	</select>
+	
+	<!-- 카테고리별 방 리스트 가져오기 -->
+	<select id="getCategoryRoomList" parameterType="String" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			select
+				r.roomNum AS roomNum, -- 룸넘버
+			    rs.roomStatusNum AS roomStatusNum, -- 방 상태 넘버
+				rt.roomTypeName AS roomTypeName,  -- 룸 유형
+			    r.roomThumbNail AS roomThumbNail,  -- 룸 대표이미지
+			    r.roomTitle AS roomTitle,  -- 룸 제목
+			    r.roomStartDate AS roomStartDate, -- 시작날짜
+				p.periodNum AS periodType,  -- 기간
+			    r.roomMinNum AS roomMinNum,  -- 최소인원
+			    r.roomMaxNum AS roomMaxNum,  -- 최대인원
+			    r.roomEnterPoint AS roomPoint, -- 입장포인트
+			    r.roomEnterRate AS roomRate, -- 입장성실도
+			    c.categoryName AS categoryName, -- 카테고리
+			    r.roomKEyword AS roomKeyword, -- 키워드
+			    re.regionName AS regionName -- 지역
+			from roomInfo r
+			join roomStatus rs on rs.roomStatusNum = r.roomStatusNum
+			join roomType rt on r.roomTypeNum = rt.roomTypeNum
+			join period p on p.periodNum = r.periodNum
+			join categories c on c.categoryNum = r.categoryNum
+			join regions re on re.regionNum = r.regionNum
+			where rs.roomStatusNum = 2
+			and c.categoryName = #{category}
+		]]>
+	</select>
+	
+	<!-- 검색어가 포함된 방리스트 가져오기 -->
+	<select id="getFilterList" parameterType="String" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			SELECT
+			    r.roomNum AS roomNum, -- 룸 넘버
+			    rs.roomStatusNum AS roomStatusNum, -- 방 상태 넘버
+			    rt.roomTypeName AS roomTypeName, -- 룸 유형
+			    r.roomThumbNail AS roomThumbNail, -- 룸 대표 이미지
+			    r.roomTitle AS roomTitle, -- 룸 제목
+			    r.roomStartDate AS roomStartDate, -- 시작 날짜
+			    p.periodNum AS periodType, -- 기간
+			    r.roomMinNum AS roomMinNum, -- 최소 인원
+			    r.roomMaxNum AS roomMaxNum, -- 최대 인원
+			    r.roomEnterPoint AS roomPoint, -- 입장 포인트
+			    r.roomEnterRate AS roomRate, -- 입장 성실도
+			    c.categoryName AS categoryName, -- 카테고리
+			    r.roomKeyword AS roomKeyword, -- 키워드
+			    re.regionName AS regionName -- 지역
+			FROM roomInfo r
+			JOIN roomStatus rs ON rs.roomStatusNum = r.roomStatusNum
+			JOIN roomType rt ON r.roomTypeNum = rt.roomTypeNum
+			JOIN period p ON p.periodNum = r.periodNum
+			JOIN categories c ON c.categoryNum = r.categoryNum
+			JOIN regions re ON re.regionNum = r.regionNum
+			WHERE rs.roomStatusNum = 2
+			  AND (
+			      r.roomTitle LIKE CONCAT('%', #{query}, '%') -- 방 제목 검색
+			      OR p.periodNum LIKE CONCAT('%', #{query}, '%') -- 기간 검색
+			      OR r.roomKeyword LIKE CONCAT('%', #{query}, '%') -- 키워드 검색
+			      OR c.categoryName LIKE CONCAT('%', #{query}, '%') -- 카테고리 검색
+			      OR re.regionName LIKE CONCAT('%', #{query}, '%') -- 지역 검색
+			  );
+		]]>
+	</select>
+	
+	<!-- 방 타입 가져오기 -->
+	<select id="getRoomtypeList" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			select roomTypeName from roomType
+		]]>
+	</select>
+	
+	<!-- 카테고리 가져오기 -->
+	<select id="getCategoryList" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			select * from categories
+		]]>
+	</select>
+	
+	<!-- 기간 가져오기 -->
+	<select id="getPeriodList" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			select periodNum AS periodType from period
+		]]>
+	</select>
+	
+	<!-- 지역 가져오기 -->
+	<select id="getRegionsList" resultType="com.javaex.vo.ChallengeVo">
+		<![CDATA[ 
+			select * from regions
+		]]>
+	</select>
+    
+</mapper>

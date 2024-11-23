@@ -55,8 +55,14 @@ public class ChallengeVo {
      private int periodType;          // 방 기간 유형 (주 단위)
      private String roomStartDate;    // 방 시작 날짜
      private String missionInstruction; // 방 미션 유의사항
+     private String roomThumbNail; 		// 방 대표이미지
+     private int roomMinNum; 			// 방 최소인원
+     private int roomMaxNum; 			// 방 최소인원
+     private int roomPoint;				// 입장 포인트
+     private int roomRate; 				// 입장 성실도
+     
 
- 	// 공지사항 정보
+	// 공지사항 정보
      private int announceNum;         // 공지사항 번호 (고유 식별자)
      private String title;            // 공지사항 제목
      private String announcement;     // 공지 내용
@@ -583,6 +589,64 @@ public class ChallengeVo {
 
 	public void setAnnounceTime(Date announceTime) {
 		this.announceTime = announceTime;
+	}
+	
+	public String getRoomThumbNail() {
+		return roomThumbNail;
+	}
+
+
+
+	public void setRoomThumbNail(String roomThumbNail) {
+		this.roomThumbNail = roomThumbNail;
+	}
+
+
+
+	public int getRoomMinNum() {
+		return roomMinNum;
+	}
+
+
+
+	public void setRoomMinNum(int roomMinNum) {
+		this.roomMinNum = roomMinNum;
+	}
+
+
+
+	public int getRoomMaxNum() {
+		return roomMaxNum;
+	}
+
+
+
+	public void setRoomMaxNum(int roomMaxNum) {
+		this.roomMaxNum = roomMaxNum;
+	}
+
+
+
+	public int getRoomPoint() {
+		return roomPoint;
+	}
+
+
+
+	public void setRoomPoint(int roomPoint) {
+		this.roomPoint = roomPoint;
+	}
+
+
+
+	public int getRoomRate() {
+		return roomRate;
+	}
+
+
+
+	public void setRoomRate(int roomRate) {
+		this.roomRate = roomRate;
 	}
 
 

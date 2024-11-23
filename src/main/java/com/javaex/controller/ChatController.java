@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("api/chat")
 public class ChatController {
-    
+     
     @Autowired
     private ChatService chatService;
     

@@ -19,7 +19,7 @@
         <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
         <result property="userNum" column="userNum"/>
         <result property="enteredUserAuth" column="enteredUserAuth"/>
-        <result property="isModified" column="isModified"/> <!-- 수정됨 여부 -->
+        <result property="isModified" column="isModified"/> <!-- 수정됨 여부 --> 
     </resultMap>
 
 

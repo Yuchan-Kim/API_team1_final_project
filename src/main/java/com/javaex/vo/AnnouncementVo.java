@@ -14,7 +14,7 @@ public class AnnouncementVo {
 	    private int announceAddedBy;      // 공지사항 추가한 사용자 번호 (FK)
 	    private String announcement;      // 공지사항 내용
 	    private LocalDateTime announceTime;   // 공지사항 추가 날짜 및 시간
-	    private int enteredUserNum;
+	    private int enteredUserNum; 
 	    private int enteredUserStatusNum;
 	    private int userNum;
 	    private int enteredUserAuth;
