@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jyStep">
+
+
+	<!-- 임시저장 체크 -->
+	<select id="checkRoom" resultType="int">
+		<![CDATA[
+		
+			select roomNum 
+			
+			from roomInfo
+			
+			where roomMaker = #{userNum}
+			and roomStatusNum = 1;
+					
+		]]>
+	</select> 
+	
+	<!-- 방정보 불러오기 -->
+	<select id="getRoomInfo" resultType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+		
+			select roomNum 
+			
+			from roomInfo
+			
+			where roomNum = #{roomNum};
+					
+		]]>
+	</select> 
+	
+	<!-- 지역 목록 불러오기 -->
+	<select id="getResionList" resultType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+			SELECT   regionNum, 
+					 regionName
+					 
+			FROM regions 
+			
+			order by regionNum asc
+		]]>
+	</select> 
+
+	
+
+	<!-- step1 방생성 일반/챌린지 선택 -->
+	<insert id="insertRoomInfo" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+			insert into roomInfo (
+				
+				roomTypeNum,
+				roomStatusNum,
+				roomMaker
+				
+			) values (
+				
+				#{roomTypeNum},
+				1,
+				#{roomMaker}  
+			)
+		]]>
+	</insert>
+
+	<!-- step2 카테고리, 키워드 -->
+   	<update id="updateStep2" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+
+			update roomInfo 
+			
+			set categoryNum = #{categoryNum}, 
+				roomKeyword = #{roomKeyword}		
+			
+		    where roomNum = #{roomNum}
+
+		]]>
+	</update>
+	
+	<!-- step3 대표이미지, 방제목, 방설명 설정 -->
+   	<update id="updateStep3" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+
+			update roomInfo 
+			
+			set roomThumbNail = #{roomThumbNail}, 
+				roomTitle = #{roomTitle},
+				roomInfo = #{roomInfo}		
+			
+		    where roomNum = #{roomNum}
+
+		]]>
+	</update>
+	
+	<!-- step4 챌린지 - 참여인원, 배팅포인트, 성실도, 지역 -->
+   	<update id="updateStep4" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+
+			update roomInfo 
+			
+			set roomMaxNum = #{roomMaxNum}, 
+				roomMinNum = #{roomMinNum},
+				roomEnterPoint = #{roomEnterPoint},
+				roomEnterRate = #{roomEnterRate}, 
+				regionNum = #{regionNum}		
+			
+		    where roomNum = #{roomNum}
+
+		]]>
+	</update>
+	
+	<!-- step44 일반 - 참여인원, 배팅포인트, 성실도, 지역 -->
+   	<update id="updateStep44" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+
+			update roomInfo 
+			
+			set roomMaxNum = #{roomMaxNum}, 
+				roomMinNum = #{roomMinNum}, 
+				regionNum = #{regionNum}		
+			
+		    where roomNum = #{roomNum}
+
+		]]>
+	</update>
+	
+	<!-- step5 시작날짜, 기간 설정 -->
+   	<update id="updateStep5" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+
+			update roomInfo 
+			
+			set roomStartDate = #{roomStartDate},
+				periodNum = #{periodNum}		
+			
+		    where roomNum = #{roomNum}
+
+		]]>
+	</update>
+	
+	<!-- step6 미션유의사항 등록 -->
+	<update id="insertStep6MissionInstruction" parameterType="java.util.Map">
+		<![CDATA[
+		
+		    update roomInfo 
+			
+			set missionInstruction = #{missionInstruction}	
+			
+		    where roomNum = #{roomNum} 
+		]]>
+	</update>
+	
+	<!-- step6 방요일번호정보 불러오기 -->
+	<select id="getRoomDayNum" resultType="int">
+		<![CDATA[
+		
+			select roomDayNum
+			
+			from roomDay
+			
+			where roomNum = #{roomNum};
+					
+		]]>
+	</select> 
+	
+	<!-- step6 미션 등록 -->
+	<insert id="insertStep6Mission" parameterType="com.javaex.vo.MissionStepVo">
+		<![CDATA[
+		    insert into challenges (
+				
+				missionTypeNum,
+				roomDayNum,
+				missionName,
+				missionMethod,
+				
+				missionImgName
+								
+				
+			) values (
+				
+				#{missionTypeNum},
+				#{roomDayNum},
+				#{title},
+				#{method},
+				#{missionImgName}
+				
+			)
+		]]>
+	</insert>
+	
+	<!-- step6 미션 정보 불러오기 -->
+	<select id="getMissionNum" parameterType="com.javaex.vo.MissionStepVo" resultType="int">
+		<![CDATA[
+		
+			select missionNum 
+			
+			from challenges
+			
+			where missionName = #{title};
+					
+		]]>
+	</select> 
+	
+	
+	<!-- step6 미션이미지 등록 -->
+	<insert id="insertStep6MissionImg" parameterType="com.javaex.vo.MissionStepVo">
+		<![CDATA[
+		    insert into challenges (
+				
+				missionNum,
+				missionImgName
+								
+				
+			) values (
+				
+				#{missionNum},
+				#{missionImgName}
+				
+			)
+		]]>
+	</insert>
+	
+	
+	
+	<!-- step7 평가방법 설정 -->
+   	<update id="updateStep7" parameterType="com.javaex.vo.RoomStepVo">
+		<![CDATA[
+
+			update roomInfo 
+			
+			set evaluationType = #{evaluationType}	
+			
+		    where roomNum = #{roomNum}
+
+		]]>
+	</update>
+	
+	<!-- step77 요일 설정 -->
+	<insert id="insertStep77" parameterType="java.util.Map">
+		<![CDATA[
+		    insert into roomDay (
+				
+				roomNum,
+				dateNum				
+				
+			) values (
+				
+				#{roomNum},
+				#{dateNum}  
+			)
+		]]>
+	</insert>
+	
+	
+	
+	
+	
+	
+
+</mapper>

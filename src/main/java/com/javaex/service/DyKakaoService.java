@@ -31,7 +31,7 @@ public class DyKakaoService {
       // Kakao API 설정 변수
       String reqURL = "https://kauth.kakao.com/oauth/token";
       String clientId = "a4813bbe6643d6aa6f77b13da53b0990"; // REST_API_KEY 입력
-      String redirectUri = "http://localhost:3000/user/uk"; // 리다이렉트 URI 입력
+      String redirectUri = "http://13.125.216.39:9000/user/uk"; // 리다이렉트 URI 입력
 
       try {
          URL url = new URL(reqURL);
