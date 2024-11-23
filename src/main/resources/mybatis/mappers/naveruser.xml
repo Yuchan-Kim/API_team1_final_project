@@ -20,4 +20,5 @@
         WHERE userEmail = #{userEmail}
     ]]>
 	</select>
+	
 </mapper>
