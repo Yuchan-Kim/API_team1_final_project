@@ -49,7 +49,8 @@ public class ChallengeVo {
      private int roomNum;             // 방 번호 (고유 식별자)
      private String roomTitle;        // 방 제목
      private String roomInfo;         // 방 설명
-     private String roomTypeName;     // 방 유형 이름 (예: 개인, 그룹 등)
+     private int roomTypeNum;		  // 방 유형 번호 (1:일반, 2:챌린지)
+	 private String roomTypeName;     // 방 유형 이름 (예: 개인, 그룹 등)
      private String roomStatusName;   // 방 상태 이름 (예: 모집 중, 종료 등)
      private String categoryName;     // 방 카테고리 이름 (예: 운동, 공부 등)
      private int periodType;          // 방 기간 유형 (주 단위)
@@ -445,6 +446,16 @@ public class ChallengeVo {
 
 	public void setRoomInfo(String roomInfo) {
 		this.roomInfo = roomInfo;
+	}
+	
+	public int getRoomTypeNum() {
+		return roomTypeNum;
+	}
+
+
+
+	public void setRoomTypeNum(int roomTypeNum) {
+		this.roomTypeNum = roomTypeNum;
 	}
 
 
