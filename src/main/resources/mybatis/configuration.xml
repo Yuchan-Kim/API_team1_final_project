@@ -17,6 +17,6 @@
 		<mapper resource="mybatis/mappers/googleuser.xml" /> 
 		<mapper resource="mybatis/mappers/jyStep.xml" /> 
 		<mapper resource="mybatis/mappers/jmsearch.xml" /> 
-		
+		<mapper resource="mybatis/mappers/jmroomgeneration.xml" /> 
     </mappers>
 </configuration>

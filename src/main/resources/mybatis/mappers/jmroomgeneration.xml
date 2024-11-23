@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="generation">
+
+	<!-- 방생성 -> 번호 반환 -->
+    <insert id="evalInsert" parameterType="int" useGeneratedKeys="true" keyProperty="roomNum">
+    	<![CDATA[
+    		INSERT INTO `roomInfo` (roomTypeNum, roomMaker)
+        	VALUES (#{roomTypeNum}, #{userNum})
+    	]]>
+    </insert>
+    
+</mapper>
