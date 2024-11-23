@@ -61,7 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             -- <<종합 달성률 계산>>
             SELECT 
                 ROUND(
-                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
                     NULLIF(COUNT(*), 0), 
                     2
                 ) as achievement_rate
@@ -229,15 +229,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             -- 4. 일반방 미션 달성률
             SELECT 
                 '일반방 미션 달성률' as chart_title,
-                COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) as attended_count,
+                COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) as attended_count,
                 COUNT(c.missionNum) as total_count,
                 CONCAT(
-                    COUNT(CASE WHEN e.evalType = '인증' THEN 1 END),
+                    COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END),
                     '/',
                     COUNT(c.missionNum)
                 ) as ratio_display,
                 ROUND(
-                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
                     NULLIF(COUNT(c.missionNum), 0), 
                     1
                 ) as percentage
@@ -256,15 +256,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             -- 5. 챌린지방 미션 달성률
             SELECT 
                 '챌린지방 미션 달성률' as chart_title,
-                COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) as attended_count,
+                COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) as attended_count,
                 COUNT(c.missionNum) as total_count,
                 CONCAT(
-                    COUNT(CASE WHEN e.evalType = '인증' THEN 1 END),
+                    COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END),
                     '/',
                     COUNT(c.missionNum)
                 ) as ratio_display,
                 ROUND(
-                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
                     NULLIF(COUNT(c.missionNum), 0), 
                     1
                 ) as percentage
@@ -283,15 +283,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             -- 6. 전체 미션 달성률
             SELECT 
                 '전체 미션 달성률' as chart_title,
-                COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) as attended_count,
+                COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) as attended_count,
                 COUNT(c.missionNum) as total_count,
                 CONCAT(
-                    COUNT(CASE WHEN e.evalType = '인증' THEN 1 END),
+                    COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END),
                     '/',
                     COUNT(c.missionNum)
                 ) as ratio_display,
                 ROUND(
-                    (COUNT(CASE WHEN e.evalType = '인증' THEN 1 END) * 100.0) / 
+                    (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
                     NULLIF(COUNT(c.missionNum), 0), 
                     1
                 ) as percentage
