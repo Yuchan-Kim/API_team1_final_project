@@ -11,7 +11,7 @@ import com.javaex.vo.AnnouncementVo;
 @Service
 public class AnnouncementService {
 
-    @Autowired
+    @Autowired 
     private AnnouncementDao announcementDao;
 
     /* 모든 공지사항 조회 */

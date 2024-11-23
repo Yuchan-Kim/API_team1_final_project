@@ -5,22 +5,22 @@
 
     <!-- 결과 매핑 정의 -->
     <resultMap id="AnnouncementResultMap" type="com.javaex.vo.AnnouncementVo">
-	    <id property="announceNum" column="announceNum"/>
-	    <result property="roomNum" column="roomNum"/>
-	    <result property="place" column="place"/>
-	    <result property="title" column="title"/>
-	    <result property="announceAddedBy" column="announceAddedBy"/>
-	    <result property="announcement" column="announcement"/>
-	    <result property="announceTime" column="announceTime"/>
-	    <result property="enteredUserNum" column="enteredUserNum"/>
-	    <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
-	    <result property="userNum" column="userNum"/>
-	    <result property="enteredUserAuth" column="enteredUserAuth"/>
-	    <result property="isModified" column="isModified"/> <!-- 수정됨 여부 -->
-	    <result property="address" column="address"/> <!-- 추가 -->
-	    <result property="latitude" column="latitude"/> <!-- 추가 -->
-	    <result property="longitude" column="longitude"/> <!-- 추가 -->
-	</resultMap>
+        <id property="announceNum" column="announceNum"/>
+        <result property="roomNum" column="roomNum"/>
+        <result property="placeTitle" column="placeTitle"/> <!-- 수정 -->
+        <result property="address" column="address"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="title" column="title"/>
+        <result property="announceAddedBy" column="announceAddedBy"/>
+        <result property="announcement" column="announcement"/>
+        <result property="announceTime" column="announceTime"/>
+        <result property="enteredUserNum" column="enteredUserNum"/>
+        <result property="enteredUserStatusNum" column="enteredUserStatusNum"/>
+        <result property="userNum" column="userNum"/>
+        <result property="enteredUserAuth" column="enteredUserAuth"/>
+        <result property="isModified" column="isModified"/> <!-- 수정됨 여부 -->
+    </resultMap>
 
 
     <!-- 방의 모든 공지사항 가져오기 -->
@@ -63,25 +63,28 @@
     </delete>
     
     <!-- AnnouncementMapper.xml -->
-<update id="editAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
-    <![CDATA[
-        UPDATE announcement
-        SET title = #{title}, 
-            announcement = #{announcement}, 
-            place = #{place}, 
-            latitude = #{latitude}, 
-            longitude = #{longitude}, 
-            isModified = true
-        WHERE announceNum = #{announceNum}
-    ]]>
-</update>
+<!-- 공지사항 수정 -->
+    <update id="editAnnouncement" parameterType="com.javaex.vo.AnnouncementVo">
+        <![CDATA[
+            UPDATE announcement
+            SET title = #{title}, 
+                announcement = #{announcement}, 
+                placeTitle = #{placeTitle}, 
+                address = #{address},
+                latitude = #{latitude}, 
+                longitude = #{longitude}, 
+                isModified = true
+            WHERE announceNum = #{announceNum}
+        ]]>
+    </update>
 
-<insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo" useGeneratedKeys="true" keyProperty="announceNum">
-    <![CDATA[
-        INSERT INTO announcement (roomNum, title, announcement, place, latitude, longitude, announceTime, announceAddedBy, isModified)
-        VALUES (#{roomNum}, #{title}, #{announcement}, #{place}, #{latitude}, #{longitude}, now(), #{announceAddedBy}, false)
-    ]]>
-</insert>
+ <!-- 공지사항 추가 -->
+    <insert id="addAnnouncement" parameterType="com.javaex.vo.AnnouncementVo" useGeneratedKeys="true" keyProperty="announceNum">
+        <![CDATA[
+            INSERT INTO announcement (roomNum, title, announcement, placeTitle, address, latitude, longitude, announceTime, announceAddedBy, isModified)
+            VALUES (#{roomNum}, #{title}, #{announcement}, #{placeTitle}, #{address}, #{latitude}, #{longitude}, now(), #{announceAddedBy}, false)
+        ]]>
+    </insert>
 
 
     <!-- 공지사항 ID로 공지사항 가져오기 -->

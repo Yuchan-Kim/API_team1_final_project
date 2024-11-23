@@ -21,17 +21,17 @@ import jakarta.servlet.http.HttpServletResponse;
 public class DyKakaoLogin {
    
    @Autowired
-   private DyUserService dyUserService;
+   private DyUserService dyUserService;  
 
    @Autowired
    private DyKakaoService dyKakaoService;
-
+ 
    /* 카카오 로그인 액세스 토큰 가져오기 */
    @PostMapping("/api/auth/kakao")
    public JsonResult kakaLogin(@RequestParam String authorizeCode) {
       try {
 
-         // Access Token 가져오기
+         // Access Token 가져오기 
          String accessToken = dyKakaoService.getKakaoAccessToken(authorizeCode);
          
          System.out.println("1 -- accessToken : " + accessToken);
