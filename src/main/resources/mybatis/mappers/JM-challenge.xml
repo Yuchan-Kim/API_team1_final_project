@@ -26,7 +26,7 @@
 			FROM 
 			    announcement
 			WHERE 
-			    roomNum = 1
+			    roomNum = #{roomNum}
 			ORDER BY 
 			    announceTime DESC
 			LIMIT #{roomNum}
