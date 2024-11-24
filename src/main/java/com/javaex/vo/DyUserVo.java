@@ -11,6 +11,7 @@ public class DyUserVo {
 	private String socialLogin;
 	private String usingProfilePic;
 	private String userStatus;
+	private String joinDate;
 	
 	
 	
@@ -19,8 +20,9 @@ public class DyUserVo {
 		super();
 	}
 
+
 	public DyUserVo(int userNum, int regionNum, String userEmail, String userPw, String userName, String socialLogin,
-			String usingProfilePic, String userStatus) {
+			String usingProfilePic, String userStatus, String joinDate) {
 		super();
 		this.userNum = userNum;
 		this.regionNum = regionNum;
@@ -30,7 +32,9 @@ public class DyUserVo {
 		this.socialLogin = socialLogin;
 		this.usingProfilePic = usingProfilePic;
 		this.userStatus = userStatus;
+		this.joinDate = joinDate;
 	}
+
 
 	public int getUserNum() {
 		return userNum;
@@ -97,12 +101,23 @@ public class DyUserVo {
 	}
 	
 	
+	public String getJoinDate() {
+		return joinDate;
+	}
+
+
+	public void setJoinDate(String joinDate) {
+		this.joinDate = joinDate;
+	}
+
+
 	@Override
 	public String toString() {
 		return "DyUserVo [userNum=" + userNum + ", regionNum=" + regionNum + ", userEmail=" + userEmail + ", userPw="
 				+ userPw + ", userName=" + userName + ", socialLogin=" + socialLogin + ", usingProfilePic="
-				+ usingProfilePic + ", userStatus=" + userStatus + "]";
+				+ usingProfilePic + ", userStatus=" + userStatus + ", joinDate=" + joinDate + "]";
 	}
+
 
 	
 }

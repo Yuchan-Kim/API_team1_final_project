@@ -8,8 +8,8 @@
 	<!-- 회원가입 -->
 	<insert id="insert" parameterType="com.javaex.vo.DyUserVo">
 		<![CDATA[
-			insert into users (`userNum`, `regionNum`, `userEmail`, `userPw`, `userName`) 
-			values(null, 1, #{userEmail}, #{userPw}, #{userName})
+			insert into users (`userNum`, `regionNum`, `userEmail`, `userPw`, `userName`, `joinDate`) 
+			values(null, 1, #{userEmail}, #{userPw}, #{userName}, now())
 		]]>
 	</insert>
 	
@@ -17,8 +17,8 @@
 	<!-- 카카오 회원가입 -->
 	<insert id="kakaoinsert" parameterType="com.javaex.vo.DyUserVo">
 		<![CDATA[
-			insert into users (`userNum`, `regionNum`, `userEmail`, `userName`, `socialLogin`) 
-			values(null, 1, #{userEmail}, #{userName}, "kakao")
+			insert into users (`userNum`, `regionNum`, `userEmail`, `userName`, `socialLogin`, `joinDate`) 
+			values(null, 1, #{userEmail}, #{userName}, "kakao", now())
 		]]>
 	</insert>
 	
