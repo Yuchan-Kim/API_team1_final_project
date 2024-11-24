@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rank">
+    <!-- Top 10 랭킹 조회 -->
+    <select id="selectTop10" resultType="com.javaex.vo.HmkUserVo">
+        SELECT 
+            u.userNum,
+            u.userName as nickname,
+            u.usingProfilePic as profileImage,
+            COALESCE(SUM(ph.historyPoint), 0) as points,
+            @rank := @rank + 1 as user_rank
+        FROM 
+            users u
+        LEFT JOIN 
+            pointHistory ph ON u.userNum = ph.userNum,
+            (SELECT @rank := 0) r
+        WHERE 
+            u.userStatus = 1
+        GROUP BY 
+            u.userNum, u.userName, u.usingProfilePic
+        ORDER BY 
+            points DESC
+        LIMIT 10
+    </select>
+
+    <!-- 특정 사용자의 랭킹 정보 조회 -->
+    <select id="selectUserRank" parameterType="int" resultType="com.javaex.vo.HmkUserVo">
+        SELECT 
+            user_rank.user_rank,
+            user_rank.userNum,
+            user_rank.nickname,
+            user_rank.profileImage,
+            user_rank.points
+        FROM (
+            SELECT 
+                @rank := @rank + 1 as user_rank,
+                userNum,
+                userName as nickname,
+                usingProfilePic as profileImage,
+                total_points as points
+            FROM (
+                SELECT 
+                    u.userNum,
+                    u.userName,
+                    u.usingProfilePic,
+                    COALESCE(SUM(ph.historyPoint), 0) as total_points
+                FROM 
+                    users u
+                LEFT JOIN 
+                    pointHistory ph ON u.userNum = ph.userNum
+                WHERE 
+                    u.userStatus = 1
+                GROUP BY 
+                    u.userNum, u.userName, u.usingProfilePic
+                ORDER BY 
+                    total_points DESC
+            ) point_totals,
+            (SELECT @rank := 0) r
+        ) user_rank
+        WHERE 
+            user_rank.userNum = #{userNum}
+    </select>
+</mapper>
