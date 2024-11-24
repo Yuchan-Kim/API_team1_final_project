@@ -73,7 +73,7 @@
     <!-- 특정 방의 전체 유저 목록 가져오기 쿼리 (달성률 순)-->
     <select id="getAllUsers" parameterType="int" resultType="com.javaex.vo.RatesVo">
         <![CDATA[
-        SELECT 
+         SELECT 
 		    u.userNum,
 		    u.usingProfilePic,
 		    u.userName,
@@ -104,7 +104,7 @@
 		    ON e.missionNum = c.missionNum 
 		    AND e.evalType = '승인' 
 		    AND e.submitUser = u.userNum
-		WHERE r.roomNum = 1
+		WHERE r.roomNum = #{roonNum}
 		GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum, p.periodType
 		ORDER BY achievementRate DESC;
         ]]>
