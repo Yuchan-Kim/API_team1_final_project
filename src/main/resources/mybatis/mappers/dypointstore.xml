@@ -27,7 +27,7 @@
 		    select i.itemNum,
 		           i.itemBrandNum,
 		           ib.itemBrandName,
-		           i.itemCost,
+		           i.itemCost, 
 		           i.itemName,
 		           i.itemImg
 		    from item as i
