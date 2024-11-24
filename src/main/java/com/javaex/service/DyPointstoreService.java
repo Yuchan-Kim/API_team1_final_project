@@ -20,14 +20,19 @@ public class DyPointstoreService {
 	
 
 	/* 포인트상점 폼  */
-	public List<DyItemVo> exeItemList() {
+	public List<DyItemVo> exeItemListAll() {
 		System.out.println("DyPointstoreService.exeItemList()");
 		
-		List<DyItemVo> itemList = dyPointstoreDao.getItemList();
+		List<DyItemVo> itemList = dyPointstoreDao.getItemListAll();
 		
 		//System.out.println(itemList);
 		
 		return itemList;
+	}
+	
+	public List<DyItemVo> getItemsByUser(int userNum) {
+	    System.out.println("DyPointstoreService.getItemsByUser()");
+	    return dyPointstoreDao.getItemsByUser(userNum); // userNum에 따른 리스트 반환
 	}
 	
 	

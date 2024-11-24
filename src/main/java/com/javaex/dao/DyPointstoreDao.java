@@ -19,13 +19,17 @@ public class DyPointstoreDao {
 
 
 	/* 포인트상점 폼  */
-	public List<DyItemVo> getItemList() {
-		System.out.println("DyPointstoreDao.getItemList()");
+	public List<DyItemVo> getItemListAll() {
+		System.out.println("DyPointstoreDao.getItemListAll()");
 		
-		List<DyItemVo> itemList =sqlSession.selectList("dypointstore.selectList");
+		List<DyItemVo> itemList =sqlSession.selectList("dypointstore.selectListAll");
 		
-		//System.out.println(itemList);
 		return itemList;	
+	}
+	
+	public List<DyItemVo> getItemsByUser(int userNum) {
+	    System.out.println("DyPointstoreDao.getItemsByUser()");
+	    return sqlSession.selectList("dypointstore.selectListByUser", userNum);
 	}
 	
 	

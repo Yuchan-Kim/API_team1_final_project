@@ -5,8 +5,8 @@
 <mapper namespace="dypointstore">
 	<!-- 쿼리문작성 -->
 
-	<!-- 포인트상점 폼  -->
-	<select id="selectList" resultType="com.javaex.vo.DyItemVo">
+	<!-- 포인트상점 폼 (로그인안했을때)  -->
+	<select id="selectListAll" resultType="com.javaex.vo.DyItemVo">
 		<![CDATA[
 			select i.itemNum,
 					i.itemBrandNum,
@@ -18,6 +18,26 @@
 			inner join itemBrand as ib
 			on i.itemBrandNum = ib.itemBrandNum
 			order by i.itemNum asc
+		]]>
+	</select>
+	
+	<!-- 포인트상점 폼 (로그인했을때) -->
+	<select id="selectListByUser" parameterType="int" resultType="com.javaex.vo.DyItemVo">
+		<![CDATA[
+		    select i.itemNum,
+		           i.itemBrandNum,
+		           ib.itemBrandName,
+		           i.itemCost,
+		           i.itemName,
+		           i.itemImg
+		    from item as i
+		    inner join itemBrand as ib
+		        on i.itemBrandNum = ib.itemBrandNum
+		    LEFT join purchaseHistory as ph
+		        on i.itemNum = ph.itemNum 
+		        AND ph.userNum = #{userNum}
+		    where (i.itemBrandNum != 1 OR ph.purchaseNum IS NULL)
+		    order by i.itemNum asc
 		]]>
 	</select>
 	

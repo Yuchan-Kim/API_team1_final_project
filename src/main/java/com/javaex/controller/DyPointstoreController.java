@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.javaex.service.DyPointstoreService;
@@ -23,13 +24,20 @@ public class DyPointstoreController {
 	
 	/* 포인트상점 폼 */
 	@GetMapping("/api/pointstores")
-	public JsonResult pointstoreForm() {
-		System.out.println("DyPointstoreController.pointstoreForm()");
-		
-		List<DyItemVo> itemList = dyPointstoreService.exeItemList();
-		
-		return JsonResult.success(itemList);
-		
+	public JsonResult pointstoreForm(@RequestParam(required = false) Integer userNum) {
+	    System.out.println("DyPointstoreController.pointstoreForm()");
+
+	    List<DyItemVo> itemList;
+
+	    if (userNum == null) {
+	        // 로그인하지 않은 경우 전체 리스트 반환
+	        itemList = dyPointstoreService.exeItemListAll();
+	    } else {
+	        // 로그인한 경우 구매 이력을 필터링한 리스트 반환
+	        itemList = dyPointstoreService.getItemsByUser(userNum);
+	    }
+
+	    return JsonResult.success(itemList);
 	}
 	
 	
