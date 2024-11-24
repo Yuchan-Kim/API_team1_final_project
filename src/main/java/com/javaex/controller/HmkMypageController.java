@@ -55,7 +55,8 @@ public class HmkMypageController {
 		userInfoMap.put("region", userInfo.getRegion());
 		userInfoMap.put("profileImage", userInfo.getProfileImage());
 		// ownedProfileImages가 null인 경우를 체크하여 기본값을 설정하는 코드
-		userInfoMap.put("ownedProfileImages", userInfo.getOwnedProfileImages() != null ? userInfo.getOwnedProfileImages() : "[]");
+		userInfoMap.put("ownedProfileImages",
+				userInfo.getOwnedProfileImages() != null ? userInfo.getOwnedProfileImages() : "[]");
 //		System.out.println("너 프로필좀 보자: " + userInfo.getProfileImage());
 //		System.out.println("프로필 보관함에 모 가지고 있니: " + userInfo.getOwnedProfileImages());
 		System.out.println("너가 만든 방이 모니? : " + createdChallenges);
@@ -194,14 +195,35 @@ public class HmkMypageController {
 	// 비밀번호 업데이트
 	@PutMapping("/{userNum}/updatePassword")
 	public JsonResult updatePassword(@PathVariable int userNum, @RequestBody HmkUserVo userVo) {
-		userVo.setUserNum(userNum);
-		boolean success = mypageService.updatePassword(userVo);
+		System.out.println("[Controller] updatePassword 호출됨 - userNum: " + userNum);
+		System.out.println("[Controller] socialLogin 정보: " + userVo.getSocialLogin());
 
-		if (success) {
-			return JsonResult.success("비밀번호가 성공적으로 변경되었습니다.");
+		userVo.setUserNum(userNum);
+
+		// 소셜 로그인 사용자인지 확인
+		if (userVo.getSocialLogin() != null && (userVo.getSocialLogin().equals("google")
+				|| userVo.getSocialLogin().equals("naver") || userVo.getSocialLogin().equals("kakao"))) {
+
+			System.out.println("[Controller] 소셜 로그인 사용자의 비밀번호 설정");
+			// 소셜 로그인 사용자는 현재 비밀번호 검증 없이 새 비밀번호 설정
+			boolean success = mypageService.updateSocialUserPassword(userVo);
+
+			if (success) {
+				return JsonResult.success("비밀번호가 성공적으로 설정되었습니다.");
+			} else {
+				return JsonResult.fail("비밀번호 설정에 실패했습니다. 새 비밀번호가 규칙에 맞지 않습니다.");
+			}
+
 		} else {
-			// 현재 비밀번호 불일치 또는 비밀번호 규칙 미충족
-			return JsonResult.fail("비밀번호 변경에 실패했습니다. 현재 비밀번호가 일치하지 않거나, 새 비밀번호가 규칙에 맞지 않습니다.");
+			System.out.println("[Controller] 일반 사용자의 비밀번호 변경");
+			// 일반 사용자는 기존 로직 그대로 실행
+			boolean success = mypageService.updatePassword(userVo);
+
+			if (success) {
+				return JsonResult.success("비밀번호가 성공적으로 변경되었습니다.");
+			} else {
+				return JsonResult.fail("비밀번호 변경에 실패했습니다. 현재 비밀번호가 일치하지 않거나, 새 비밀번호가 규칙에 맞지 않습니다.");
+			}
 		}
 	}
 

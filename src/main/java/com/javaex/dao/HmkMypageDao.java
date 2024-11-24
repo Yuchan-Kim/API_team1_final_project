@@ -82,6 +82,11 @@ public class HmkMypageDao {
 	public int updatePassword(HmkUserVo userVo) {
 		return sqlSession.update("Mypage.updatePassword", userVo);
 	}
+	
+	public int updateSocialUserPassword(HmkUserVo userVo) {
+        System.out.println("[DAO] updateSocialUserPassword 호출됨");
+        return sqlSession.update("mypage.updateSocialUserPassword", userVo);
+    }
 
 	/**
 	 * 사용자의 차트 데이터 조회 - 미션 수행률 (일반/챌린지/전체) - 미션 달성률 (일반/챌린지/전체)

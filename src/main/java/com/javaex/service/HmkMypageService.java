@@ -36,18 +36,22 @@ public class HmkMypageService {
 	public HmkUserVo getUserChallengeStats(int userNum) {
 		return mypageDao.getUserChallengeStats(userNum);
 	}
+
 	// 사용자가 방장인 방
 	public List<HmkChallengeVo> getMyCreatedRooms(int userNum) {
-	    return mypageDao.getMyCreatedRooms(userNum);
+		return mypageDao.getMyCreatedRooms(userNum);
 	}
+
 	// 진행중인 챌린지 리스트
 	public List<HmkChallengeVo> getOngoingChallenges(int userNum) {
 		return mypageDao.getOngoingChallenges(userNum);
 	}
+
 	// 진행 예정 챌린지 리스트
 	public List<HmkChallengeVo> getUpcomingChallenges(int userNum) {
 		return mypageDao.getUpcomingChallenges(userNum);
 	}
+
 	// 완료된 챌린지 리스트
 	public List<HmkChallengeVo> getCompletedChallenges(int userNum) {
 		return mypageDao.getCompletedChallenges(userNum);
@@ -108,7 +112,17 @@ public class HmkMypageService {
 		}
 	}
 
-	// 비밀번호 업데이트
+	// 비밀번호 규칙 검증 메서드 (기존 isValidPassword를 수정)
+	private boolean isPasswordValid(String password) {
+		if (password == null || password.length() < 10) {
+			return false;
+		}
+		boolean hasLetter = password.matches(".*[A-Za-z].*");
+		boolean hasNumberOrSpecial = password.matches(".*[0-9#?!&].*");
+		return hasLetter && hasNumberOrSpecial;
+	}
+
+	// 일반 사용자 비밀번호 업데이트
 	public boolean updatePassword(HmkUserVo userVo) {
 		// 사용자 정보 조회
 		HmkUserVo existingUser = mypageDao.getUserInfo(userVo.getUserNum());
@@ -123,8 +137,8 @@ public class HmkMypageService {
 			return false;
 		}
 
-		// 비밀번호 규칙 검증 (선택 사항)
-		if (!isValidPassword(userVo.getNewPassword())) {
+		// 비밀번호 규칙 검증
+		if (!isPasswordValid(userVo.getNewPassword())) {
 			// 새 비밀번호가 규칙에 맞지 않음
 			return false;
 		}
@@ -133,51 +147,67 @@ public class HmkMypageService {
 		return mypageDao.updatePassword(userVo) > 0;
 	}
 
-	// 비밀번호 규칙 검증 메서드 (선택 사항)
-	private boolean isValidPassword(String password) {
-		if (password == null)
+	// 소셜 로그인 사용자의 비밀번호 설정
+	public boolean updateSocialUserPassword(HmkUserVo userVo) {
+		System.out.println("[Service] updateSocialUserPassword 호출됨");
+
+		// 새 비밀번호 유효성 검사
+		if (!isPasswordValid(userVo.getNewPassword())) {
+			System.out.println("[Service] 새 비밀번호가 규칙에 맞지 않음");
 			return false;
-		if (password.length() < 10)
+		}
+
+		try {
+			// 새 비밀번호를 그대로 저장
+			userVo.setUserPw(userVo.getNewPassword());
+
+			// DB 업데이트
+			int count = mypageDao.updateSocialUserPassword(userVo);
+			System.out.println("[Service] 비밀번호 업데이트 결과: " + (count > 0));
+
+			return count > 0;
+		} catch (Exception e) {
+			System.out.println("[Service] 비밀번호 업데이트 중 에러 발생: " + e.getMessage());
 			return false;
-		boolean hasLetter = password.matches(".*[A-Za-z].*");
-		boolean hasNumberOrSpecial = password.matches(".*[0-9#?!&].*");
-		return hasLetter && hasNumberOrSpecial;
+		}
 	}
 
 	// 회원 보관함 기프티콘 리스트 조회
 	public List<HmkGiftVo> getUserGiftCards(int userNum) {
 		return mypageDao.getUserGiftCards(userNum);
 	}
+
 	// 기프티콘 소유권 확인
 	public boolean checkGiftcardOwnership(int purchaseNum, int userNum) {
-	    Map<String, Object> params = new HashMap<>();
-	    params.put("purchaseNum", purchaseNum);
-	    params.put("userNum", userNum);
-	    return mypageDao.checkGiftcardOwnership(params);
+		Map<String, Object> params = new HashMap<>();
+		params.put("purchaseNum", purchaseNum);
+		params.put("userNum", userNum);
+		return mypageDao.checkGiftcardOwnership(params);
 	}
+
 	// 기프티콘 사용 하기
 	public boolean useGiftcard(int purchaseNum) {
-        try {
-            // 기프티콘 상태 업데이트
-            int result = mypageDao.updateGiftcardStatus(purchaseNum);
-            return result > 0;
-        } catch (Exception e) {
-            logger.error("기프티콘 사용 처리 중 오류 발생 - purchaseNum: {}", purchaseNum, e);
-            return false;
-        }
-    }
+		try {
+			// 기프티콘 상태 업데이트
+			int result = mypageDao.updateGiftcardStatus(purchaseNum);
+			return result > 0;
+		} catch (Exception e) {
+			logger.error("기프티콘 사용 처리 중 오류 발생 - purchaseNum: {}", purchaseNum, e);
+			return false;
+		}
+	}
 
 	// ** 포인트 요약 정보 조회**
-    public HmkPointSummaryVo getPointSummary(int userNum) {
-        return mypageDao.getPointSummary(userNum);
-    }
+	public HmkPointSummaryVo getPointSummary(int userNum) {
+		return mypageDao.getPointSummary(userNum);
+	}
 
-    // ** 포인트 상세 내역 조회**
-    public List<HmkPointHistoryVo> getPointHistory(int userNum, String startDate, String endDate) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("userNum", userNum);
-        params.put("startDate", startDate);
-        params.put("endDate", endDate);
-        return mypageDao.getPointHistory(userNum, params);
-    }
+	// ** 포인트 상세 내역 조회**
+	public List<HmkPointHistoryVo> getPointHistory(int userNum, String startDate, String endDate) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("userNum", userNum);
+		params.put("startDate", startDate);
+		params.put("endDate", endDate);
+		return mypageDao.getPointHistory(userNum, params);
+	}
 }
