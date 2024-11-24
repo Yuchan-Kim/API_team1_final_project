@@ -28,7 +28,7 @@ public class ChallengeVo {
 
 	// 제출 정보
 	private int submitUser;			 // 제출 유저 
-	private String submitDate;       // 미션 제출 날짜
+	private String submitDate;       // 미션 제출 날짜 
 	private String submitComment;    // 제출 시 남긴 코멘트
 
 	// 미션 이미지 정보
