@@ -43,6 +43,7 @@ public class HmkMypageController {
 		HmkUserVo userInfo = mypageService.getUserInfo(userNum);
 		HmkUserVo statsVo = mypageService.getUserChallengeStats(userNum);
 		// 챌린지 상세 정보 가져오기
+		List<HmkChallengeVo> createdChallenges = mypageService.getMyCreatedRooms(userNum); // 추가
 		List<HmkChallengeVo> ongoingChallenges = mypageService.getOngoingChallenges(userNum);
 		List<HmkChallengeVo> upcomingChallenges = mypageService.getUpcomingChallenges(userNum);
 		List<HmkChallengeVo> completedChallenges = mypageService.getCompletedChallenges(userNum);
@@ -54,10 +55,10 @@ public class HmkMypageController {
 		userInfoMap.put("region", userInfo.getRegion());
 		userInfoMap.put("profileImage", userInfo.getProfileImage());
 		// ownedProfileImages가 null인 경우를 체크하여 기본값을 설정하는 코드
-		userInfoMap.put("ownedProfileImages",
-				userInfo.getOwnedProfileImages() != null ? userInfo.getOwnedProfileImages() : "[]");
-		System.out.println("너 프로필좀 보자: " + userInfo.getProfileImage());
-		System.out.println("프로필 보관함에 모 가지고 있니: " + userInfo.getOwnedProfileImages());
+		userInfoMap.put("ownedProfileImages", userInfo.getOwnedProfileImages() != null ? userInfo.getOwnedProfileImages() : "[]");
+//		System.out.println("너 프로필좀 보자: " + userInfo.getProfileImage());
+//		System.out.println("프로필 보관함에 모 가지고 있니: " + userInfo.getOwnedProfileImages());
+		System.out.println("너가 만든 방이 모니? : " + createdChallenges);
 		// statsVo가 null이 아닐 때만 데이터 추가
 		if (statsVo != null) {
 			// 통계 정보 추가(count)
@@ -74,6 +75,7 @@ public class HmkMypageController {
 		}
 		// 챌린지 상세 데이터 추가
 		Map<String, Object> challengesMap = new HashMap<>();
+		challengesMap.put("created", createdChallenges);
 		challengesMap.put("ongoing", ongoingChallenges);
 		challengesMap.put("upcoming", upcomingChallenges);
 		challengesMap.put("completed", completedChallenges);
@@ -103,15 +105,7 @@ public class HmkMypageController {
 		return JsonResult.success(responseData);
 	}
 
-	/*
-	 * 포인트 요약 정보 조회 엔드포인트**
-	 * 
-	 * @param userNum 사용자 번호 (Path Variable)
-	 * 
-	 * @param request HTTP 요청 객체 (JWT 토큰 추출용)
-	 * 
-	 * @return 포인트 요약 정보
-	 */
+	/* 포인트 요약 정보 */
 	@GetMapping("/{userNum}/pointSummary")
 	public JsonResult getPointSummary(@PathVariable int userNum, HttpServletRequest request) {
 		// JWT 토큰에서 사용자 번호 추출 (보안 강화)
@@ -125,17 +119,7 @@ public class HmkMypageController {
 		return JsonResult.success(summary);
 	}
 
-	/*
-	 * 추가: 포인트 상세 내역 조회 엔드포인트**
-	 * 
-	 * @param startDate 시작 날짜 (Query Param, optional)
-	 * 
-	 * @param endDate 종료 날짜 (Query Param, optional)
-	 * 
-	 * @param request HTTP 요청 객체 (JWT 토큰 추출용)
-	 * 
-	 * @return 포인트 상세 내역 리스트
-	 */
+	/* 포인트 상세 내역 리스트 */
 	@GetMapping("/{userNum}/pointHistory")
 	public JsonResult getPointHistory(@PathVariable int userNum, @RequestParam(required = false) String startDate,
 			@RequestParam(required = false) String endDate, HttpServletRequest request) {

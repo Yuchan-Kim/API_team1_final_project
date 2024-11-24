@@ -312,6 +312,37 @@
             END
             ]]>
 	</select>
+	
+	<!-- 내가 만든 방 목록 조회 -->
+	<select id="getMyCreatedRooms" parameterType="int" resultType="com.javaex.vo.HmkChallengeVo">
+	<![CDATA[
+	    SELECT DISTINCT
+	        r.roomNum,
+	        r.roomTitle,
+	        r.roomThumbNail,
+	        DATE_FORMAT(r.roomStartDate, '%Y-%m-%d') as roomStartDate,
+	        CASE 
+	            WHEN p.periodType = 7 THEN DATE_FORMAT(DATE_ADD(r.roomStartDate, INTERVAL 7 DAY), '%Y-%m-%d')
+	            WHEN p.periodType = 14 THEN DATE_FORMAT(DATE_ADD(r.roomStartDate, INTERVAL 14 DAY), '%Y-%m-%d')
+	            WHEN p.periodType = 28 THEN DATE_FORMAT(DATE_ADD(r.roomStartDate, INTERVAL 28 DAY), '%Y-%m-%d')
+	            ELSE DATE_FORMAT(DATE_ADD(r.roomStartDate, INTERVAL p.periodType DAY), '%Y-%m-%d')
+	        END as endDate,
+	        r.roomDescription,
+	        r.roomStatusNum,
+	        eu.enteredUserAuth,
+	        rs.roomStatusName
+	    FROM
+	        roomInfo r
+	        JOIN enteredUser eu ON r.roomNum = eu.roomNum
+	        JOIN period p ON r.periodNum = p.periodNum
+	        JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+	    WHERE
+	        eu.userNum = #{userNum}
+	        AND eu.enteredUserAuth = 1
+	    ORDER BY
+	        r.roomStartDate DESC
+	]]>
+	</select>
 
 	<!-- 진행 중인 챌린지 목록 -->
 	<select id="getOngoingChallenges" parameterType="int"

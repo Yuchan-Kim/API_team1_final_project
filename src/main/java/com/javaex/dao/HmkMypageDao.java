@@ -34,17 +34,19 @@ public class HmkMypageDao {
 	public HmkUserVo getUserChallengeStats(int userNum) {
 		return sqlSession.selectOne("Mypage.getUserChallengeStats", userNum);
 	}
-
+	// 사용자가 방장인 방
+	public List<HmkChallengeVo> getMyCreatedRooms(int userNum) {
+	    return sqlSession.selectList("Mypage.getMyCreatedRooms", userNum);
+	}
 	// 사용자의 현재 진행중인 챌린지 리스트
-	// MypageDao.java
 	public List<HmkChallengeVo> getOngoingChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getOngoingChallenges", userNum);
 	}
-
+	// 사용자의 시작 전 챌린지 리스트
 	public List<HmkChallengeVo> getUpcomingChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getUpcomingChallenges", userNum);
 	}
-
+	// 사용자의 완료된 챌린지 리스트
 	public List<HmkChallengeVo> getCompletedChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getCompletedChallenges", userNum);
 	}

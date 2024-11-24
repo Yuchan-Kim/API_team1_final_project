@@ -36,17 +36,18 @@ public class HmkMypageService {
 	public HmkUserVo getUserChallengeStats(int userNum) {
 		return mypageDao.getUserChallengeStats(userNum);
 	}
-
+	// 사용자가 방장인 방
+	public List<HmkChallengeVo> getMyCreatedRooms(int userNum) {
+	    return mypageDao.getMyCreatedRooms(userNum);
+	}
 	// 진행중인 챌린지 리스트
 	public List<HmkChallengeVo> getOngoingChallenges(int userNum) {
 		return mypageDao.getOngoingChallenges(userNum);
 	}
-
 	// 진행 예정 챌린지 리스트
 	public List<HmkChallengeVo> getUpcomingChallenges(int userNum) {
 		return mypageDao.getUpcomingChallenges(userNum);
 	}
-
 	// 완료된 챌린지 리스트
 	public List<HmkChallengeVo> getCompletedChallenges(int userNum) {
 		return mypageDao.getCompletedChallenges(userNum);
