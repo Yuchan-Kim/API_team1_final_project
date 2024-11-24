@@ -26,7 +26,7 @@
     </select>
 
     <!-- 방 헤더 정보 조회 -->
-    <select id="selectRoomHeaderInfo" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    <select id="selectRoomHeaderInfo" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
         SELECT 
             ri.roomTitle,
             ri.roomDescription,
@@ -36,14 +36,17 @@
             rt.roomTypeName,
             c.categoryName,
             ri.roomKeyword,
-            r.regionName
+            r.regionName,
+            COALESCE(eu.enteredUserStatusNum, 0) AS enteredUserStatusNum <!-- NULL을 0으로 처리 -->
         FROM roomInfo ri
         JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
         JOIN categories c ON ri.categoryNum = c.categoryNum
         JOIN regions r ON ri.regionNum = r.regionNum
         JOIN period p ON ri.periodNum = p.periodNum <!-- period 테이블과 조인 -->
+        LEFT JOIN enteredUser eu ON ri.roomNum = eu.roomNum AND eu.userNum = #{userNum} <!-- enteredUser와 LEFT JOIN -->
         WHERE ri.roomNum = #{roomNum};
     </select>
+
 
     <!-- 사용자 권한 조회 -->
     <select id="selectUserAuth" parameterType="map" resultType="int">
