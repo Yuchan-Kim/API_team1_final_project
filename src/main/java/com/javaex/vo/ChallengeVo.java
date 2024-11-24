@@ -17,6 +17,7 @@ public class ChallengeVo {
 	private String userStatus;       // 유저 상태 (활성, 비활성 등)
 	private int userAuth;         // 유저 권한 (관리자, 일반 사용자 등)
 	private String regionName;       // 유저가 속한 지역 이름
+	private int regionNum;       // 유저가 속한 지역 번호
 
 	// 미션 정보
 	private int missionNum;          // 미션 번호 (고유 식별자)
@@ -74,6 +75,9 @@ public class ChallengeVo {
 
 
 
+	public ChallengeVo() {
+	}
+	
 	public int getCategoryNum() {
 		return categoryNum;
 	}
@@ -83,10 +87,15 @@ public class ChallengeVo {
 	public void setCategoryNum(int categoryNum) {
 		this.categoryNum = categoryNum;
 	}
+	
+	public int getRegionNum() {
+		return regionNum;
+	}
 
 
 
-	public ChallengeVo() {
+	public void setRegionNum(int regionNum) {
+		this.regionNum = regionNum;
 	}
 
 
