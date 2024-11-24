@@ -105,10 +105,10 @@ public class JM_ChallengeDao {
 	public int insertMission(ChallengeVo challengevo) {
 		System.out.println("ChallengeDao.insertDetail()");
 
-		// 상품 등록 쿼리 실행 후, 자동 생성된 productDetailNum이 unionVo 객체에 설정됨
+		// 상품 등록 쿼리 실행 후, 자동 생성된 evalNum이 challengevo 객체에 설정됨
 		session.insert("JM-challenge.evalInsert", challengevo);
 
-		// unionVo에 설정된 productDetailNum을 반환
+		// challengevo에 설정된 evalNum을 반환
 		return challengevo.getEvalNum();
 	}
 	

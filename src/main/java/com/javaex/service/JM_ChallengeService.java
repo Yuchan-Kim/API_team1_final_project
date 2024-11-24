@@ -98,7 +98,6 @@ public class JM_ChallengeService {
 		String osName = System.getProperty("os.name").toLowerCase();
 		if (osName.contains("linux")) {
 			saveDir = "/app/upload";
-			// saveDir = "/Users/yuchan/Desktop";
 		} else {
 			saveDir = "/Users/jiminpark/Desktop/upload";
 		}

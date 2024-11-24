@@ -46,16 +46,17 @@ public class ChallengeVo {
 	private String evalImgName;      // 평가 이미지 파일 이름
 
 	// 방 정보
-	private int roomNum;             // 방 번호 (고유 식별자)
-	private String roomTitle;        // 방 제목
-	private String roomInfo;         // 방 설명
-	private int roomTypeNum;		  // 방 유형 번호 (1:일반, 2:챌린지)
-	private String roomTypeName;     // 방 유형 이름 (예: 개인, 그룹 등)
-	private String roomStatusName;   // 방 상태 이름 (예: 모집 중, 종료 등)
-	private String categoryName;     // 방 카테고리 이름 (예: 운동, 공부 등)
-	private int periodType;          // 방 기간 유형 (주 단위)
-	private String roomStartDate;    // 방 시작 날짜
-	private String missionInstruction; // 방 미션 유의사항
+	private int roomNum;             	// 방 번호 (고유 식별자)
+	private String roomTitle;        	// 방 제목
+	private String roomInfo;         	// 방 설명
+	private int roomTypeNum;		 	// 방 유형 번호 (1:일반, 2:챌린지)
+	private String roomTypeName;     	// 방 유형 이름 (예: 개인, 그룹 등)
+	private String roomStatusName;   	// 방 상태 이름 (예: 모집 중, 종료 등)
+	private String categoryName;     	// 방 카테고리 이름 (예: 운동, 공부 등)
+	private int categoryNum;     		// 방 카테고리 넘버 
+	private int periodType;          	// 방 기간 유형 (주 단위)
+	private String roomStartDate;    	// 방 시작 날짜
+	private String missionInstruction;  // 방 미션 유의사항
 	private String roomThumbNail; 		// 방 대표이미지
 	private int roomMinNum; 			// 방 최소인원
 	private int roomMaxNum; 			// 방 최소인원
@@ -70,6 +71,18 @@ public class ChallengeVo {
 	private int announceAddedBy;     // 공지 작성자 유저 번호
 	private String announceAddedByName; // 공지 작성자 이름
 	private Date announceTime;       // 공지 작성 시간
+
+
+
+	public int getCategoryNum() {
+		return categoryNum;
+	}
+
+
+
+	public void setCategoryNum(int categoryNum) {
+		this.categoryNum = categoryNum;
+	}
 
 
 

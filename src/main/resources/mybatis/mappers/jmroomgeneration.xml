@@ -4,12 +4,35 @@
 
 <mapper namespace="generation">
 
-	<!-- 방생성 -> 번호 반환 -->
-    <insert id="evalInsert" parameterType="int" useGeneratedKeys="true" keyProperty="roomNum">
+	<!-- 방생성 -->
+    <insert id="insertRoomType" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="roomNum">
     	<![CDATA[
     		INSERT INTO `roomInfo` (roomTypeNum, roomMaker)
         	VALUES (#{roomTypeNum}, #{userNum})
     	]]>
     </insert>
+    
+    <!-- 카테고리 등록 -->
+    <update id="updateCategory" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		UPDATE roomInfo
+			SET categoryNum = #{categoryNum},
+			    roomKeyword = #{roomKeyword}
+			WHERE roomNum = #{roomNum}
+			AND roomMaker = #{userNum}
+    	]]>
+    </update>
+    
+    <!-- 이미지, 타이틀, 설명 등록 -->
+    <update id="updateITD" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		UPDATE roomInfo
+			SET roomTitle = #{roomTitle},
+			    roomDescription = #{roomInfo},
+			    roomThumbNail = #{roomThumbNail}
+			WHERE roomNum = #{roomNum}
+			AND roomMaker = #{userNum}
+    	]]>
+    </update>
     
 </mapper>
