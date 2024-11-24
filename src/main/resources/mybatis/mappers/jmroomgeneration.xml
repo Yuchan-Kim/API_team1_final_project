@@ -60,4 +60,34 @@
     	]]>
     </update>
     
+    <!-- 방 평가방법 업데이트 -->
+    <update id="updateEvaluationType" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		UPDATE roomInfo
+			SET evaluationType = #{evaluationType}
+			WHERE roomNum = #{roomNum}
+			AND roomMaker = #{userNum}
+    	]]>
+    </update>
+    
+    <!-- 방넘버 요일정보 인서트하기 -->
+    <insert id="insertRoomDay" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="roomNum">
+    	<![CDATA[
+    		INSERT INTO `roomDay` (dateNum, roomNum)
+        	VALUES (#{roomDayNum}, #{roomNum})
+    	]]>
+    </insert>
+    
+    <!-- 방에 모든 요일넘버 가져오기 -->
+    <select id="">
+    	<![CDATA[ 
+    		select rd.dateNum AS roomDayNum
+			from roomInfo r
+			join roomDay rd on rd.roomNum =  r.roomNum
+			where r.roomNum = #{roomNum}
+    	]]>
+    </select>
+    
+    
+    
 </mapper>

@@ -51,5 +51,21 @@ public class JM_RoomGenerationDao {
 						
 		return null;
 	}
+	
+	// 방 평가 방법 업데이트
+	public ChallengeVo updateEvaluationType (ChallengeVo challengevo) {
+		
+		session.update("generation.updateEvaluationType", challengevo);
+		
+		return null;
+	}
+	
+	// 방요일 인서트하기
+	public ChallengeVo insertRoomDay (ChallengeVo challengevo) {
+		
+		session.insert("generation.insertRoomDay", challengevo);
+		
+		return null;
+	}
 
 }

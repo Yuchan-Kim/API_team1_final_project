@@ -1,7 +1,10 @@
 package com.javaex.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.javaex.dao.JM_RoomGenerationDao;
 import com.javaex.vo.ChallengeVo;
@@ -54,5 +57,27 @@ public class JM_RoomGenerationService {
 						
 		return newRoomTitle;
 	}
+	
+	// 방 기간+시작날짜 업데이트
+	public ChallengeVo exeRoomUpdateStep7(ChallengeVo challengevo, List<Integer> roomDayNumList) {
+	    // 1. roomInfo 테이블의 evaluationType 업데이트
+	    dao.updateEvaluationType(challengevo);
+
+	    // 2. roomDay 테이블에 roomNum과 roomDayNum 리스트 삽입
+	    int insertedCount = 0; // 성공적으로 삽입된 row 수를 추적
+	    for (Integer roomDayNum : roomDayNumList) {
+	        if (roomDayNum != null) { // null 값 방지
+	            ChallengeVo roomDayVo = new ChallengeVo();
+	            roomDayVo.setRoomNum(challengevo.getRoomNum());
+	            roomDayVo.setRoomDayNum(roomDayNum);
+	            
+	            dao.insertRoomDay(roomDayVo);
+	            insertedCount++;
+	        }
+	    }
+	    System.out.println("총 삽입된 요일 데이터 개수: " + insertedCount);
+	    return challengevo;
+	}
+            
 
 }

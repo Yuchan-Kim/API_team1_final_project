@@ -4,20 +4,25 @@ import java.util.Date;
 
 public class ChallengeVo {
 	private String roomDescription;
-	private int roomStatusNum; // 방 상태 번호 (1: 모집 중, 2: 챌린지 시작, 3: 챌린지 진행 중, 4: 챌린지 완료)
+	private int roomStatusNum; 		// 방 상태 번호 (1: 모집 중, 2: 챌린지 시작, 3: 챌린지 진행 중, 4: 챌린지 완료)
 	private String roomKeyword;
-	private boolean isJoined; // 사용자 참여 여부
+	private boolean isJoined; 		// 사용자 참여 여부
+	
+	// 로직용
+	private int roomDayNum;			//요일번호
+	
 	// 필터용
 	private String order;			 // 오름,내림 차순
 	private int enteredUserStatusNum;
+	
 	// 유저 정보
 	private int userNum;             // 유저 번호 (고유 식별자)
 	private String userName;         // 유저 이름
 	private String userEmail;        // 유저 이메일
 	private String userStatus;       // 유저 상태 (활성, 비활성 등)
-	private int userAuth;         // 유저 권한 (관리자, 일반 사용자 등)
+	private int userAuth;         	 // 유저 권한 (관리자, 일반 사용자 등)
 	private String regionName;       // 유저가 속한 지역 이름
-	private int regionNum;       // 유저가 속한 지역 번호
+	private int regionNum;       	 // 유저가 속한 지역 번호
 
 	// 미션 정보
 	private int missionNum;          // 미션 번호 (고유 식별자)
@@ -47,30 +52,30 @@ public class ChallengeVo {
 	private String evalImgName;      // 평가 이미지 파일 이름
 
 	// 방 정보
-	private int roomNum;             // 방 번호 (고유 식별자)
-	private String roomTitle;        // 방 제목
-	private String roomInfo;         // 방 설명
-	private int roomTypeNum;		  // 방 유형 번호 (1:일반, 2:챌린지)
-	private String roomTypeName;     // 방 유형 이름 (예: 개인, 그룹 등)
-	private String roomStatusName;   // 방 상태 이름 (예: 모집 중, 종료 등)
-	private String categoryName;     // 방 카테고리 이름 (예: 운동, 공부 등)
-	private int periodType;          // 방 기간 유형 (주 단위)
-	private String roomStartDate;    // 방 시작 날짜
-	private String missionInstruction; // 방 미션 유의사항
-	private String roomThumbNail; 		// 방 대표이미지
-	private int roomMinNum; 			// 방 최소인원
-	private int roomMaxNum; 			// 방 최소인원
-	private int roomPoint;				// 입장 포인트
-	private int roomRate; 				// 입장 성실도
-
+	private int roomNum;            	 // 방 번호 (고유 식별자)
+	private String roomTitle;       	 // 방 제목
+	private String roomInfo;        	 // 방 설명
+	private int roomTypeNum;		 	 // 방 유형 번호 (1:일반, 2:챌린지)
+	private String roomTypeName;    	 // 방 유형 이름 (예: 개인, 그룹 등)
+	private String roomStatusName;  	 // 방 상태 이름 (예: 모집 중, 종료 등)
+	private String categoryName;    	 // 방 카테고리 이름 (예: 운동, 공부 등)
+	private int periodType;         	 // 방 기간 유형 (주 단위)
+	private String roomStartDate;    	 // 방 시작 날짜
+	private String missionInstruction;	 // 방 미션 유의사항
+	private String roomThumbNail; 		 // 방 대표이미지
+	private int roomMinNum; 			 // 방 최소인원
+	private int roomMaxNum; 			 // 방 최소인원
+	private int roomPoint;				 // 입장 포인트
+	private int roomRate; 				 // 입장 성실도
+	private int evaluationType;			 // 평가방법 (방장1, 유저2)
 
 	// 공지사항 정보
-	private int announceNum;         // 공지사항 번호 (고유 식별자)
-	private String title;            // 공지사항 제목
-	private String announcement;     // 공지 내용
-	private int announceAddedBy;     // 공지 작성자 유저 번호
+	private int announceNum;         	// 공지사항 번호 (고유 식별자)
+	private String title;            	// 공지사항 제목
+	private String announcement;     	// 공지 내용
+	private int announceAddedBy;     	// 공지 작성자 유저 번호
 	private String announceAddedByName; // 공지 작성자 이름
-	private Date announceTime;       // 공지 작성 시간
+	private Date announceTime;       	// 공지 작성 시간
 	private int categoryNum;
 
 
@@ -79,6 +84,24 @@ public class ChallengeVo {
 
 	}
 	
+	public int getRoomDayNum() {
+		return roomDayNum;
+	}
+
+
+	public void setRoomDayNum(int roomDayNum) {
+		this.roomDayNum = roomDayNum;
+	}
+
+
+	public int getEvaluationType() {
+		return evaluationType;
+	}
+
+	public void setEvaluationType(int evaluationType) {
+		this.evaluationType = evaluationType;
+	}
+
 	public int getCategoryNum() {
 		return categoryNum;
 	}

@@ -1,7 +1,9 @@
 package com.javaex.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -158,6 +160,49 @@ public class JM_RoomGenerationController {
 			    
 		return JsonResult.success("상세정보가 성공적으로 저장되었습니다.");
 	}
+	
+	// 방 평가방법 + 요일 업데이트
+	@PostMapping("api/genebang/step7")
+	public JsonResult roomUpdateStep7(
+	        @RequestBody Map<String, Object> requestData,
+	        HttpServletRequest request) {
+
+	    try {
+	        // JSON 데이터에서 각 값을 추출
+	        int roomNum = Integer.parseInt(requestData.get("roomNum").toString());
+	        int evaluationType = Integer.parseInt(requestData.get("evaluationType").toString());
+
+	        // roomDayNum 배열을 String 리스트에서 Integer 리스트로 변환
+	        List<Integer> roomDayNum = ((List<?>) requestData.get("roomDayNum"))
+	                .stream()
+	                .map(Object::toString) // 객체를 String으로 변환
+	                .map(Integer::parseInt) // String을 Integer로 변환
+	                .toList();
+
+	        int userNum = JwtUtil.getNoFromHeader(request);
+
+	        System.out.println("UserNum: " + userNum);
+	        System.out.println("RoomNum: " + roomNum);
+	        System.out.println("EvaluationType: " + evaluationType);
+	        System.out.println("RoomDayNum: " + roomDayNum);
+
+	        // 데이터 객체 생성
+	        ChallengeVo categoryVo = new ChallengeVo();
+	        categoryVo.setRoomNum(roomNum);
+	        categoryVo.setEvaluationType(evaluationType);
+	        categoryVo.setUserNum(userNum); // 생성한 사용자 정보 추가
+
+	        // 서비스 호출
+	        ChallengeVo isSaved = service.exeRoomUpdateStep7(categoryVo, roomDayNum);
+
+	        return JsonResult.success("평가방법이 성공적으로 저장되었습니다.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return JsonResult.fail("데이터 처리 중 오류가 발생했습니다.");
+	    }
+	}
+
+
 
 
 }
