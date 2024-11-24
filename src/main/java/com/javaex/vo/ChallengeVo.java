@@ -3,78 +3,78 @@ package com.javaex.vo;
 import java.util.Date;
 
 public class ChallengeVo {
-    private String roomDescription;
-    private int roomStatusNum; // 방 상태 번호 (1: 모집 중, 2: 챌린지 시작, 3: 챌린지 진행 중, 4: 챌린지 완료)
-    private String roomKeyword;
-    private boolean isJoined; // 사용자 참여 여부
- // 필터용
- 	private String order;			 // 오름,내림 차순
+	private String roomDescription;
+	private int roomStatusNum; // 방 상태 번호 (1: 모집 중, 2: 챌린지 시작, 3: 챌린지 진행 중, 4: 챌린지 완료)
+	private String roomKeyword;
+	private boolean isJoined; // 사용자 참여 여부
+	// 필터용
+	private String order;			 // 오름,내림 차순
+	private int enteredUserStatusNum;
+	// 유저 정보
+	private int userNum;             // 유저 번호 (고유 식별자)
+	private String userName;         // 유저 이름
+	private String userEmail;        // 유저 이메일
+	private String userStatus;       // 유저 상태 (활성, 비활성 등)
+	private int userAuth;         // 유저 권한 (관리자, 일반 사용자 등)
+	private String regionName;       // 유저가 속한 지역 이름
 
- 	// 유저 정보
-     private int userNum;             // 유저 번호 (고유 식별자)
-     private String userName;         // 유저 이름
-     private String userEmail;        // 유저 이메일
-     private String userStatus;       // 유저 상태 (활성, 비활성 등)
-     private int userAuth;         // 유저 권한 (관리자, 일반 사용자 등)
-     private String regionName;       // 유저가 속한 지역 이름
+	// 미션 정보
+	private int missionNum;          // 미션 번호 (고유 식별자)
+	private String missionName;      // 미션 이름
+	private String missionMethod;    // 미션 수행 방법
+	private int missionGoal;         // 미션 목표 (예: 걸음 수, 시간 등)
+	private String missionAI;        // AI 도움 여부 (사용 여부)
 
-     // 미션 정보
-     private int missionNum;          // 미션 번호 (고유 식별자)
-     private String missionName;      // 미션 이름
-     private String missionMethod;    // 미션 수행 방법
-     private int missionGoal;         // 미션 목표 (예: 걸음 수, 시간 등)
-     private String missionAI;        // AI 도움 여부 (사용 여부)
+	// 제출 정보
+	private int submitUser;			 // 제출 유저 
+	private String submitDate;       // 미션 제출 날짜
+	private String submitComment;    // 제출 시 남긴 코멘트
 
-     // 제출 정보
-     private int submitUser;			 // 제출 유저 
- 	private String submitDate;       // 미션 제출 날짜
-     private String submitComment;    // 제출 시 남긴 코멘트
+	// 미션 이미지 정보
+	private String missionImgRoute;  // 미션 이미지 경로 (저장된 위치)
+	private String missionImgName;   // 미션 이미지 파일 이름
 
-     // 미션 이미지 정보
-     private String missionImgRoute;  // 미션 이미지 경로 (저장된 위치)
-     private String missionImgName;   // 미션 이미지 파일 이름
+	// 평가 정보
+	private int evalNum; 			 // 평가 번호
+	private String evalType;         // 평가 유형 (예: 승인, 거절 등)
+	private int evalUser;			 // 평가 유저
+	private String evalDate;         // 평가 날짜
 
-     // 평가 정보
-     private int evalNum; 			 // 평가 번호
- 	private String evalType;         // 평가 유형 (예: 승인, 거절 등)
-     private int evalUser;			 // 평가 유저
-     private String evalDate;         // 평가 날짜
+	// 평가 이미지 정보
+	private int evalImgNum;   		 // 평가 이미지 번호
+	private String evalImgRoute;     // 평가 이미지 경로 (저장된 위치)
+	private String evalImgName;      // 평가 이미지 파일 이름
 
-     // 평가 이미지 정보
-     private int evalImgNum;   		 // 평가 이미지 번호
- 	private String evalImgRoute;     // 평가 이미지 경로 (저장된 위치)
-     private String evalImgName;      // 평가 이미지 파일 이름
+	// 방 정보
+	private int roomNum;             // 방 번호 (고유 식별자)
+	private String roomTitle;        // 방 제목
+	private String roomInfo;         // 방 설명
+	private int roomTypeNum;		  // 방 유형 번호 (1:일반, 2:챌린지)
+	private String roomTypeName;     // 방 유형 이름 (예: 개인, 그룹 등)
+	private String roomStatusName;   // 방 상태 이름 (예: 모집 중, 종료 등)
+	private String categoryName;     // 방 카테고리 이름 (예: 운동, 공부 등)
+	private int periodType;          // 방 기간 유형 (주 단위)
+	private String roomStartDate;    // 방 시작 날짜
+	private String missionInstruction; // 방 미션 유의사항
+	private String roomThumbNail; 		// 방 대표이미지
+	private int roomMinNum; 			// 방 최소인원
+	private int roomMaxNum; 			// 방 최소인원
+	private int roomPoint;				// 입장 포인트
+	private int roomRate; 				// 입장 성실도
 
-     // 방 정보
-     private int roomNum;             // 방 번호 (고유 식별자)
-     private String roomTitle;        // 방 제목
-     private String roomInfo;         // 방 설명
-     private int roomTypeNum;		  // 방 유형 번호 (1:일반, 2:챌린지)
-	 private String roomTypeName;     // 방 유형 이름 (예: 개인, 그룹 등)
-     private String roomStatusName;   // 방 상태 이름 (예: 모집 중, 종료 등)
-     private String categoryName;     // 방 카테고리 이름 (예: 운동, 공부 등)
-     private int periodType;          // 방 기간 유형 (주 단위)
-     private String roomStartDate;    // 방 시작 날짜
-     private String missionInstruction; // 방 미션 유의사항
-     private String roomThumbNail; 		// 방 대표이미지
-     private int roomMinNum; 			// 방 최소인원
-     private int roomMaxNum; 			// 방 최소인원
-     private int roomPoint;				// 입장 포인트
-     private int roomRate; 				// 입장 성실도
-     
 
 	// 공지사항 정보
-     private int announceNum;         // 공지사항 번호 (고유 식별자)
-     private String title;            // 공지사항 제목
-     private String announcement;     // 공지 내용
-     private int announceAddedBy;     // 공지 작성자 유저 번호
-     private String announceAddedByName; // 공지 작성자 이름
-     private Date announceTime;       // 공지 작성 시간
-	
-     
-     
-     public ChallengeVo() {
-	 }
+	private int announceNum;         // 공지사항 번호 (고유 식별자)
+	private String title;            // 공지사항 제목
+	private String announcement;     // 공지 내용
+	private int announceAddedBy;     // 공지 작성자 유저 번호
+	private String announceAddedByName; // 공지 작성자 이름
+	private Date announceTime;       // 공지 작성 시간
+
+
+
+	public ChallengeVo() {
+	}
 
 
 
@@ -89,6 +89,13 @@ public class ChallengeVo {
 	}
 
 
+	public int getEnteredUserStatusNum() {
+		return enteredUserStatusNum;
+	}
+
+	public void setEnteredUserStatusNum(int enteredUserStatusNum) {
+		this.enteredUserStatusNum = enteredUserStatusNum;
+	}
 
 	public int getRoomStatusNum() {
 		return roomStatusNum;
@@ -447,7 +454,7 @@ public class ChallengeVo {
 	public void setRoomInfo(String roomInfo) {
 		this.roomInfo = roomInfo;
 	}
-	
+
 	public int getRoomTypeNum() {
 		return roomTypeNum;
 	}
@@ -601,7 +608,7 @@ public class ChallengeVo {
 	public void setAnnounceTime(Date announceTime) {
 		this.announceTime = announceTime;
 	}
-	
+
 	public String getRoomThumbNail() {
 		return roomThumbNail;
 	}
@@ -681,5 +688,5 @@ public class ChallengeVo {
 				+ "]";
 	}
 
-    
+
 }
