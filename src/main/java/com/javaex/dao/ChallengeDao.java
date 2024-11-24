@@ -24,7 +24,15 @@ public class ChallengeDao {
 		System.out.println("ChallengeDao.getRoomInfo()");
 		return sqlSession.selectList(namespace + ".selectRoomInfo", roomNum);
 	}
+	// **사용자 상세 정보 조회 메서드**
+    public ChallengeVo getUserDetails(int userNum) {
+        return sqlSession.selectOne(namespace + ".selectUserDetails", userNum);
+    }
 
+    // **포인트 히스토리 삽입 메서드**
+    public int insertPointHistory(ChallengeVo pointHistory) {
+        return sqlSession.insert(namespace + ".insertPointHistory", pointHistory);
+    }
 	// 방 헤더 정보 조회 with userNum
 	public ChallengeVo getRoomHeaderInfo(int roomNum, int userNum) {
 		System.out.println("ChallengeDao.getRoomHeaderInfo()");
