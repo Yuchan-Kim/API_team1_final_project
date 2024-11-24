@@ -502,15 +502,15 @@
 	<update id="updateGiftcardStatus" parameterType="int">
 		<![CDATA[
 		    UPDATE purchaseHistory
-		    SET 
+		    SET
 		        purchasedStatus = '사용완료',
-		        usedDate = CURRENT_TIMESTAMP
-		    WHERE 
+		        usedDate = CONVERT_TZ(CURRENT_TIMESTAMP, '+00:00', '+09:00')
+		    WHERE
 		        purchaseNum = #{purchaseNum}
 		        AND purchasedStatus = '사용가능'
 		]]>
 	</update>
-	
+
 	<!-- 기프티콘 소유권 확인 -->
 	<select id="checkGiftcardOwnership" parameterType="map" resultType="boolean">
 		<![CDATA[
