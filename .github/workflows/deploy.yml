@@ -53,7 +53,7 @@ jobs: # 작업을 정의
             sudo mkdir -p /home/ec2-user/upload			 
             sudo docker pull yuchankim/api-donkey:latest
             sudo docker stop api-donkey || true
-            sudo docker rm api-donkey || true
+            sudo docker rm -f api-donkey || true
             sudo docker run -d \
               --name api-donkey \
               -p 9000:9000 \
