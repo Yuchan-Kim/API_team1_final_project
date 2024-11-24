@@ -25,27 +25,27 @@
         WHERE ri.roomNum = #{roomNum};
     </select>
 
-    <!-- 방 헤더 정보 조회 -->
     <select id="selectRoomHeaderInfo" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
-        SELECT 
-            ri.roomTitle,
-            ri.roomDescription,
-            ri.roomStartDate,
-            ri.roomStatusNum,
-            p.periodType, <!-- period 테이블에서 periodType 가져오기 -->
-            rt.roomTypeName,
-            c.categoryName,
-            ri.roomKeyword,
-            r.regionName,
-            COALESCE(eu.enteredUserStatusNum, 0) AS enteredUserStatusNum <!-- NULL을 0으로 처리 -->
-        FROM roomInfo ri
-        JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
-        JOIN categories c ON ri.categoryNum = c.categoryNum
-        JOIN regions r ON ri.regionNum = r.regionNum
-        JOIN period p ON ri.periodNum = p.periodNum <!-- period 테이블과 조인 -->
-        LEFT JOIN enteredUser eu ON ri.roomNum = eu.roomNum AND eu.userNum = #{userNum} <!-- enteredUser와 LEFT JOIN -->
-        WHERE ri.roomNum = #{roomNum};
-    </select>
+    SELECT 
+        ri.roomTitle,
+        ri.roomDescription,
+        ri.roomStartDate,
+        ri.roomStatusNum,
+        p.periodType,
+        rt.roomTypeName,
+        c.categoryName,
+        ri.roomKeyword,
+        r.regionName,
+        COALESCE(eu.enteredUserStatusNum, 0) AS enteredUserStatusNum
+    FROM roomInfo ri
+    JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
+    JOIN categories c ON ri.categoryNum = c.categoryNum
+    JOIN regions r ON ri.regionNum = r.regionNum
+    JOIN period p ON ri.periodNum = p.periodNum
+    LEFT JOIN enteredUser eu ON ri.roomNum = eu.roomNum AND eu.userNum = #{userNum}
+    WHERE ri.roomNum = #{roomNum};
+</select>
+
 
 
     <!-- 사용자 권한 조회 -->
@@ -81,17 +81,39 @@
         WHERE roomNum = #{roomNum} AND userNum = #{userNum}
     </select>
 
-    <!-- 사용자 참가 여부 확인 -->
-    <select id="checkUserJoined" parameterType="map" resultType="int">
-        SELECT COUNT(*) FROM enteredUser
-        WHERE roomNum = #{roomNum} AND userNum = #{userNum};
-    </select>
+   
+    <!-- 사용자 참가 여부 확인 (enteredUserStatusNum이 2가 아닌 경우만) -->
+<select id="checkUserJoined" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM enteredUser
+    WHERE roomNum = #{roomNum} 
+      AND userNum = #{userNum}
+      AND enteredUserStatusNum != #{excludeStatusNum};
+</select>
 
-    <!-- 사용자 참가 처리 -->
-    <insert id="joinRoom" parameterType="map">
-        INSERT INTO enteredUser (roomNum, userNum, enteredUserStatusNum, enteredUserAuth)
-        VALUES (#{roomNum}, #{userNum}, #{enteredUserStatusNum}, #{enteredUserAuth});
-    </insert>
+
+   
+    
+   <!-- enteredUser 업데이트 -->
+<update id="updateEnteredUser" parameterType="map">
+    UPDATE enteredUser
+    SET enteredUserStatusNum = #{enteredUserStatusNum},
+        enteredUserAuth = #{enteredUserAuth}
+    WHERE roomNum = #{roomNum} AND userNum = #{userNum};
+</update>
+
+<!-- enteredUser 삽입 -->
+<insert id="joinRoom" parameterType="map">
+    INSERT INTO enteredUser (roomNum, userNum, enteredUserStatusNum, enteredUserAuth)
+    VALUES (#{roomNum}, #{userNum}, #{enteredUserStatusNum}, #{enteredUserAuth});
+</insert>
+
+<!-- enteredUser 조회 -->
+<select id="selectEnteredUser" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
+    SELECT * FROM enteredUser
+    WHERE roomNum = #{roomNum} AND userNum = #{userNum};
+</select>
+
+
 
     <!-- 방 삭제: enteredUser 데이터 삭제 -->
     <delete id="deleteEnteredUsers" parameterType="int">

@@ -7,13 +7,12 @@ public class ChallengeVo {
 	private int roomStatusNum; 		// 방 상태 번호 (1: 모집 중, 2: 챌린지 시작, 3: 챌린지 진행 중, 4: 챌린지 완료)
 	private String roomKeyword;
 	private boolean isJoined; 		// 사용자 참여 여부
-	
+	private int enteredUserStatusNum;
 	// 로직용
 	private int roomDayNum;			//요일번호
 	
 	// 필터용
 	private String order;			 // 오름,내림 차순
-	private int enteredUserStatusNum;
 	
 	// 유저 정보
 	private int userNum;             // 유저 번호 (고유 식별자)

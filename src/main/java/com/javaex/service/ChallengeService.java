@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.javaex.dao.ChallengeDao;
 import com.javaex.vo.ChallengeVo;
@@ -71,11 +72,12 @@ public class ChallengeService {
 		return challengeDao.checkUserJoined(roomNum, userNum) > 0;
 	}
 
-	// 사용자 참가 처리
-	public boolean joinRoom(int roomNum, int userNum) {
-		System.out.println("ChallengeService.joinRoom()");
-		return challengeDao.joinRoom(roomNum, userNum) > 0;
-	}
+	@Transactional
+    public boolean joinRoom(int roomNum, int userNum) {
+        System.out.println("ChallengeService.joinRoom()");
+        return challengeDao.joinRoom(roomNum, userNum) > 0;
+    }
+
 
 	// 챌린지 모집 시작: roomStatusNum을 2로 변경
 	public boolean startRecruit(int roomNum) {
@@ -123,7 +125,5 @@ public class ChallengeService {
 
 		return true;
 	}
-	
-	
 
 }

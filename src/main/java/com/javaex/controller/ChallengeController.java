@@ -174,31 +174,32 @@ public class ChallengeController {
 		}
 	}
 
-	// **참가 엔드포인트**
 	@PostMapping("/join/{roomNum}")
 	public JsonResult joinRoom(@PathVariable int roomNum, HttpServletRequest request) {
-		System.out.println("ChallengeController.joinRoom()");
+	    System.out.println("ChallengeController.joinRoom()");
 
-		// JWT를 통해 사용자 인증
-		int userNum = JwtUtil.getNoFromHeader(request);
-		if (userNum <= 0) {
-			return JsonResult.fail("인증되지 않은 사용자입니다.");
-		}
+	    // JWT를 통해 사용자 인증
+	    int userNum = JwtUtil.getNoFromHeader(request);
+	    if (userNum <= 0) {
+	        return JsonResult.fail("인증되지 않은 사용자입니다.");
+	    }
 
-		// 이미 참가했는지 확인
-		boolean alreadyJoined = challengeService.checkUserJoined(roomNum, userNum);
-		if (alreadyJoined) {
-			return JsonResult.fail("이미 참가한 챌린지입니다.");
-		}
+	    // 이미 참가했는지 확인 (enteredUserStatusNum != 2 인 경우)
+	    boolean alreadyJoined = challengeService.checkUserJoined(roomNum, userNum);
+	    if (alreadyJoined) {
+	        return JsonResult.fail("이미 참가한 챌린지입니다.");
+	    }
 
-		// 참가 서비스 호출
-		boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
-		if (joinSuccess) {
-			return JsonResult.success("참가가 완료되었습니다.");
-		} else {
-			return JsonResult.fail("참가에 실패했습니다.");
-		}
+	    // 참가 서비스 호출
+	    boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
+	    if (joinSuccess) {
+	        int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
+	        return JsonResult.success(enteredUserAuth);
+	    } else {
+	        return JsonResult.fail("참가에 실패했습니다.");
+	    }
 	}
+
 
 	// **모집 시작 엔드포인트**
 	@PutMapping("/start-recruit/{roomNum}")

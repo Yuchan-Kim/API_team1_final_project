@@ -97,25 +97,55 @@ public class ChallengeDao {
 		return sqlSession.update(namespace + ".updateRoomStatus", params);
 	}
 
-	// 사용자 참가 여부 확인
+	// ChallengeDao.java - checkUserJoined 메서드
 	public int checkUserJoined(int roomNum, int userNum) {
-		System.out.println("ChallengeDao.checkUserJoined()");
-		Map<String, Object> params = new HashMap<>();
-		params.put("roomNum", roomNum);
-		params.put("userNum", userNum);
-		return sqlSession.selectOne(namespace + ".checkUserJoined", params);
+	    System.out.println("ChallengeDao.checkUserJoined()");
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("roomNum", roomNum);
+	    params.put("userNum", userNum);
+	    params.put("excludeStatusNum", 2);
+	    return sqlSession.selectOne(namespace + ".checkUserJoined", params);
 	}
 
-	// 사용자 참가 처리
+
+	// ChallengeDao.java - joinRoom 메서드 수정
 	public int joinRoom(int roomNum, int userNum) {
-		System.out.println("ChallengeDao.joinRoom()");
-		Map<String, Object> params = new HashMap<>();
-		params.put("roomNum", roomNum);
-		params.put("userNum", userNum);
-		params.put("enteredUserStatusNum", 1);
-		params.put("enteredUserAuth", 2);
-		return sqlSession.insert(namespace + ".joinRoom", params);
+	    System.out.println("ChallengeDao.joinRoom() - roomNum: " + roomNum + ", userNum: " + userNum);
+	    ChallengeVo existingUser = sqlSession.selectOne(namespace + ".selectEnteredUser", Map.of("roomNum", roomNum, "userNum", userNum));
+	    
+	    if (existingUser != null) {
+	        System.out.println("Existing user found with enteredUserStatusNum: " + existingUser.getEnteredUserStatusNum());
+	        if (existingUser.getEnteredUserStatusNum() == 2) {
+	            // 기존 레코드를 업데이트하여 다시 참여 상태로 변경
+	            Map<String, Object> params = new HashMap<>();
+	            params.put("roomNum", roomNum);
+	            params.put("userNum", userNum);
+	            params.put("enteredUserStatusNum", 1);
+	            params.put("enteredUserAuth", 2); // 필요에 따라 수정
+	            int updatedRows = sqlSession.update(namespace + ".updateEnteredUser", params);
+	            System.out.println("Updated enteredUserStatusNum to 1, rows affected: " + updatedRows);
+	            return updatedRows;
+	        } else {
+	            // 이미 참여 중인 경우
+	            System.out.println("User is already participating in the room.");
+	            return 0;
+	        }
+	    } else {
+	        // 새로운 참가자 등록
+	        System.out.println("No existing user found. Inserting new enteredUser record.");
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("roomNum", roomNum);
+	        params.put("userNum", userNum);
+	        params.put("enteredUserStatusNum", 1);
+	        params.put("enteredUserAuth", 2);
+	        int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
+	        System.out.println("Inserted new enteredUser record, rows affected: " + insertedRows);
+	        return insertedRows;
+	    }
 	}
+
+
+
 
 	// 참여자 수 조회
 	public int getParticipantCount(int roomNum) {
