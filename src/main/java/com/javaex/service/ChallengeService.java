@@ -47,12 +47,78 @@ public class ChallengeService {
 		return challengeDao.startChallenge(roomNum) > 0;
 	}
 
-	// 방 삭제
 	public boolean deleteRoom(int roomNum) {
-		System.out.println("ChallengeService.deleteRoom()");
-		// 관련된 모든 데이터 삭제 (enteredUser 등)
-		return challengeDao.deleteEnteredUsers(roomNum) > 0 && challengeDao.deleteRoom(roomNum) > 0;
-	}
+        System.out.println("ChallengeService.deleteRoom() - roomNum: " + roomNum);
+
+        boolean allDeleted = true;
+
+        // 삭제 순서: evaluationImg -> evaluations -> missionImg -> challenges -> roomDay -> announcements -> roomChat -> enteredUser -> roomInfo
+
+        // evaluationImg 삭제
+        int result = challengeDao.deleteEvaluationImgsByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete evaluationImg for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // evaluations 삭제
+        result = challengeDao.deleteEvaluationsByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete evaluations for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // missionImg 삭제
+        result = challengeDao.deleteMissionImgsByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete missionImg for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // challenges 삭제
+        result = challengeDao.deleteChallengesByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete challenges for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // roomDay 삭제
+        result = challengeDao.deleteRoomDaysByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete roomDay for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // announcements 삭제
+        result = challengeDao.deleteAnnouncementsByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete announcements for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // roomChat 삭제
+        result = challengeDao.deleteRoomChatsByRoomNum(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete roomChats for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // enteredUser 삭제
+        result = challengeDao.deleteEnteredUsers(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete enteredUsers for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        // roomInfo 삭제
+        result = challengeDao.deleteRoom(roomNum);
+        if (result < 0) {
+            System.err.println("Failed to delete roomInfo for roomNum: " + roomNum);
+            allDeleted = false;
+        }
+
+        return allDeleted;
+    }
 
 	// 챌린지 종료: roomStatusNum을 3으로 변경
 	public boolean endChallenge(int roomNum) {
@@ -78,6 +144,22 @@ public class ChallengeService {
         return challengeDao.joinRoom(roomNum, userNum) > 0;
     }
 
+	
+	public ChallengeVo getUserDetails(int userNum, int roomNum) {
+        System.out.println("ChallengeService.getUserDetails()");
+        return challengeDao.getUserDetails(userNum, roomNum);
+    }
+
+    public boolean insertPointHistory(int userNum, int points, int purposeNum, String info) {
+        System.out.println("ChallengeService.insertPointHistory()");
+        ChallengeVo pointHistory = new ChallengeVo();
+        pointHistory.setUserNum(userNum);
+        pointHistory.setPoint(points);
+        pointHistory.setPointPurposeNum(purposeNum);
+        pointHistory.setHistoryInfo(info);
+
+        return challengeDao.insertPointHistory(pointHistory) > 0;
+    }
 
 	// 챌린지 모집 시작: roomStatusNum을 2로 변경
 	public boolean startRecruit(int roomNum) {

@@ -89,6 +89,67 @@
       AND userNum = #{userNum}
       AND enteredUserStatusNum != #{excludeStatusNum};
 </select>
+<!-- evaluationImg 삭제 -->
+    <delete id="deleteEvaluationImgsByRoomNum" parameterType="int">
+        DELETE ei FROM evaluationImg ei
+        JOIN evaluation e ON ei.evalNum = e.evalNum
+        JOIN challenges c ON e.missionNum = c.missionNum
+        JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+        WHERE rd.roomNum = #{roomNum};
+    </delete>
+
+    <!-- evaluations 삭제 -->
+    <delete id="deleteEvaluationsByRoomNum" parameterType="int">
+        DELETE e FROM evaluation e
+        JOIN challenges c ON e.missionNum = c.missionNum
+        JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+        WHERE rd.roomNum = #{roomNum};
+    </delete>
+
+    <!-- missionImg 삭제 -->
+    <delete id="deleteMissionImgsByRoomNum" parameterType="int">
+        DELETE mi FROM missionImg mi
+        JOIN challenges c ON mi.missionNum = c.missionNum
+        JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+        WHERE rd.roomNum = #{roomNum};
+    </delete>
+
+    <!-- challenges 삭제 -->
+    <delete id="deleteChallengesByRoomNum" parameterType="int">
+        DELETE c FROM challenges c
+        JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+        WHERE rd.roomNum = #{roomNum};
+    </delete>
+
+    <!-- roomDay 삭제 -->
+    <delete id="deleteRoomDaysByRoomNum" parameterType="int">
+        DELETE FROM roomDay
+        WHERE roomNum = #{roomNum};
+    </delete>
+
+    <!-- announcements 삭제 -->
+    <delete id="deleteAnnouncementsByRoomNum" parameterType="int">
+        DELETE FROM announcement
+        WHERE roomNum = #{roomNum};
+    </delete>
+
+    <!-- roomChat 삭제 -->
+    <delete id="deleteRoomChatsByRoomNum" parameterType="int">
+        DELETE FROM roomChat
+        WHERE roomNum = #{roomNum};
+    </delete>
+
+    <!-- enteredUser 삭제 -->
+    <delete id="deleteEnteredUsers" parameterType="int">
+        DELETE FROM enteredUser
+        WHERE roomNum = #{roomNum};
+    </delete>
+
+    <!-- roomInfo 삭제 -->
+    <delete id="deleteRoom" parameterType="int">
+        DELETE FROM roomInfo
+        WHERE roomNum = #{roomNum};
+    </delete>
 
 
    
@@ -113,20 +174,27 @@
     WHERE roomNum = #{roomNum} AND userNum = #{userNum};
 </select>
 
+ <!-- 유저 세부 정보 조회 -->
+    <select id="getUserDetails" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
+        SELECT 
+            eu.userNum,
+            ri.roomPoint,
+            (SELECT AVG(e.achievementRate) 
+             FROM evaluation e 
+             WHERE e.userNum = eu.userNum AND e.roomNum = ri.roomNum) AS achievementRate
+        FROM enteredUser eu
+        JOIN roomInfo ri ON eu.roomNum = ri.roomNum
+        WHERE eu.userNum = #{userNum} AND eu.roomNum = #{roomNum};
+    </select>
 
+    <!-- 포인트 히스토리 삽입 -->
+    <insert id="insertPointHistory" parameterType="com.javaex.vo.ChallengeVo">
+        INSERT INTO pointHistory (userNum, point, pointPurposeNum, historyInfo, createdAt)
+        VALUES (#{userNum}, #{point}, #{pointPurposeNum}, #{historyInfo}, NOW());
+    </insert>
 
-    <!-- 방 삭제: enteredUser 데이터 삭제 -->
-    <delete id="deleteEnteredUsers" parameterType="int">
-        DELETE FROM enteredUser
-        WHERE roomNum = #{roomNum};
-    </delete>
+   
 
-    <!-- 방 삭제: roomInfo 데이터 삭제 -->
-    <delete id="deleteRoom" parameterType="int">
-        DELETE FROM roomInfo
-        WHERE roomNum = #{roomNum};
-    </delete>
-    
     <!-- 참여자 수 조회 -->
 <select id="getParticipantCount" parameterType="int" resultType="int">
     SELECT COUNT(*) FROM enteredUser

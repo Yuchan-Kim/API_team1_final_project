@@ -75,18 +75,60 @@ public class ChallengeDao {
 		params.put("roomNum", roomNum);
 		return sqlSession.update(namespace + ".startChallenge", params);
 	}
+	public ChallengeVo getUserDetails(int userNum, int roomNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userNum", userNum);
+        params.put("roomNum", roomNum);
+        return sqlSession.selectOne(namespace + ".getUserDetails", params);
+    }
 
-	// 방 삭제: enteredUser 데이터 삭제
-	public int deleteEnteredUsers(int roomNum) {
-		System.out.println("ChallengeDao.deleteEnteredUsers()");
-		return sqlSession.delete(namespace + ".deleteEnteredUsers", roomNum);
-	}
+ 
 
 	// 방 삭제: roomInfo 데이터 삭제
-	public int deleteRoom(int roomNum) {
-		System.out.println("ChallengeDao.deleteRoom()");
-		return sqlSession.delete(namespace + ".deleteRoom", roomNum);
-	}
+	// evaluationImg 삭제
+    public int deleteEvaluationImgsByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteEvaluationImgsByRoomNum", roomNum);
+    }
+
+    // evaluations 삭제
+    public int deleteEvaluationsByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteEvaluationsByRoomNum", roomNum);
+    }
+
+    // missionImg 삭제
+    public int deleteMissionImgsByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteMissionImgsByRoomNum", roomNum);
+    }
+
+    // challenges 삭제
+    public int deleteChallengesByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteChallengesByRoomNum", roomNum);
+    }
+
+    // roomDay 삭제
+    public int deleteRoomDaysByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteRoomDaysByRoomNum", roomNum);
+    }
+
+    // announcements 삭제
+    public int deleteAnnouncementsByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteAnnouncementsByRoomNum", roomNum);
+    }
+
+    // roomChat 삭제
+    public int deleteRoomChatsByRoomNum(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteRoomChatsByRoomNum", roomNum);
+    }
+
+    // enteredUser 삭제
+    public int deleteEnteredUsers(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteEnteredUsers", roomNum);
+    }
+
+    // roomInfo 삭제
+    public int deleteRoom(int roomNum) {
+        return sqlSession.delete(namespace + ".deleteRoom", roomNum);
+    }
 
 	// 방 상태 업데이트 (roomStatusNum)
 	public int updateRoomStatus(int roomNum, int newStatusNum) {
