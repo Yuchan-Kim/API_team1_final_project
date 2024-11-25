@@ -10,7 +10,6 @@ public class ChallengeVo {
 	private int enteredUserStatusNum;
 	// 로직용
 	private int roomDayNum;			//요일번호
-	private double achievementRate;
 	
 	// 필터용
 	private String order;			 // 오름,내림 차순
@@ -27,7 +26,7 @@ public class ChallengeVo {
 	// 미션 정보
 	private int missionNum;          // 미션 번호 (고유 식별자)
 	private String missionName;      // 미션 이름
-	private String missionMethod;    // 미션 수행 방법
+	private String missionMethod;    // 미션 수행 방법ㅐ
 	private int missionGoal;         // 미션 목표 (예: 걸음 수, 시간 등)
 	private String missionAI;        // AI 도움 여부 (사용 여부)
 
@@ -78,42 +77,12 @@ public class ChallengeVo {
 	private Date announceTime;       	// 공지 작성 시간
 	private int categoryNum;
 
-	private int point;
-    private int pointPurposeNum;
-    private String historyInfo;
+
 
 	public ChallengeVo() {
 
 	}
-	public int getPoint() {
-        return point;
-    }
-
-    public void setPoint(int point) {
-        this.point = point;
-    }
-
-    public double getAchievementRate() {
-		return achievementRate;
-	}
-	public void setAchievementRate(double achievementRate) {
-		this.achievementRate = achievementRate;
-	}
-	public int getPointPurposeNum() {
-        return pointPurposeNum;
-    }
-
-    public void setPointPurposeNum(int pointPurposeNum) {
-        this.pointPurposeNum = pointPurposeNum;
-    }
-
-    public String getHistoryInfo() {
-        return historyInfo;
-    }
-
-    public void setHistoryInfo(String historyInfo) {
-        this.historyInfo = historyInfo;
-    }
+	
 	public int getRoomDayNum() {
 		return roomDayNum;
 	}

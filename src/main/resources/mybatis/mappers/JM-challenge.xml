@@ -110,7 +110,7 @@
 			GROUP BY 
 			    c.missionName
 			HAVING 
-			    MIN(c.missionNum) 
+			    MIN(c.missionNum)
 		]]>
 	 </select>
     
