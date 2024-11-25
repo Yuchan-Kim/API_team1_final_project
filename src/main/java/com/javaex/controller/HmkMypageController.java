@@ -23,6 +23,8 @@ import com.javaex.util.JwtUtil;
 import com.javaex.vo.HmkChallengeVo;
 import com.javaex.vo.HmkChartDataVo;
 import com.javaex.vo.HmkGiftVo;
+import com.javaex.vo.HmkNoticeSummaryVo;
+import com.javaex.vo.HmkNoticeVo;
 import com.javaex.vo.HmkPointHistoryVo;
 import com.javaex.vo.HmkPointSummaryVo;
 import com.javaex.vo.HmkUserVo;
@@ -261,4 +263,34 @@ public class HmkMypageController {
 			return JsonResult.fail("서버 오류로 인해 기프티콘 사용 처리에 실패했습니다.");
 		}
 	}
+	
+	// 알림 요약 정보 조회 엔드포인트
+    @GetMapping("/{userNum}/noticeSummary")
+    public JsonResult getNoticeSummary(@PathVariable int userNum, HttpServletRequest request) {
+        // JWT 토큰에서 사용자 번호 추출 (보안 강화)
+        Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
+        if (jwtUserNum == null || jwtUserNum != userNum) {
+            return JsonResult.fail("권한이 없는 사용자입니다.");
+        }
+
+        HmkNoticeSummaryVo summary = mypageService.getNoticeSummary(userNum);
+        return JsonResult.success(summary);
+    }
+
+ // 알림 리스트 조회 엔드포인트
+    @GetMapping("/{userNum}/notices")
+    public JsonResult getNotices(
+            @PathVariable int userNum,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            HttpServletRequest request) {
+        // JWT 토큰에서 사용자 번호 추출 (보안 강화)
+        Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
+        if (jwtUserNum == null || jwtUserNum != userNum) {
+            return JsonResult.fail("권한이 없는 사용자입니다.");
+        }
+
+        List<HmkNoticeVo> notices = mypageService.getNotices(userNum, startDate, endDate);
+        return JsonResult.success(notices);
+    }
 }
