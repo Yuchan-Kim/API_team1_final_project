@@ -565,5 +565,50 @@
 		]]>
 	</select>
 
+	<!-- 알림 요약 정보 조회 -->
+	<select id="getNoticeSummary" parameterType="int"
+		resultType="com.javaex.vo.HmkNoticeSummaryVo">
+        <![CDATA[
+            SELECT 
+                COUNT(*) AS totalNotice,
+                SUM(CASE WHEN isCheck = 1 THEN 1 ELSE 0 END) AS readNotice,
+                SUM(CASE WHEN isCheck = 0 THEN 1 ELSE 0 END) AS newNotice
+            FROM notice
+            WHERE userNum = #{userNum}
+        ]]>
+    </select>
+
+	<!-- 알림 리스트 조회 -->
+	<select id="getNotices" parameterType="map"
+		resultType="com.javaex.vo.HmkNoticeVo">
+        <![CDATA[
+            SELECT
+                n.noticeNum,
+                n.userNum,
+                n.noticeTitle,
+                n.noticeMsg,
+                n.isCheck,
+                DATE_FORMAT(n.createDate, '%Y-%m-%d') AS createDate,
+                n.msgSender,
+                u.userName AS senderNickname
+            FROM notice n
+            JOIN users u ON n.msgSender = u.userNum
+            WHERE n.userNum = #{userNum}
+            ]]>
+		<if test="startDate != null and startDate != ''">
+        <![CDATA[
+                AND n.createDate &gt;= #{startDate}
+                ]]>
+            </if>
+		<if test="endDate != null and endDate != ''">
+        <![CDATA[
+                AND n.createDate &lt;= #{endDate}
+                ]]>
+            </if>
+        <![CDATA[
+            ORDER BY n.createDate DESC
+        ]]>
+	</select>
+
 
 </mapper>

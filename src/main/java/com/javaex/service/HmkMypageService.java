@@ -15,6 +15,8 @@ import com.javaex.dao.HmkMypageDao;
 import com.javaex.vo.HmkChallengeVo;
 import com.javaex.vo.HmkChartDataVo;
 import com.javaex.vo.HmkGiftVo;
+import com.javaex.vo.HmkNoticeSummaryVo;
+import com.javaex.vo.HmkNoticeVo;
 import com.javaex.vo.HmkPointHistoryVo;
 import com.javaex.vo.HmkPointSummaryVo;
 import com.javaex.vo.HmkUserVo;
@@ -29,8 +31,8 @@ public class HmkMypageService {
 	// 사용자 정보 조회
 	public HmkUserVo getUserInfo(int userNum) {
 		HmkUserVo userInfo = mypageDao.getUserInfo(userNum);
-	    System.out.println("[Service] 사용자 정보: " + userInfo);
-	    System.out.println("[Service] socialLogin 값: " + userInfo.getSocialLogin());
+		System.out.println("[Service] 사용자 정보: " + userInfo);
+		System.out.println("[Service] socialLogin 값: " + userInfo.getSocialLogin());
 		return userInfo;
 	}
 
@@ -113,36 +115,36 @@ public class HmkMypageService {
 			return success;
 		}
 	}
-	
+
 	// 비밀번호 조회
 	public String getUserPassword(int userNum) {
-	    return mypageDao.getUserPassword(userNum);
+		return mypageDao.getUserPassword(userNum);
 	}
 
 	// 비밀번호 유효성 검사
 	private boolean validatePassword(String password) {
-	    if (password == null || password.length() < 10) {
-	        return false;
-	    }
-	    boolean hasLetter = password.matches(".*[A-Za-z].*");
-	    boolean hasNumberOrSpecial = password.matches(".*[0-9#?!&].*");
-	    return hasLetter && hasNumberOrSpecial;
+		if (password == null || password.length() < 10) {
+			return false;
+		}
+		boolean hasLetter = password.matches(".*[A-Za-z].*");
+		boolean hasNumberOrSpecial = password.matches(".*[0-9#?!&].*");
+		return hasLetter && hasNumberOrSpecial;
 	}
 
 	// 비밀번호 업데이트
 	public boolean updatePassword(HmkUserVo userVo) {
-	    if (!validatePassword(userVo.getNewPassword())) {
-	        return false;
-	    }
-	    
-	    String currentPassword = getUserPassword(userVo.getUserNum());
-	    if (currentPassword != null && !currentPassword.isEmpty()) {
-	        if (!currentPassword.equals(userVo.getCurrentPassword())) {
-	            return false;
-	        }
-	    }
-	    
-	    return mypageDao.updatePassword(userVo) > 0;
+		if (!validatePassword(userVo.getNewPassword())) {
+			return false;
+		}
+
+		String currentPassword = getUserPassword(userVo.getUserNum());
+		if (currentPassword != null && !currentPassword.isEmpty()) {
+			if (!currentPassword.equals(userVo.getCurrentPassword())) {
+				return false;
+			}
+		}
+
+		return mypageDao.updatePassword(userVo) > 0;
 	}
 
 	// 회원 보관함 기프티콘 리스트 조회
@@ -183,4 +185,15 @@ public class HmkMypageService {
 		params.put("endDate", endDate);
 		return mypageDao.getPointHistory(userNum, params);
 	}
+
+	// 알림 요약 정보 조회
+	public HmkNoticeSummaryVo getNoticeSummary(int userNum) {
+		return mypageDao.getNoticeSummary(userNum);
+	}
+
+	// 알림 리스트 조회
+	public List<HmkNoticeVo> getNotices(int userNum, String startDate, String endDate) {
+		return mypageDao.getNotices(userNum, startDate, endDate);
+	}
+
 }

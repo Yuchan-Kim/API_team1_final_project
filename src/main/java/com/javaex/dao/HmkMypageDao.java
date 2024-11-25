@@ -5,6 +5,7 @@ package com.javaex.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Repository;
 import com.javaex.vo.HmkChallengeVo;
 import com.javaex.vo.HmkChartDataVo;
 import com.javaex.vo.HmkGiftVo;
+import com.javaex.vo.HmkNoticeSummaryVo;
+import com.javaex.vo.HmkNoticeVo;
 import com.javaex.vo.HmkPointHistoryVo;
 import com.javaex.vo.HmkPointSummaryVo;
 import com.javaex.vo.HmkUserVo;
@@ -135,5 +138,16 @@ public class HmkMypageDao {
 	// ** 포인트 상세 내역 조회**
 	public List<HmkPointHistoryVo> getPointHistory(int userNum, Map<String, Object> params) {
 		return sqlSession.selectList("Mypage.getPointHistory", params);
+	}
+
+	// 알림 요약 정보 조회
+	public HmkNoticeSummaryVo getNoticeSummary(int userNum) {
+		return sqlSession.selectOne("Mypage.getNoticeSummary", userNum);
+	}
+
+	// 알림 리스트 조회
+	public List<HmkNoticeVo> getNotices(int userNum, String startDate, String endDate) {
+		Map<String, Object> params = Map.of("userNum", userNum, "startDate", startDate, "endDate", endDate);
+		return sqlSession.selectList("Mypage.getNotices", params);
 	}
 }
