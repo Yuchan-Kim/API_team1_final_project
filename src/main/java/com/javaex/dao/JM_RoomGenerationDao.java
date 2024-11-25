@@ -91,8 +91,8 @@ public class JM_RoomGenerationDao {
 
     // 미션 유의사항 업데이트
     public ChallengeVo updateInstruction(ChallengeVo challengevo) {
-        session.update("generation.updateInstruction", challengevo);
-        return challengevo;
+        session.update("generation.updateInstruction",challengevo );
+        return null;
     }
 
 

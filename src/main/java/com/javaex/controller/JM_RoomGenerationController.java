@@ -2,6 +2,7 @@ package com.javaex.controller;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,10 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaex.service.JM_RoomGenerationService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
 import com.javaex.vo.ChallengeVo;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -201,27 +206,49 @@ public class JM_RoomGenerationController {
 	    }
 	}
 	
-	// 미션 생성
-	@PostMapping("/api/genebang/step6")
-	public JsonResult registerMissions(
-	        @RequestParam("roomNum") int roomNum,
-	        @RequestParam("missionInstruction") String missionInstruction,
-	        @RequestPart("missions") List<ChallengeVo> missions,
-	        @RequestPart("missionFiles") List<List<MultipartFile>> missionFiles,
-	        HttpServletRequest request) {
+	// 유의사항 등록
+	@PostMapping("api/genebang/saveInstruction")
+    public JsonResult saveInstruction(
+    		@RequestParam("roomNum") int roomNum,
+            @RequestParam("missionInstruction") String missionInstruction) {
+		
+		System.out.println("유의사항");
+		System.out.println(roomNum);
+		System.out.println(missionInstruction);
+        
+        ChallengeVo challengevo = new ChallengeVo();
+        	
+        challengevo.setRoomNum(roomNum);
+        challengevo.setMissionInstruction(missionInstruction);
+        service.saveInstruction(challengevo);
+           
+        return JsonResult.success("유의사항이 성공적으로 저장되었습니다.");
+    }
+	
+	@PostMapping("api/genebang/saveMission")
+    public JsonResult saveMission(
+            @RequestParam("roomNum") int roomNum,
+            @RequestParam("missionName") String missionName,
+            @RequestParam("missionMethod") String missionMethod,
+            @RequestParam("missionTypeNum") int missionTypeNum,
+            @RequestPart("files") List<MultipartFile> files) {
+		
+		System.out.println(missionName);
+		System.out.println(missionMethod);
+		System.out.println(missionTypeNum);
+        
+        ChallengeVo challengevo = new ChallengeVo();
+        challengevo.setRoomNum(roomNum);
+        challengevo.setMissionName(missionName);
+        challengevo.setMissionMethod(missionMethod);
+        challengevo.setMissionTypeNum(missionTypeNum);
+        
+        // 서비스 호출로 미션 저장
+        service.registerMissions(challengevo, files);
+        
+        return JsonResult.success("미션이 성공적으로 저장되었습니다.");
+    }
 
-	    try {
-	        ChallengeVo challengevo = new ChallengeVo();
-	        challengevo.setRoomNum(roomNum);
-	        challengevo.setMissionInstruction(missionInstruction); // missionInstruction 설정
-
-	        service.registerMissions(challengevo, missions, missionFiles);
-	        return JsonResult.success("미션 등록 완료");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return JsonResult.fail("미션 등록 실패: " + e.getMessage());
-	    }
-	}
 
 
 

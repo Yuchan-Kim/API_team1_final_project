@@ -25,8 +25,9 @@ public class ChallengeVo {
 
 	// 미션 정보
 	private int missionNum;          // 미션 번호 (고유 식별자)
+	private int missionTypeNum; 	 // 미션 유형 번호 (일반1, 최종2, ai3)
 	private String missionName;      // 미션 이름
-	private String missionMethod;    // 미션 수행 방법ㅐ
+	private String missionMethod;    // 미션 수행 방법
 	private int missionGoal;         // 미션 목표 (예: 걸음 수, 시간 등)
 	private String missionAI;        // AI 도움 여부 (사용 여부)
 
@@ -90,6 +91,18 @@ public class ChallengeVo {
 	
 	public int getPoint() {
 		return point;
+	}
+
+
+
+	public int getMissionTypeNum() {
+		return missionTypeNum;
+	}
+
+
+
+	public void setMissionTypeNum(int missionTypeNum) {
+		this.missionTypeNum = missionTypeNum;
 	}
 
 

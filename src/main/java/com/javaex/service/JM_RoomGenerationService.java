@@ -84,6 +84,16 @@ public class JM_RoomGenerationService {
 	    return challengevo;
 	}
 	
+	// 유의사항 업데이트
+	public ChallengeVo saveInstruction(ChallengeVo  challengevo) {
+		System.out.println(challengevo.getRoomDayNum());
+		System.out.println(challengevo.getMissionInstruction());
+        
+		ChallengeVo Instruction = dao.updateInstruction(challengevo);
+		
+		return Instruction;
+    }
+	
 	/* 파일 저장 후 파일명 반환 */
 	public String exeUpload(MultipartFile file) {
 		System.out.println("AdminService.exeUpload()");
@@ -130,53 +140,44 @@ public class JM_RoomGenerationService {
 	}
 	
 	// 미션 및 이미지 생성 서비스
-	public void registerMissions(ChallengeVo challengevo, List<ChallengeVo> missions, List<List<MultipartFile>> missionFiles) {
-		// 미션유의사항 업데이트
-		ChallengeVo missionInstruction = dao.updateInstruction(challengevo);
-		
-		// 1. 방 번호로 roomDayNum 리스트 가져오기
-	    List<ChallengeVo> roomDayList = dao.getRoomDayList(challengevo.getRoomNum());
+	public int registerMissions(ChallengeVo challengevo, List<MultipartFile> files) {
+        // 1. 방 번호로 roomDayNum 리스트 가져오기
+        List<ChallengeVo> roomDayList = dao.getRoomDayList(challengevo.getRoomNum());
 
-	    // 2. roomDayNum 기준으로 미션 등록 및 이미지 등록
-	    for (ChallengeVo roomDay : roomDayList) {
-	        int roomDayNum = roomDay.getRoomDayNum(); // roomDayNum 추출
+        int conut = -1;
+        // 2. roomDayNum 기준으로 미션 등록 및 이미지 등록
+        for (int i = 0; i <roomDayList.size(); i++) {
+        	
+        	int roomDayNum = roomDayList.get(i).getRoomDayNum();
+        	challengevo.setRoomDayNum(roomDayNum);
+        	
+        	// 미션 등록
+            conut = dao.insertMission(challengevo); // missionNum 반환
+            System.out.println(conut);
 
-	        // 각 roomDayNum에 대해 미션 등록
-	        for (int missionIndex = 0; missionIndex < missions.size(); missionIndex++) {
-	            ChallengeVo mission = missions.get(missionIndex);
-	            mission.setRoomDayNum(roomDayNum); // roomDayNum 설정
+             // Step 2: InfoImage 테이블에 파일 정보 삽입
+        		int fileCount = 0;
+        		for (int a = 0; a < files.size(); a++) {
+        			MultipartFile file = files.get(a);
+        			if (!file.isEmpty()) {
+        				// 파일 저장 후 저장된 파일명 반환
+        				String savedFileName = exeUpload(file);
+        				System.out.println("사진이름###"+savedFileName);
 
-	            // 미션 등록
-	            int missionNum = dao.insertMission(mission); // missionNum 반환
-	            mission.setMissionNum(missionNum); // 생성된 missionNum 설정
-
-	            // 각 미션에 대한 이미지 등록
-	            List<MultipartFile> files = missionFiles.get(missionIndex);
-	            if (files != null) {
-	                int fileCount = 0;
-
-	                for (MultipartFile file : files) {
-	                    if (!file.isEmpty()) {
-	                        // 파일 저장 후 저장된 파일명 반환
-	                        String savedFileName = exeUpload(file);
-	                        System.out.println("저장된 사진 이름: " + savedFileName);
-
-	                        if (savedFileName != null) {
-	                            // 이미지 정보 설정
-	                            ChallengeVo imageInfo = new ChallengeVo();
-	                            imageInfo.setMissionNum(missionNum); // 해당 미션의 missionNum 설정
-	                            imageInfo.setMissionImgName(savedFileName); // 저장된 이미지 파일명 설정
-
-	                            // 이미지 정보 삽입
-	                            dao.insertMissionImage(imageInfo);
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
-	}
+        				if (savedFileName != null) {
+        					// unionVo에 저장된 파일명 및 이미지 순서 설정
+        					challengevo.setEvalImgName(savedFileName);
+        					dao.insertMissionImage(challengevo); // 이미지 정보 삽입
+        					fileCount++;
+        				}
+        			}
+        		}
+            }
+        	return conut;
+        }
+    
 
             
+
 
 }

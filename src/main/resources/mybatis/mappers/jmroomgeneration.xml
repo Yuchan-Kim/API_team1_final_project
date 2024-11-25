@@ -79,12 +79,11 @@
     </insert>
     
     <!-- 미션유의사항 업데이트 -->
-    <update id="updateInstruction" parameterType="com.javaex.vo.ChallengeVo">
+    <update id="updateInstruction">
     	<![CDATA[
     		UPDATE roomInfo
 			SET missionInstruction = #{missionInstruction}
 			WHERE roomNum = #{roomNum}
-			AND roomMaker = #{userNum}
     	]]>
     </update>
     
@@ -108,8 +107,8 @@
     <!-- 미션별 이미지 등록 -->
     <insert id="missionImageInsert" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
-	        INSERT INTO missionImg (missionNum, missionImgRoute, missionImgName)
-    	    VALUES (#{missionNum}, #{missionImgRoute}, #{missionImgName})
+	        INSERT INTO missionImg (missionNum, missionImgName)
+    	    VALUES (#{missionNum}, #{missionImgName})
     	]]>
     </insert>
     
