@@ -1,5 +1,7 @@
 package com.javaex.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -67,5 +69,31 @@ public class JM_RoomGenerationDao {
 		
 		return null;
 	}
+	
+	// 방 번호로 roomDayNum 리스트 가져오기
+    public List<ChallengeVo> getRoomDayList(int roomNum) {
+        List<ChallengeVo> dayList = session.selectList("generation.getRoomDayNum", roomNum);
+        System.out.println("ChallengeDao.getRoomDayList 결과: " + dayList);
+        return dayList;
+    }
+
+    // 미션 등록
+    public int insertMission(ChallengeVo challengevo) {
+        session.insert("generation.insertMission", challengevo);
+        return challengevo.getMissionNum();
+    }
+
+    // 미션별 이미지 등록
+    public int insertMissionImage(ChallengeVo challengevo) {
+        System.out.println("ChallengeDao.insertImageInfo()");
+        return session.insert("generation.missionImageInsert", challengevo);
+    }
+
+    // 미션 유의사항 업데이트
+    public ChallengeVo updateInstruction(ChallengeVo challengevo) {
+        session.update("generation.updateInstruction", challengevo);
+        return challengevo;
+    }
+
 
 }

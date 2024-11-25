@@ -107,7 +107,10 @@
 			WHERE 
 			    rd.roomNum = #{roomNum}
 			    AND m.missionType = '일반'
-			    AND d.dateNum = DAYNAME(NOW())+1
+			GROUP BY 
+			    c.missionName
+			HAVING 
+			    MIN(c.missionNum) 
 		]]>
 	 </select>
     

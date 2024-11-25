@@ -1,6 +1,11 @@
 package com.javaex.service;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +63,7 @@ public class JM_RoomGenerationService {
 		return newRoomTitle;
 	}
 	
-	// 방 기간+시작날짜 업데이트
+	// 방 평가방법 + 요일 업데이트
 	public ChallengeVo exeRoomUpdateStep7(ChallengeVo challengevo, List<Integer> roomDayNumList) {
 	    // 1. roomInfo 테이블의 evaluationType 업데이트
 	    dao.updateEvaluationType(challengevo);
@@ -78,6 +83,100 @@ public class JM_RoomGenerationService {
 	    System.out.println("총 삽입된 요일 데이터 개수: " + insertedCount);
 	    return challengevo;
 	}
+	
+	/* 파일 저장 후 파일명 반환 */
+	public String exeUpload(MultipartFile file) {
+		System.out.println("AdminService.exeUpload()");
+
+		// 파일 저장 경로 설정
+		String saveDir;
+		String osName = System.getProperty("os.name").toLowerCase();
+		if (osName.contains("linux")) {
+			saveDir = "/app/upload";
+		} else {
+			saveDir = "/Users/jiminpark/Desktop/upload";
+		}
+
+		// 오리지널 파일명
+		String orgName = file.getOriginalFilename();
+		System.out.println("Original File Name: " + orgName);
+
+		// 확장자 추출
+		String exeName = orgName.substring(orgName.lastIndexOf("."));
+		System.out.println("Extension: " + exeName);
+
+		// 저장 파일명 (UUID로 중복 방지)
+		String saveName = System.currentTimeMillis() + UUID.randomUUID().toString() + exeName;
+		System.out.println("Save Name: " + saveName);
+
+		// 파일 전체 경로 + 파일명
+		String filePath = saveDir + File.separator + saveName;
+		System.out.println("File Path: " + filePath);
+
+		// 파일을 실제로 디스크에 저장
+		try {
+			byte[] fileData = file.getBytes();
+			OutputStream os = new FileOutputStream(filePath);
+			BufferedOutputStream bos = new BufferedOutputStream(os);
+			bos.write(fileData);
+			bos.close();
+		} catch (Exception e) {
+			System.out.println("파일 저장 중 오류: " + e.getMessage());
+			return null;
+		}
+
+		// 저장된 파일명 반환
+		return saveName;
+	}
+	
+	// 미션 및 이미지 생성 서비스
+	public void registerMissions(ChallengeVo challengevo, List<ChallengeVo> missions, List<List<MultipartFile>> missionFiles) {
+		// 미션유의사항 업데이트
+		ChallengeVo missionInstruction = dao.updateInstruction(challengevo);
+		
+		// 1. 방 번호로 roomDayNum 리스트 가져오기
+	    List<ChallengeVo> roomDayList = dao.getRoomDayList(challengevo.getRoomNum());
+
+	    // 2. roomDayNum 기준으로 미션 등록 및 이미지 등록
+	    for (ChallengeVo roomDay : roomDayList) {
+	        int roomDayNum = roomDay.getRoomDayNum(); // roomDayNum 추출
+
+	        // 각 roomDayNum에 대해 미션 등록
+	        for (int missionIndex = 0; missionIndex < missions.size(); missionIndex++) {
+	            ChallengeVo mission = missions.get(missionIndex);
+	            mission.setRoomDayNum(roomDayNum); // roomDayNum 설정
+
+	            // 미션 등록
+	            int missionNum = dao.insertMission(mission); // missionNum 반환
+	            mission.setMissionNum(missionNum); // 생성된 missionNum 설정
+
+	            // 각 미션에 대한 이미지 등록
+	            List<MultipartFile> files = missionFiles.get(missionIndex);
+	            if (files != null) {
+	                int fileCount = 0;
+
+	                for (MultipartFile file : files) {
+	                    if (!file.isEmpty()) {
+	                        // 파일 저장 후 저장된 파일명 반환
+	                        String savedFileName = exeUpload(file);
+	                        System.out.println("저장된 사진 이름: " + savedFileName);
+
+	                        if (savedFileName != null) {
+	                            // 이미지 정보 설정
+	                            ChallengeVo imageInfo = new ChallengeVo();
+	                            imageInfo.setMissionNum(missionNum); // 해당 미션의 missionNum 설정
+	                            imageInfo.setMissionImgName(savedFileName); // 저장된 이미지 파일명 설정
+
+	                            // 이미지 정보 삽입
+	                            dao.insertMissionImage(imageInfo);
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	}
+
             
 
 }

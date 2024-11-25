@@ -2,18 +2,17 @@ package com.javaex.controller;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
 import com.javaex.service.JM_RoomGenerationService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
 import com.javaex.vo.ChallengeVo;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -201,7 +200,28 @@ public class JM_RoomGenerationController {
 	        return JsonResult.fail("데이터 처리 중 오류가 발생했습니다.");
 	    }
 	}
+	
+	// 미션 생성
+	@PostMapping("/api/genebang/step6")
+	public JsonResult registerMissions(
+	        @RequestParam("roomNum") int roomNum,
+	        @RequestParam("missionInstruction") String missionInstruction,
+	        @RequestPart("missions") List<ChallengeVo> missions,
+	        @RequestPart("missionFiles") List<List<MultipartFile>> missionFiles,
+	        HttpServletRequest request) {
 
+	    try {
+	        ChallengeVo challengevo = new ChallengeVo();
+	        challengevo.setRoomNum(roomNum);
+	        challengevo.setMissionInstruction(missionInstruction); // missionInstruction 설정
+
+	        service.registerMissions(challengevo, missions, missionFiles);
+	        return JsonResult.success("미션 등록 완료");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return JsonResult.fail("미션 등록 실패: " + e.getMessage());
+	    }
+	}
 
 
 

@@ -78,16 +78,40 @@
     	]]>
     </insert>
     
-    <!-- 방에 모든 요일넘버 가져오기 -->
-    <select id="">
-    	<![CDATA[ 
-    		select rd.dateNum AS roomDayNum
-			from roomInfo r
-			join roomDay rd on rd.roomNum =  r.roomNum
-			where r.roomNum = #{roomNum}
+    <!-- 미션유의사항 업데이트 -->
+    <update id="updateInstruction" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		UPDATE roomInfo
+			SET missionInstruction = #{missionInstruction}
+			WHERE roomNum = #{roomNum}
+			AND roomMaker = #{userNum}
     	]]>
-    </select>
+    </update>
     
+    <!-- 방 번호로 roomDayNum 리스트 가져오기 -->
+    <select id="getRoomDayNum" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+        	SELECT roomDayNum
+        	FROM roomDay
+        	WHERE roomNum = #{roomNum}
+        ]]>
+    </select>
+
+    <!-- 미션 등록 -->
+    <insert id="insertMission" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="missionNum">
+    	<![CDATA[
+        	INSERT INTO challenges (missionTypeNum, roomDayNum, missionName, missionMethod, missionGoal, missionAI)
+        	VALUES (#{missionTypeNum}, #{roomDayNum}, #{missionName}, #{missionMethod}, #{missionGoal}, #{missionAI})
+        ]]>
+    </insert>
+
+    <!-- 미션별 이미지 등록 -->
+    <insert id="missionImageInsert" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+	        INSERT INTO missionImg (missionNum, missionImgRoute, missionImgName)
+    	    VALUES (#{missionNum}, #{missionImgRoute}, #{missionImgName})
+    	]]>
+    </insert>
     
     
 </mapper>
