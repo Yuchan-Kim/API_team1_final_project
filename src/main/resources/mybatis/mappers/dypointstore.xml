@@ -29,14 +29,14 @@
 		           ib.itemBrandName,
 		           i.itemCost, 
 		           i.itemName,
-		           i.itemImg
+		           i.itemImg,
+		           ph.purchaseNum
 		    from item as i
 		    inner join itemBrand as ib
 		        on i.itemBrandNum = ib.itemBrandNum
 		    LEFT join purchaseHistory as ph
 		        on i.itemNum = ph.itemNum 
 		        AND ph.userNum = #{userNum}
-		    where (i.itemBrandNum != 1 OR ph.purchaseNum IS NULL)
 		    order by i.itemNum asc
 		]]>
 	</select>

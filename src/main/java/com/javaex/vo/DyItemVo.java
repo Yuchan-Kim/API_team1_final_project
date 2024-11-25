@@ -9,6 +9,7 @@ public class DyItemVo {
 	private int itemCost;
 	private String itemName;
 	private String itemImg;
+	private int purchaseNum;
 	
 	
 	//생성자
@@ -16,8 +17,8 @@ public class DyItemVo {
 		super();
 	}
 
-	public DyItemVo(int itemNum, int itemBrandNum, String itemBrandName, int itemCost, String itemName,
-			String itemImg) {
+	public DyItemVo(int itemNum, int itemBrandNum, String itemBrandName, int itemCost, String itemName, String itemImg,
+			int purchaseNum) {
 		super();
 		this.itemNum = itemNum;
 		this.itemBrandNum = itemBrandNum;
@@ -25,6 +26,7 @@ public class DyItemVo {
 		this.itemCost = itemCost;
 		this.itemName = itemName;
 		this.itemImg = itemImg;
+		this.purchaseNum = purchaseNum;
 	}
 
 
@@ -77,11 +79,20 @@ public class DyItemVo {
 	}
 
 
+	public int getPurchaseNum() {
+		return purchaseNum;
+	}
+
+	public void setPurchaseNum(int purchaseNum) {
+		this.purchaseNum = purchaseNum;
+	}
+
 	@Override
 	public String toString() {
 		return "DyItemVo [itemNum=" + itemNum + ", itemBrandNum=" + itemBrandNum + ", itemBrandName=" + itemBrandName
-				+ ", itemCost=" + itemCost + ", itemName=" + itemName + ", itemImg=" + itemImg + "]";
+				+ ", itemCost=" + itemCost + ", itemName=" + itemName + ", itemImg=" + itemImg + ", purchaseNum="
+				+ purchaseNum + "]";
 	}
-	
+
 
 }
