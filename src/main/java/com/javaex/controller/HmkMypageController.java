@@ -192,39 +192,35 @@ public class HmkMypageController {
 		return success ? JsonResult.success("주소가 업데이트되었습니다.") : JsonResult.fail("지역 업데이트 실패");
 	}
 
+	// 비밀번호 존재 확인(socialLogin 확인용)
+	@GetMapping("/{userNum}/checkPassword")
+	public JsonResult checkPasswordExists(@PathVariable int userNum) {
+	    try {
+	        String userPw = mypageService.getUserPassword(userNum);
+	        // data 객체 안에 passwordExists 값을 넣어서 반환
+	        Map<String, Boolean> data = new HashMap<>();
+	        data.put("passwordExists", userPw != null && !userPw.isEmpty());
+	        return JsonResult.success(data);
+	    } catch (Exception e) {
+	        return JsonResult.fail(e.getMessage());
+	    }
+	}
+
 	// 비밀번호 업데이트
 	@PutMapping("/{userNum}/updatePassword")
 	public JsonResult updatePassword(@PathVariable int userNum, @RequestBody HmkUserVo userVo) {
-		System.out.println("[Controller] updatePassword 호출됨 - userNum: " + userNum);
-		System.out.println("[Controller] socialLogin 정보: " + userVo.getSocialLogin());
-
-		userVo.setUserNum(userNum);
-
-		// 소셜 로그인 사용자인지 확인
-		if (userVo.getSocialLogin() != null && (userVo.getSocialLogin().equals("google")
-				|| userVo.getSocialLogin().equals("naver") || userVo.getSocialLogin().equals("kakao"))) {
-
-			System.out.println("[Controller] 소셜 로그인 사용자의 비밀번호 설정");
-			// 소셜 로그인 사용자는 현재 비밀번호 검증 없이 새 비밀번호 설정
-			boolean success = mypageService.updateSocialUserPassword(userVo);
-
-			if (success) {
-				return JsonResult.success("비밀번호가 성공적으로 설정되었습니다.");
-			} else {
-				return JsonResult.fail("비밀번호 설정에 실패했습니다. 새 비밀번호가 규칙에 맞지 않습니다.");
-			}
-
-		} else {
-			System.out.println("[Controller] 일반 사용자의 비밀번호 변경");
-			// 일반 사용자는 기존 로직 그대로 실행
-			boolean success = mypageService.updatePassword(userVo);
-
-			if (success) {
-				return JsonResult.success("비밀번호가 성공적으로 변경되었습니다.");
-			} else {
-				return JsonResult.fail("비밀번호 변경에 실패했습니다. 현재 비밀번호가 일치하지 않거나, 새 비밀번호가 규칙에 맞지 않습니다.");
-			}
-		}
+	    userVo.setUserNum(userNum);
+	    boolean hasPassword = mypageService.getUserPassword(userNum) != null;
+	    
+	    if (!hasPassword) {
+	        boolean success = mypageService.updatePassword(userVo);
+	        return success ? JsonResult.success("비밀번호가 성공적으로 설정되었습니다.") 
+	                      : JsonResult.fail("비밀번호 설정에 실패했습니다.");
+	    } else {
+	        boolean success = mypageService.updatePassword(userVo);
+	        return success ? JsonResult.success("비밀번호가 성공적으로 변경되었습니다.") 
+	                      : JsonResult.fail("비밀번호 변경에 실패했습니다.");
+	    }
 	}
 
 	// 회원 보관함 기프티콘 리스트 조회

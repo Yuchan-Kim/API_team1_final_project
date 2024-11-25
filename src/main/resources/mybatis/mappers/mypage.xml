@@ -124,23 +124,22 @@
     ]]>
 	</select>
 
+	<!-- 비밀번호 조회 -->
+	<select id="getUserPassword" parameterType="int" resultType="string">
+    <![CDATA[
+        SELECT userPw
+        FROM users
+        WHERE userNum = #{userNum}
+    ]]>
+	</select>
+
 	<!-- 비밀번호 업데이트 -->
-	<update id="updatePassword"
-		parameterType="com.javaex.vo.HmkUserVo">
+	<update id="updatePassword" parameterType="com.javaex.vo.HmkUserVo">
     <![CDATA[
         UPDATE users
         SET userPw = #{newPassword}
         WHERE userNum = #{userNum}
     ]]>
-	</update>
-
-	<update id="updateSocialUserPassword" parameterType="com.javaex.vo.HmkUserVo">
-	<![CDATA[
-		UPDATE users
-		SET userPw = #{userPw}
-		WHERE userNum = #{userNum}
-		AND socialLogin = #{socialLogin}
-	]]>
 	</update>
 
 	<!-- 차트 데이터 조회 -->

@@ -34,18 +34,22 @@ public class HmkMypageDao {
 	public HmkUserVo getUserChallengeStats(int userNum) {
 		return sqlSession.selectOne("Mypage.getUserChallengeStats", userNum);
 	}
+
 	// 사용자가 방장인 방
 	public List<HmkChallengeVo> getMyCreatedRooms(int userNum) {
-	    return sqlSession.selectList("Mypage.getMyCreatedRooms", userNum);
+		return sqlSession.selectList("Mypage.getMyCreatedRooms", userNum);
 	}
+
 	// 사용자의 현재 진행중인 챌린지 리스트
 	public List<HmkChallengeVo> getOngoingChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getOngoingChallenges", userNum);
 	}
+
 	// 사용자의 시작 전 챌린지 리스트
 	public List<HmkChallengeVo> getUpcomingChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getUpcomingChallenges", userNum);
 	}
+
 	// 사용자의 완료된 챌린지 리스트
 	public List<HmkChallengeVo> getCompletedChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getCompletedChallenges", userNum);
@@ -78,15 +82,20 @@ public class HmkMypageDao {
 		return sqlSession.selectList("Mypage.findRegionsByName", query + "%");
 	}
 
+	// 비밀번호 조회
+	public String getUserPassword(int userNum) {
+		return sqlSession.selectOne("Mypage.getUserPassword", userNum);
+	}
+
 	// 비밀번호 업데이트
 	public int updatePassword(HmkUserVo userVo) {
 		return sqlSession.update("Mypage.updatePassword", userVo);
 	}
-	
+
 	public int updateSocialUserPassword(HmkUserVo userVo) {
-        System.out.println("[DAO] updateSocialUserPassword 호출됨");
-        return sqlSession.update("mypage.updateSocialUserPassword", userVo);
-    }
+		System.out.println("[DAO] updateSocialUserPassword 호출됨");
+		return sqlSession.update("mypage.updateSocialUserPassword", userVo);
+	}
 
 	/**
 	 * 사용자의 차트 데이터 조회 - 미션 수행률 (일반/챌린지/전체) - 미션 달성률 (일반/챌린지/전체)
@@ -102,20 +111,21 @@ public class HmkMypageDao {
 	public List<HmkGiftVo> getUserGiftCards(int userNum) {
 		return sqlSession.selectList("Mypage.getUserGiftCards", userNum);
 	}
-	
+
 	// 기프티콘 소유권 확인
 	public boolean checkGiftcardOwnership(Map<String, Object> params) {
-	    try {
-	        return sqlSession.selectOne("Mypage.checkGiftcardOwnership", params);
-	    } catch (Exception e) {
-	        logger.error("기프티콘 소유권 확인 중 오류 발생", e);
-	        return false;
-	    }
+		try {
+			return sqlSession.selectOne("Mypage.checkGiftcardOwnership", params);
+		} catch (Exception e) {
+			logger.error("기프티콘 소유권 확인 중 오류 발생", e);
+			return false;
+		}
 	}
+
 	// 기프트콘 사용 업데이트
 	public int updateGiftcardStatus(int purchaseNum) {
-        return sqlSession.update("Mypage.updateGiftcardStatus", purchaseNum);
-    }
+		return sqlSession.update("Mypage.updateGiftcardStatus", purchaseNum);
+	}
 
 	// ** 포인트 요약 정보 조회**
 	public HmkPointSummaryVo getPointSummary(int userNum) {

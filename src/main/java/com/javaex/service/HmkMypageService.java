@@ -29,6 +29,8 @@ public class HmkMypageService {
 	// 사용자 정보 조회
 	public HmkUserVo getUserInfo(int userNum) {
 		HmkUserVo userInfo = mypageDao.getUserInfo(userNum);
+	    System.out.println("[Service] 사용자 정보: " + userInfo);
+	    System.out.println("[Service] socialLogin 값: " + userInfo.getSocialLogin());
 		return userInfo;
 	}
 
@@ -111,65 +113,36 @@ public class HmkMypageService {
 			return success;
 		}
 	}
-
-	// 비밀번호 규칙 검증 메서드 (기존 isValidPassword를 수정)
-	private boolean isPasswordValid(String password) {
-		if (password == null || password.length() < 10) {
-			return false;
-		}
-		boolean hasLetter = password.matches(".*[A-Za-z].*");
-		boolean hasNumberOrSpecial = password.matches(".*[0-9#?!&].*");
-		return hasLetter && hasNumberOrSpecial;
+	
+	// 비밀번호 조회
+	public String getUserPassword(int userNum) {
+	    return mypageDao.getUserPassword(userNum);
 	}
 
-	// 일반 사용자 비밀번호 업데이트
+	// 비밀번호 유효성 검사
+	private boolean validatePassword(String password) {
+	    if (password == null || password.length() < 10) {
+	        return false;
+	    }
+	    boolean hasLetter = password.matches(".*[A-Za-z].*");
+	    boolean hasNumberOrSpecial = password.matches(".*[0-9#?!&].*");
+	    return hasLetter && hasNumberOrSpecial;
+	}
+
+	// 비밀번호 업데이트
 	public boolean updatePassword(HmkUserVo userVo) {
-		// 사용자 정보 조회
-		HmkUserVo existingUser = mypageDao.getUserInfo(userVo.getUserNum());
-		if (existingUser == null) {
-			// 사용자가 존재하지 않음
-			return false;
-		}
-
-		// 현재 비밀번호 검증
-		if (!existingUser.getCurrentPassword().equals(userVo.getCurrentPassword())) {
-			// 현재 비밀번호가 일치하지 않음
-			return false;
-		}
-
-		// 비밀번호 규칙 검증
-		if (!isPasswordValid(userVo.getNewPassword())) {
-			// 새 비밀번호가 규칙에 맞지 않음
-			return false;
-		}
-
-		// 새 비밀번호로 업데이트
-		return mypageDao.updatePassword(userVo) > 0;
-	}
-
-	// 소셜 로그인 사용자의 비밀번호 설정
-	public boolean updateSocialUserPassword(HmkUserVo userVo) {
-		System.out.println("[Service] updateSocialUserPassword 호출됨");
-
-		// 새 비밀번호 유효성 검사
-		if (!isPasswordValid(userVo.getNewPassword())) {
-			System.out.println("[Service] 새 비밀번호가 규칙에 맞지 않음");
-			return false;
-		}
-
-		try {
-			// 새 비밀번호를 그대로 저장
-			userVo.setUserPw(userVo.getNewPassword());
-
-			// DB 업데이트
-			int count = mypageDao.updateSocialUserPassword(userVo);
-			System.out.println("[Service] 비밀번호 업데이트 결과: " + (count > 0));
-
-			return count > 0;
-		} catch (Exception e) {
-			System.out.println("[Service] 비밀번호 업데이트 중 에러 발생: " + e.getMessage());
-			return false;
-		}
+	    if (!validatePassword(userVo.getNewPassword())) {
+	        return false;
+	    }
+	    
+	    String currentPassword = getUserPassword(userVo.getUserNum());
+	    if (currentPassword != null && !currentPassword.isEmpty()) {
+	        if (!currentPassword.equals(userVo.getCurrentPassword())) {
+	            return false;
+	        }
+	    }
+	    
+	    return mypageDao.updatePassword(userVo) > 0;
 	}
 
 	// 회원 보관함 기프티콘 리스트 조회
