@@ -19,5 +19,6 @@
 		<mapper resource="mybatis/mappers/jmsearch.xml" /> 
 		<mapper resource="mybatis/mappers/jmroomgeneration.xml" /> 
 		<mapper resource="mybatis/mappers/rank.xml" /> 
+		<mapper resource="mybatis/mappers/Notice.xml" /> 
     </mappers>
 </configuration>

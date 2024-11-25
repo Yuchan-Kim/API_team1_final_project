@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Notice">
+	<!-- 방 생성 알림 추가 -->
+	<insert id="insertRoomCreationNotice" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        VALUES (
+            #{roomMaker},
+            CONCAT('[방 생성 알림] ', #{roomTitle}),
+            CONCAT('"', #{roomTitle}, '" 방이 성공적으로 생성되었습니다.'),
+            #{roomMaker}
+        )
+    ]]>
+    </insert>
+
+	<!-- 방 참가 알림 추가 (방장에게) -->
+	<insert id="insertRoomEnterNoticeToMaker" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        VALUES (
+            #{roomMaker},
+            CONCAT('[방 참가 알림] ', #{roomTitle}),
+            CONCAT('"', #{userName}, '"님이 "', #{roomTitle}, '" 방에 참여하였습니다.'),
+            #{newUserNum}
+        )
+    ]]>
+    </insert>
+
+	<!-- 방 참가 알림 추가 (참가자에게) -->
+	<insert id="insertRoomEnterNoticeToUser" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        VALUES (
+            #{newUserNum},
+            CONCAT('[방 참가 알림] ', #{roomTitle}),
+            CONCAT('"', #{roomTitle}, '" 방에 참가하였습니다.'),
+            #{roomMaker}
+        )
+    ]]>
+    </insert>
+
+	<!-- 방 시작 알림 추가 (모든 참가자에게) -->
+	<insert id="insertRoomStartNotice" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        SELECT 
+            eu.userNum,
+            CONCAT('[방 시작 알림] ', #{roomTitle}),
+            CONCAT('"', #{roomTitle}, '" 방이 시작되었습니다. 함께 목표를 달성해보세요!'),
+            #{roomMaker}
+        FROM enteredUser eu
+        WHERE eu.roomNum = #{roomNum}
+    ]]>
+    </insert>
+
+	<!-- 방 종료 알림 추가 (모든 참가자에게) -->
+	<insert id="insertRoomEndNotice" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        SELECT 
+            eu.userNum,
+            CONCAT('[방 종료 알림] ', #{roomTitle}),
+            CONCAT('"', #{roomTitle}, '" 방이 종료되었습니다. 수고하셨습니다!'),
+            #{roomMaker}
+        FROM enteredUser eu
+        WHERE eu.roomNum = #{roomNum}
+    ]]>
+    </insert>
+
+	<!-- 방 상태 조회 -->
+	<select id="getRoomStatus" parameterType="int" resultType="int">
+    <![CDATA[
+        SELECT roomStatusNum
+        FROM roomInfo
+        WHERE roomNum = #{roomNum}
+    ]]>
+    </select>
+
+	<!-- 방 정보 조회 -->
+	<select id="getRoomInfo" parameterType="int" resultType="map">
+    <![CDATA[
+        SELECT 
+            ri.roomNum,
+            ri.roomTitle,
+            ri.roomMaker,
+            ri.roomStatusNum,
+            rs.roomStatusName
+        FROM roomInfo ri
+        JOIN roomStatus rs ON ri.roomStatusNum = rs.roomStatusNum
+        WHERE ri.roomNum = #{roomNum}
+    ]]>
+    </select>
+
+	<!-- 유저 이름 조회 -->
+	<select id="getUserName" parameterType="int" resultType="string">
+    <![CDATA[
+        SELECT userName
+        FROM users
+        WHERE userNum = #{userNum}
+    ]]>
+    </select>
+    
+	<!-- 알림 읽음 여부 업데이트 -->
+	<update id="updateNoticeReadStatus" parameterType="int">
+    <![CDATA[
+        UPDATE notice
+        SET isCheck = 1
+        WHERE noticeNum = #{noticeNum}
+	    ]]>
+	</update>
+
+	<!-- 알림 조회 시 읽음 여부도 함께 반환하도록 수정 -->
+	<select id="getNotices" parameterType="map"
+		resultType="com.javaex.vo.HmkNoticeVo">
+    <![CDATA[
+        SELECT 
+            n.noticeNum,
+            n.userNum,
+            n.noticeTitle,
+            n.noticeMsg,
+            n.isCheck,
+            DATE_FORMAT(n.createDate, '%Y-%m-%d') AS createDate,
+            n.msgSender,
+            u.userName AS senderNickname
+        FROM notice n
+        JOIN users u ON n.msgSender = u.userNum
+        WHERE n.userNum = #{userNum}
+    ]]>
+		<if test="startDate != null and startDate != ''">
+        <![CDATA[ AND n.createDate >= #{startDate} ]]>
+    </if>
+		<if test="endDate != null and endDate != ''">
+        <![CDATA[ AND n.createDate <= #{endDate} ]]>
+    </if>
+    <![CDATA[ ORDER BY n.createDate DESC ]]>
+	</select>
+</mapper>
