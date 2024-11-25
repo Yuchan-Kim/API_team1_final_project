@@ -2,10 +2,10 @@
 
 package com.javaex.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,7 +147,16 @@ public class HmkMypageDao {
 
 	// 알림 리스트 조회
 	public List<HmkNoticeVo> getNotices(int userNum, String startDate, String endDate) {
-		Map<String, Object> params = Map.of("userNum", userNum, "startDate", startDate, "endDate", endDate);
+		Map<String, Object> params = new HashMap<>();
+		params.put("userNum", userNum);
+		if (startDate != null && !startDate.isEmpty()) {
+			params.put("startDate", startDate);
+		}
+		if (endDate != null && !endDate.isEmpty()) {
+			params.put("endDate", endDate);
+		}
+
+		logger.debug("Fetching notices with params: {}", params);
 		return sqlSession.selectList("Mypage.getNotices", params);
 	}
 }
