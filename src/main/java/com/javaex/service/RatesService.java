@@ -33,10 +33,18 @@ public class RatesService {
     public List<RatesVo> getAllUsers(int roomNum) {
         return ratesdao.getAllUsers(roomNum);
     }
-    
+    // 유저 정보 가져오기 
+    public RatesVo getMyInfo(int roomNum, int userNum) {
+        return ratesdao.getMyInfo(roomNum,userNum);
+    }
     // 미션 승인 횟수 가져오기 
     public List<Map<String, Object>> getMissionApprovals(int roomNum) {
         return ratesdao.getMissionApprovals(roomNum);
+    }
+    
+    // 미션 승인 횟수 가져오기 
+    public List<Map<String, Object>> getmyMissionApprovals(int roomNum, int userNum) {
+        return ratesdao.getmyMissionApprovals(roomNum,userNum);
     }
     
    

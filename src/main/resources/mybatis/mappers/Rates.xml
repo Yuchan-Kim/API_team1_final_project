@@ -231,6 +231,29 @@
         ]]>
     </select>
     
+    <select id="getmyMissionApprovals" parameterType="com.javaex.vo.UserProfileVo" resultType="map">
+        <![CDATA[
+		       
+		SELECT 
+		    c.missionName, 
+		    COUNT(e.evalNum) AS userSubmissionCount
+		FROM 
+		    challenges c
+		JOIN 
+		    roomDay rd ON c.roomDayNum = rd.roomDayNum
+		LEFT JOIN 
+		    evaluation e ON c.missionNum = e.missionNum AND e.submitUser = #{userNum}
+		WHERE 
+		    rd.roomNum = #{roomNum}
+		    AND c.missionTypeNum = 1
+		GROUP BY 
+		    c.missionName
+		ORDER BY 
+		    userSubmissionCount DESC;
+
+        ]]>
+    </select>
+    
      
 
 
@@ -404,6 +427,42 @@
       AND c.missionTypeNum = 2
       AND e.evalType = '승인'
       AND e.submitUser = #{userNum}
+</select>
+
+<select id = "getMyInfo" parameterType = "com.javaex.vo.RatesVo" resultType = "com.javaex.vo.RatesVo">
+	SELECT 
+    u.userNum,
+    u.usingProfilePic,
+    u.userName,
+    r.roomNum,
+    ROUND(
+        COALESCE(COUNT(e.evalNum), 0) / (
+            -- 분모 계산
+            (SELECT COUNT(*) 
+             FROM roomDay rd 
+             WHERE rd.roomNum = r.roomNum)
+            *
+            (SELECT COUNT(DISTINCT c.missionName)
+             FROM challenges c
+             JOIN roomDay rd2 ON c.roomDayNum = rd2.roomDayNum
+             WHERE rd2.roomNum = r.roomNum)
+            *
+            (p.periodType / 7)
+        ) * 100, 
+        2
+    ) AS achievementRate
+FROM users u
+JOIN enteredUser eu ON u.userNum = eu.userNum
+JOIN roomInfo r ON eu.roomNum = r.roomNum
+JOIN period p ON r.periodNum = p.periodNum
+LEFT JOIN roomDay rd ON rd.roomNum = r.roomNum
+LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
+LEFT JOIN evaluation e 
+    ON e.missionNum = c.missionNum 
+    AND e.evalType = '승인' 
+    AND e.submitUser = u.userNum
+WHERE r.roomNum = #{roomNum}
+  AND u.userNum = #{userNum}  -- 특정 userNum 조건 추가 
 </select>
     
 

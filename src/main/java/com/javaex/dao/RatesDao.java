@@ -37,9 +37,25 @@ public class RatesDao {
         return sqlSession.selectList(namespace + ".getAllUsers", roomNum);
     }
     
+ // 전체 유저 목록 가져오기 
+    public RatesVo getMyInfo(int roomNum,int userNum) {
+    	RatesVo rates = new RatesVo();
+    	rates.setRoomNum(roomNum);
+    	rates.setUserNum(userNum);
+        return sqlSession.selectOne(namespace + ".getMyInfo", rates);
+    }
+    
     // 미션 승인 횟수 가져오기 
     public List<Map<String, Object>> getMissionApprovals(int roomNum) {
         return sqlSession.selectList(namespace + ".getMissionApprovals", roomNum);
+    }
+    
+ // 미션 승인 횟수 가져오기 
+    public List<Map<String, Object>> getmyMissionApprovals(int roomNum, int userNum) {
+    	RatesVo rates = new RatesVo();
+    	rates.setRoomNum(roomNum);
+    	rates.setUserNum(userNum);
+        return sqlSession.selectList(namespace + ".getmyMissionApprovals" , rates);
     }
     
     // Get User Achievement Details

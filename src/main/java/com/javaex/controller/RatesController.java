@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.javaex.service.RatesService;
 import com.javaex.util.JsonResult;
+import com.javaex.util.JwtUtil;
 import com.javaex.vo.RatesVo;
 import com.javaex.vo.UserProfileVo;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("api/rates")
@@ -66,11 +69,37 @@ public class RatesController {
         }
     }
     
+ // 전체 유저 목록 가져오기 (달성률 순)
+    @GetMapping("/myInfo/{roomNum}")
+    public JsonResult getMyInfo(@PathVariable int roomNum,HttpServletRequest request) {
+    	int userNum = JwtUtil.getNoFromHeader(request); // JWT에서 userNum 추출
+
+        try {
+            RatesVo users = ratesservice.getMyInfo(roomNum,userNum);
+            return JsonResult.success(users);
+        } catch (Exception e) {
+            return JsonResult.fail("유저 목록을 불러오는 데 실패했습니다.");
+        }
+    }
+    
     // 전체 유저의 미션 승인 횟수 가져오기 
     @GetMapping("/approvals/{roomNum}")
     public JsonResult getMissionApprovals(@PathVariable int roomNum) {
         try {
             List<Map<String, Object>> approvals = ratesservice.getMissionApprovals(roomNum);
+            return JsonResult.success(approvals);
+        } catch (Exception e) {
+            return JsonResult.fail("미션 승인 횟수를 불러오는 데 실패했습니다.");
+        }
+    }
+    
+ // 전체 유저의 미션 승인 횟수 가져오기 
+    @GetMapping("/myapprovals/{roomNum}")
+    public JsonResult getmyMissionApprovals(@PathVariable int roomNum,HttpServletRequest request) {
+    	int userNum = JwtUtil.getNoFromHeader(request); // JWT에서 userNum 추출
+        try {
+            List<Map<String, Object>> approvals = ratesservice.getmyMissionApprovals(roomNum,userNum);
+            System.out.println("아아아아아아아아아아" + approvals.toString());
             return JsonResult.success(approvals);
         } catch (Exception e) {
             return JsonResult.fail("미션 승인 횟수를 불러오는 데 실패했습니다.");
