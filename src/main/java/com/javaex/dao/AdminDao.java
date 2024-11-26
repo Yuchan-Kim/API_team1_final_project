@@ -51,11 +51,26 @@ public class AdminDao {
         return sqlSession.selectList(namespace + ".getRecentActivities");
     }
     
+    public int insertItem(AdminVo itemVo) {
+        System.out.println("AdminDao.insertItem()");
+        return sqlSession.insert(namespace + ".insertItem", itemVo);
+    }
+    
  // **새로운 메소드 추가: 모든 상품 정보 가져오기**
     public List<AdminVo> getAllItems() {
         System.out.println("AdminDao.getAllItems()");
         return sqlSession.selectList(namespace + ".selectAllItems");
     }
-    
+    public List<AdminVo> getItemBrands() {
+        System.out.println("AdminDao.getItemBrands()");
+        return sqlSession.selectList(namespace + ".selectAllItemBrands");
+    }
+
+    public int insertItemBrand(String itemBrandName) {
+        System.out.println("AdminDao.insertItemBrand()");
+        AdminVo adminVo = new AdminVo();
+        adminVo.setItemBrandName(itemBrandName);
+        return sqlSession.insert(namespace + ".insertItemBrand", adminVo);
+    }
     
 }

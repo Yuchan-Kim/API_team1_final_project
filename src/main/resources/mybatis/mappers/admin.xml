@@ -112,6 +112,28 @@
             ORDER BY i.itemNum ASC
         ]]>
     </select>
-   
+   <!-- 모든 아이템 브랜드 조회 -->
+    <select id="selectAllItemBrands" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                itemBrandNum,
+                itemBrandName
+            FROM itemBrand
+            ORDER BY itemBrandNum ASC
+        ]]>
+    </select>
+
+    <!-- 새로운 아이템 브랜드 추가 -->
+    <insert id="insertItemBrand" parameterType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            INSERT INTO itemBrand (itemBrandName)
+            VALUES (#{itemBrandName})
+        ]]>
+    </insert>
+    
+    <insert id="insertItem" parameterType="com.javaex.vo.AdminVo">
+        INSERT INTO items (itemName, itemCost, itemBrandNum, itemImg)
+        VALUES (#{itemName}, #{itemCost}, #{itemBrandNum}, #{itemImg})
+    </insert>
 
 </mapper>

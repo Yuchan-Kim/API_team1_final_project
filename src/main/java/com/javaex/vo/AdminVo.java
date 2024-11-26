@@ -30,13 +30,25 @@ public class AdminVo {
     private int totalOrders;      
     
     private int itemNum;
+    private int itemBrandNum;
     private String itemBrandName;
     private String itemImg;
 
     public AdminVo() {
     }
     
-    public int getItemNum() {
+    
+    public int getItemBrandNum() {
+		return itemBrandNum;
+	}
+
+
+	public void setItemBrandNum(int itemBrandNum) {
+		this.itemBrandNum = itemBrandNum;
+	}
+
+
+	public int getItemNum() {
         return itemNum;
     }
 

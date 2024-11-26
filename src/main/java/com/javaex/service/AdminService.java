@@ -40,8 +40,20 @@ public class AdminService {
     public AdminVo getKeyStats(){
         return admindao.getKeyStats();
     }
+    
+    public boolean addItem(AdminVo itemVo) {
+        return admindao.insertItem(itemVo) > 0;
+    }
 
     public List<AdminVo> getAllItems() {
         return admindao.getAllItems();
+    }
+    public List<AdminVo> getItemBrands() {
+        return admindao.getItemBrands();
+    }
+
+    public boolean addItemBrand(String itemBrandName) {
+        int result = admindao.insertItemBrand(itemBrandName);
+        return result > 0;
     }
 }
