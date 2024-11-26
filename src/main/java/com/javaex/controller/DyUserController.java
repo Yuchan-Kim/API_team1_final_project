@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.javaex.service.DyUserService;
+import com.javaex.service.HmkWelcomService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
 import com.javaex.vo.DyUserVo;
@@ -17,24 +18,52 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RestController	
 public class DyUserController {
+	
+	//-------------------------<ham 셋집 살이>---------------------------------------//
+	@Autowired
+	private HmkWelcomService welcomeService;
+	//-------------------------</ham 셋집 살이>---------------------------------------//
 
 	@Autowired		
 	private DyUserService dyUserService;
 	
 	/* 회원가입 */
 	@PostMapping("/api/users")
-	public JsonResult userJoin(@RequestBody DyUserVo dyUserVo) {	
-		System.out.println("DyUserController.userJoin()");
-		
-		int count = dyUserService.exeUserJoin(dyUserVo);
-		
-		if(count != 1) { 		//등록안됨
-			return JsonResult.fail("회원등록에 실패했습니다.");
-		}else { 				//등록됨
-			return JsonResult.success(count);
-		}
-		
-	}
+//	public JsonResult userJoin(@RequestBody DyUserVo dyUserVo) {	
+//		System.out.println("DyUserController.userJoin()");
+//		
+//		int count = dyUserService.exeUserJoin(dyUserVo);
+//		
+//		if(count != 1) { 		//등록안됨
+//			return JsonResult.fail("회원등록에 실패했습니다.");
+//		}else { 				//등록됨
+//			return JsonResult.success(count);
+//		}
+//		
+//	}
+	//-------------------------<ham 셋집 살이>---------------------------------------//
+	public JsonResult userJoin(@RequestBody DyUserVo userVo) {
+        System.out.println("UserController.signup() 호출 - userEmail: " + userVo.getUserEmail());
+        try {
+            // 기존 회원가입 로직
+            int userNum = dyUserService.exeUserJoin(userVo);
+            System.out.println("Inserted user with userNum: " + userNum);
+
+            // 가입 축하 처리
+            if (userNum > 0) {
+                welcomeService.celebrateNewUser(userNum);
+                System.out.println("가입 축하 처리 완료 - userNum: " + userNum);
+            }
+
+            System.out.println("회원가입 성공 - userNum: " + userNum);
+            return JsonResult.success(userNum);
+        } catch (Exception e) {
+            System.err.println("회원가입 처리 중 오류 발생");
+            e.printStackTrace();  // 예외 스택 트레이스 출력
+            return JsonResult.fail(e.getMessage());
+        }
+    }
+		//-------------------------</ham 셋집 살이>---------------------------------------//
 	
 	
 	/* 카카오 회원가입 */

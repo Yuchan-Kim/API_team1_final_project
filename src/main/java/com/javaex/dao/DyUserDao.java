@@ -13,13 +13,22 @@ public class DyUserDao {
 	private SqlSession sqlSession;	
 
 	/* 회원가입 */
+//	public int insertUser(DyUserVo dyUserVo) {
+//		System.out.println("DyUserDao.insertUser()");
+//		
+//		int count = sqlSession.insert("dyuser.insert", dyUserVo);
+//		
+//		return count;
+//		
+//	}
+	//-------------------------<ham 셋집 살이>---------------------------------------//
+	
 	public int insertUser(DyUserVo dyUserVo) {
 		System.out.println("DyUserDao.insertUser()");
 		
-		int count = sqlSession.insert("dyuser.insert", dyUserVo);
+		sqlSession.insert("dyuser.insert", dyUserVo); // userNum이 dyUserVo에 설정됨
 		
-		return count;
-		
+		return dyUserVo.getUserNum(); // 설정된 userNum을 반환
 	}
 	
 	

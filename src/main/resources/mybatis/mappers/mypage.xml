@@ -357,47 +357,15 @@
 	<select id="getOngoingChallenges" parameterType="int"
 		resultType="com.javaex.vo.HmkChallengeVo">
 	    <![CDATA[
-	        WITH MemberRole AS (
-	            SELECT 
-	                eu.roomNum,
-	                eu.userNum,
-	                eu.enteredUserAuth,
-	                ROW_NUMBER() OVER (
-	                    PARTITION BY eu.roomNum, eu.userNum 
-	                    ORDER BY eu.enteredUserAuth DESC
-	                ) as role_rank
-	            FROM enteredUser eu
-	            WHERE eu.enteredUserStatusNum = 1 -- 수정된 조건: enteredUserStatusNum이 1인 경우만
-	        )
-	        SELECT DISTINCT
-	            r.roomNum,
-	            r.roomTitle,
-	            r.roomThumbNail,
-	            r.roomStartDate
-	        FROM roomInfo r
-	        JOIN MemberRole mr ON r.roomNum = mr.roomNum
-	        JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
-	        WHERE mr.userNum = #{userNum}
-	        AND mr.role_rank = 1
-	        AND rs.roomStatusName = '시작'
-	        ORDER BY r.roomStartDate DESC
-	    ]]>
-	</select>
-
-
-	<!-- 시작 예정 챌린지 목록 -->
-	<select id="getUpcomingChallenges" parameterType="int"
-		resultType="com.javaex.vo.HmkChallengeVo">
-    <![CDATA[
-        WITH MemberRole AS (
+        WITH LatestStatus AS (
             SELECT 
                 eu.roomNum,
                 eu.userNum,
-                eu.enteredUserAuth,
+                eu.enteredUserStatusNum,
                 ROW_NUMBER() OVER (
                     PARTITION BY eu.roomNum, eu.userNum 
-                    ORDER BY eu.enteredUserAuth DESC
-                ) as role_rank
+                    ORDER BY eu.enteredUserNum DESC
+                ) as rn
             FROM enteredUser eu
         )
         SELECT DISTINCT
@@ -406,14 +374,47 @@
             r.roomThumbNail,
             r.roomStartDate
         FROM roomInfo r
-        JOIN MemberRole mr ON r.roomNum = mr.roomNum
+        JOIN LatestStatus ls ON r.roomNum = ls.roomNum
         JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
-        WHERE mr.userNum = #{userNum}
-        AND mr.role_rank = 1
+        WHERE ls.userNum = #{userNum}
+        AND ls.rn = 1
+        AND ls.enteredUserStatusNum = 1
+        AND rs.roomStatusName = '시작'
+        ORDER BY r.roomStartDate DESC
+    ]]>
+	</select>
+
+
+	<!-- 시작 예정 챌린지 목록 -->
+	<select id="getUpcomingChallenges" parameterType="int"
+		resultType="com.javaex.vo.HmkChallengeVo">
+    <![CDATA[
+        WITH LatestStatus AS (
+            SELECT 
+                eu.roomNum,
+                eu.userNum,
+                eu.enteredUserStatusNum,
+                ROW_NUMBER() OVER (
+                    PARTITION BY eu.roomNum, eu.userNum 
+                    ORDER BY eu.enteredUserNum DESC
+                ) as rn
+            FROM enteredUser eu
+        )
+        SELECT DISTINCT
+            r.roomNum,
+            r.roomTitle,
+            r.roomThumbNail,
+            r.roomStartDate
+        FROM roomInfo r
+        JOIN LatestStatus ls ON r.roomNum = ls.roomNum
+        JOIN roomStatus rs ON r.roomStatusNum = rs.roomStatusNum
+        WHERE ls.userNum = #{userNum}
+        AND ls.rn = 1
+        AND ls.enteredUserStatusNum = 1 
         AND rs.roomStatusName IN ('모집 전', '모집 중')
         ORDER BY r.roomStartDate ASC
-        ]]>
-	</select>
+    ]]>
+</select>
 
 	<!-- 완료된 챌린지 목록 -->
 	<select id="getCompletedChallenges" parameterType="int"
