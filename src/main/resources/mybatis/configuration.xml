@@ -22,5 +22,6 @@
 		<mapper resource="mybatis/mappers/jmroomgeneration.xml" /> 
 		<mapper resource="mybatis/mappers/rank.xml" /> 
 		<mapper resource="mybatis/mappers/Notice.xml" /> 
+		<mapper resource="mybatis/mappers/openai.xml" /> 
     </mappers>
 </configuration>

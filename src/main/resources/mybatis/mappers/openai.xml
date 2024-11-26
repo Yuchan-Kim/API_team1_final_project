@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="openAi">
+
+    <!-- 키워드 가져오기 -->
+    <select id="getKeywords" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+	        SELECT roomKeyword 
+	        FROM roomInfo 
+	        WHERE roomNum = #{roomNum}
+        ]]>
+    </select>
+
+    <!-- 미션 리스트 가져오기 -->
+    <select id="getMissions" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+	        SELECT 
+			    c.missionNum AS missionNum,
+			    c.missionName AS missionName
+			FROM 
+			    challenges c
+			JOIN 
+			    missionType m ON c.missionTypeNum = m.missionTypeNum
+			JOIN 
+			    roomDay rd ON c.roomDayNum = rd.roomDayNum
+			JOIN 
+			    day d ON rd.dateNum = d.dateNum
+			WHERE 
+			    rd.roomNum = #{roomNum}
+			    AND m.missionType = '일반'
+			GROUP BY 
+			    c.missionName
+			HAVING 
+			    MIN(c.missionNum)
+	    ]]>
+    </select>
+    
+    <!-- 방 최대인원 가져오기 -->
+    <select id="getMaxNum" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		SELECT roomMaxNum
+    		FROM roomInfo
+    		WHERE roomNum = #{roomNum}
+    	]]>
+    </select>
+    
+    <!-- 방 기간 가져오기 -->
+    <select id="getPeriodType" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		SELECT periodNum
+    		FROM roomInfo
+    		WHERE roomNum = #{roomNum}
+    	]]>
+    </select>
+
+    <!-- 선택된 챌린지 저장 -->
+    <insert id="insertSelectedChallenge" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+        	INSERT INTO selectedChallenge (roomNum, challengeId, evaluationType) 
+        	VALUES (#{roomNum}, #{challengeId}, #{evaluationType})
+        ]]>
+    </insert>
+    
+    <!-- 미션 등록 -->
+    <insert id="insertMission" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+        	INSERT INTO challenges (missionTypeNum, roomDayNum, missionName, missionGoal)
+        	VALUES (3, 8, #{missionName}, #{missionGoal})
+        ]]>
+    </insert>
+</mapper>

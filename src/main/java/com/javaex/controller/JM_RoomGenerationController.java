@@ -2,7 +2,6 @@ package com.javaex.controller;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,14 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaex.service.JM_RoomGenerationService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
 import com.javaex.vo.ChallengeVo;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -225,6 +220,7 @@ public class JM_RoomGenerationController {
         return JsonResult.success("유의사항이 성공적으로 저장되었습니다.");
     }
 	
+	//미션 등록
 	@PostMapping("api/genebang/saveMission")
     public JsonResult saveMission(
             @RequestParam("roomNum") int roomNum,

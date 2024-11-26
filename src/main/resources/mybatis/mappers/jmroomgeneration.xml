@@ -7,8 +7,8 @@
 	<!-- 방생성 -->
     <insert id="insertStep1" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="roomNum">
     	<![CDATA[
-    		INSERT INTO `roomInfo` (roomTypeNum, roomMaker)
-        	VALUES (#{roomTypeNum}, #{userNum})
+    		INSERT INTO `roomInfo` (roomTypeNum, roomMaker, roomStatusNum)
+        	VALUES (#{roomTypeNum}, #{userNum}, 1)
     	]]>
     </insert>
     

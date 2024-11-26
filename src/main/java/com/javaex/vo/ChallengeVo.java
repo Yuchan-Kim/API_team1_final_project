@@ -64,7 +64,7 @@ public class ChallengeVo {
 	private String missionInstruction;	 // 방 미션 유의사항
 	private String roomThumbNail; 		 // 방 대표이미지
 	private int roomMinNum; 			 // 방 최소인원
-	private int roomMaxNum; 			 // 방 최소인원
+	private int roomMaxNum; 			 // 방 최대인원
 	private int roomPoint;				 // 입장 포인트
 	private int roomRate; 				 // 입장 성실도
 	private int evaluationType;			 // 평가방법 (방장1, 유저2)
