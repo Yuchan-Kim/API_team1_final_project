@@ -56,4 +56,17 @@ public class AdminService {
         int result = admindao.insertItemBrand(itemBrandName);
         return result > 0;
     }
+    
+    public AdminVo getItemInfo(int itemNum) {
+    	return admindao.getItemInfo(itemNum);
+    }
+    
+    public boolean updateItem(AdminVo itemVo) {
+        return admindao.updateItem(itemVo) > 0;
+    }
+    
+    public boolean deleteItem(int itemNum) {
+        return admindao.deleteItem(itemNum) > 0;
+    }
+
 }

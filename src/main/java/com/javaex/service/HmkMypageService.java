@@ -178,12 +178,16 @@ public class HmkMypageService {
 	}
 
 	// ** 포인트 상세 내역 조회**
-	public List<HmkPointHistoryVo> getPointHistory(int userNum, String startDate, String endDate) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("userNum", userNum);
-		params.put("startDate", startDate);
-		params.put("endDate", endDate);
-		return mypageDao.getPointHistory(userNum, params);
+	public Map<String, Object> getPointHistory(int userNum, Map<String, Object> params) {
+	    List<HmkPointHistoryVo> history = mypageDao.getPointHistory(params);
+	    int totalCount = mypageDao.getTotalPointHistoryCount(params);
+	    
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("content", history);
+	    response.put("totalElements", totalCount);
+	    response.put("hasMore", (int)params.get("page") + (int)params.get("size") < totalCount);
+	    
+	    return response;
 	}
 
 	// 알림 요약 정보 조회
