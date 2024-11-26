@@ -73,4 +73,19 @@ public class AdminDao {
         return sqlSession.insert(namespace + ".insertItemBrand", adminVo);
     }
     
+    public AdminVo getItemInfo (int itemNum) {
+    	return sqlSession.selectOne(namespace + ".getItemInfo", itemNum);
+    }
+    
+    public int updateItem(AdminVo itemVo) {
+        System.out.println("AdminDao.updateItem()");
+        return sqlSession.update(namespace + ".updateItem", itemVo);
+    }
+    
+    public int deleteItem(int itemNum) {
+        System.out.println("AdminDao.deleteItem()");
+        return sqlSession.delete(namespace + ".deleteItem", itemNum);
+    }
+
+
 }

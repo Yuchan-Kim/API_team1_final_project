@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,6 +116,13 @@ public class AdminController {
 	    }
 	}
 	
+	@GetMapping("/iteminfo/{itemNum}")
+	public JsonResult editItems(@PathVariable int itemNum ) {
+	    System.out.println("AdminController.iteminfo()");
+	    AdminVo item = service.getItemInfo(itemNum);
+	    return JsonResult.success(item);
+	}
+	
 	@GetMapping("/itembrands")
     public JsonResult getAllItemBrands() {
         System.out.println("AdminController.getAllItemBrands()");
@@ -177,4 +187,60 @@ public class AdminController {
             return JsonResult.fail("이미지 업로드 중 오류가 발생했습니다.");
         }
     }
+	
+	@PutMapping("/editItems/{itemNum}")
+	public JsonResult updateItem(
+	    @PathVariable int itemNum,
+	    @RequestParam("itemName") String itemName,
+	    @RequestParam("price") int price,
+	    @RequestParam("category") int itemBrandNum,
+	    @RequestParam(value = "image", required = false) MultipartFile image
+	) {
+	    System.out.println("AdminController.updateItem()");
+	    try {
+	        String imagePath = null;
+
+	        if (image != null && !image.isEmpty()) {
+	            // 이미지 저장 경로 설정
+	            String uploadDir = "/Users/yuchan/final_project_Team1/team1_final_project/public/images";
+	            File dir = new File(uploadDir);
+	            if (!dir.exists()) {
+	                dir.mkdirs();
+	            }
+	            // 파일 이름 설정
+	            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+	            String filePath = uploadDir + fileName;
+	            image.transferTo(new File(filePath));
+	            imagePath = "/" + filePath; // 접근 가능한 경로로 설정
+	        }
+
+	        AdminVo itemVo = new AdminVo();
+	        itemVo.setItemNum(itemNum);
+	        itemVo.setItemName(itemName);
+	        itemVo.setItemCost(price);
+	        itemVo.setItemBrandNum(itemBrandNum);
+	        itemVo.setItemImg(imagePath); // 새 이미지 경로 설정 (없으면 null)
+
+	        boolean success = service.updateItem(itemVo);
+	        if (success) {
+	            return JsonResult.success("상품이 성공적으로 업데이트되었습니다.");
+	        } else {
+	            return JsonResult.fail("상품 업데이트에 실패했습니다.");
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return JsonResult.fail("이미지 업로드 중 오류가 발생했습니다.");
+	    }
+	}
+	
+	@DeleteMapping("/deleteItem/{itemNum}")
+	public JsonResult deleteItem(@PathVariable int itemNum) {
+	    System.out.println("AdminController.deleteItem()");
+	    boolean success = service.deleteItem(itemNum);
+	    if (success) {
+	        return JsonResult.success("상품이 성공적으로 삭제되었습니다.");
+	    } else {
+	        return JsonResult.fail("상품 삭제에 실패했습니다.");
+	    }
+	}
 }
