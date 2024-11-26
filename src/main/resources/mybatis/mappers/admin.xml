@@ -132,8 +132,45 @@
     </insert>
     
     <insert id="insertItem" parameterType="com.javaex.vo.AdminVo">
-        INSERT INTO items (itemName, itemCost, itemBrandNum, itemImg)
-        VALUES (#{itemName}, #{itemCost}, #{itemBrandNum}, #{itemImg})
+        <![CDATA[INSERT INTO item (itemName, itemCost, itemBrandNum, itemImg)
+        VALUES (#{itemName}, #{itemCost}, #{itemBrandNum}, #{itemImg})        ]]>
+
     </insert>
+    
+    <select id="getItemInfo" parameterType="int" resultType="com.javaex.vo.AdminVo">
+            <![CDATA[
+		SELECT 
+		        item.itemNum, 
+		        item.itemBrandNum, 
+		        item.itemCost, 
+		        item.itemName, 
+		        item.itemImg, 
+		        i.itemBrandName
+		    FROM item
+		    INNER JOIN itemBrand i ON item.itemBrandNum = i.itemBrandNum
+		    WHERE item.itemNum = #{itemNum}        
+		    
+    ]]>
+    </select>
+
+<update id="updateItem" parameterType="com.javaex.vo.AdminVo">
+           <![CDATA[
+ UPDATE item
+    SET 
+        itemName = #{itemName},
+        itemCost = #{itemCost},
+        itemBrandNum = #{itemBrandNum},
+        itemImg = CASE 
+            WHEN #{itemImg} IS NOT NULL THEN #{itemImg}
+            ELSE itemImg
+        END
+    WHERE itemNum = #{itemNum}  ]]>
+</update>
+
+<delete id="deleteItem" parameterType="int">
+    DELETE FROM item
+    WHERE itemNum = #{itemNum}
+</delete>
+
 
 </mapper>
