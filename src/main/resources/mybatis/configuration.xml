@@ -9,6 +9,8 @@
     	<mapper resource="mybatis/mappers/Rates.xml" />
     	<mapper resource="mybatis/mappers/dyuser.xml" />
     	<mapper resource="mybatis/mappers/Chat.xml" />
+    	<mapper resource="mybatis/mappers/admin.xml" />
+
     	<mapper resource="mybatis/mappers/YC-challenge.xml" />
     	<mapper resource="mybatis/mappers/JM-challenge.xml" />
     	<mapper resource="mybatis/mappers/dypointstore.xml" />

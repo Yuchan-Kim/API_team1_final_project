@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin">
+
+    <!-- 모든 유저 정보 불러오기 -->
+    <select id="selectAllUsers" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                users.userNum,
+                users.userName,
+                users.regionNum,
+                regions.regionName,
+                users.userEmail,
+                users.socialLogin,
+                users.usingProfilePic,
+                users.userStatus,
+                users.joinDate
+            FROM users
+            INNER JOIN regions ON users.regionNum = regions.regionNum;
+        ]]>
+    </select>
+    
+    <!-- 사용자 등록 추이 가져오기 -->
+    <select id="getSignupRate" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT DATE(joinDate) AS joinDate, COUNT(userNum) AS userCount
+				FROM users
+				WHERE joinDate IS NOT NULL
+				GROUP BY DATE(joinDate)
+				ORDER BY DATE(joinDate) ASC;
+        ]]>
+    </select>
+    
+    <!-- 판매 데이터 가져오기 -->
+    <select id="getSalesData" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                DATE_FORMAT(ph.purchasedDate, '%b %Y') AS month, 
+                IFNULL(SUM(i.itemCost), 0) AS sales
+            FROM purchaseHistory ph
+            JOIN item i ON ph.itemNum = i.itemNum
+            GROUP BY month
+            ORDER BY month;
+        ]]>
+    </select>
+    
+    <!-- 카테고리 분포 데이터 가져오기 -->
+    <select id="getCategoryDistribution" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                c.categoryName, 
+                COUNT(r.roomNum) AS roomCount
+            FROM roomInfo r
+            JOIN categories c ON r.categoryNum = c.categoryNum
+            GROUP BY c.categoryName
+            ORDER BY c.categoryName;
+        ]]>
+    </select>
+    
+    <!-- 카테고리 퍼포먼스 데이터 가져오기 -->
+    <select id="getCategoryPerformance" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                c.categoryName, 
+                COUNT(eu.enteredUserNum) AS categoryUserCount
+            FROM enteredUser eu
+            JOIN roomInfo r ON eu.roomNum = r.roomNum
+            JOIN categories c ON r.categoryNum = c.categoryNum
+            GROUP BY c.categoryName
+            ORDER BY categoryUserCount DESC;
+        ]]>
+    </select>
+    
+    <!-- 최근 구매 활동 데이터 가져오기 -->
+    <select id="getRecentActivities" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                ph.purchasedDate, 
+                u.userName, 
+                i.itemName, 
+                i.itemCost
+            FROM purchaseHistory ph
+            JOIN users u ON ph.userNum = u.userNum
+            JOIN item i ON ph.itemNum = i.itemNum
+            ORDER BY ph.purchasedDate DESC
+            LIMIT 10;
+        ]]>
+    </select>
+    
+    <!-- 주요 통계 데이터 가져오기 -->
+	<select id="getKeyStats" resultType="com.javaex.vo.AdminVo">
+	    <![CDATA[
+	        SELECT 
+	            (SELECT COUNT(*) FROM users) AS totalUsers,
+	            IFNULL((SELECT SUM(i.itemCost) FROM purchaseHistory ph JOIN item i ON ph.itemNum = i.itemNum), 0) AS totalSales,
+	            (SELECT COUNT(*) FROM purchaseHistory) AS totalOrders
+	    ]]>
+	</select>
+
+
+ <select id="selectAllItems" resultType="com.javaex.vo.AdminVo">
+        <![CDATA[
+            SELECT 
+                i.itemNum,
+                i.itemName,
+                ib.itemBrandName,
+                i.itemCost,
+                i.itemImg
+            FROM item i
+            JOIN itemBrand ib ON i.itemBrandNum = ib.itemBrandNum
+            ORDER BY i.itemNum ASC
+        ]]>
+    </select>
+   
+
+</mapper>
