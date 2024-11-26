@@ -2,6 +2,7 @@ package com.javaex.vo;
 
 public class HmkPointHistoryVo {
 	// 필드
+	private int historyNum;
 	private String date;
     private String purposeName;
     private int historyPoint;
@@ -12,15 +13,26 @@ public class HmkPointHistoryVo {
 	public HmkPointHistoryVo() {
 		super();
 	}
-	public HmkPointHistoryVo(String date, String purposeName, int historyPoint, String historyInfo, int total) {
+	
+    public HmkPointHistoryVo(int historyNum, String date, String purposeName, int historyPoint, String historyInfo,
+			int total) {
 		super();
+		this.historyNum = historyNum;
 		this.date = date;
 		this.purposeName = purposeName;
 		this.historyPoint = historyPoint;
 		this.historyInfo = historyInfo;
 		this.total = total;
 	}
-    // getter - setter
+
+	// getter - setter
+    
+    public int getHistoryNum() {
+		return historyNum;
+	}
+	public void setHistoryNum(int historyNum) {
+		this.historyNum = historyNum;
+	}
 	public String getDate() {
 		return date;
 	}
@@ -52,10 +64,11 @@ public class HmkPointHistoryVo {
 		this.total = total;
 	}
 	// 일반 메소드
+
 	@Override
 	public String toString() {
-		return "HmkPointHistoryVo [date=" + date + ", purposeName=" + purposeName + ", historyPoint=" + historyPoint
-				+ ", historyInfo=" + historyInfo + ", total=" + total + "]";
+		return "HmkPointHistoryVo [historyNum=" + historyNum + ", date=" + date + ", purposeName=" + purposeName
+				+ ", historyPoint=" + historyPoint + ", historyInfo=" + historyInfo + ", total=" + total + "]";
 	}
 	
     

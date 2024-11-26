@@ -122,15 +122,23 @@ public class HmkMypageController {
 	/* 포인트 상세 내역 리스트 */
 	@GetMapping("/{userNum}/pointHistory")
 	public JsonResult getPointHistory(@PathVariable int userNum, @RequestParam(required = false) String startDate,
-			@RequestParam(required = false) String endDate, HttpServletRequest request) {
-		// JWT 토큰에서 사용자 번호 추출 (보안 강화)
+			@RequestParam(required = false) String endDate, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
+
 		Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
 		if (jwtUserNum == null || jwtUserNum != userNum) {
 			return JsonResult.fail("권한이 없는 사용자입니다.");
 		}
-		List<HmkPointHistoryVo> history = mypageService.getPointHistory(userNum, startDate, endDate);
-		System.out.println("이 회원의 포인트 내역 기간: " + history);
-		return JsonResult.success(history);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("userNum", userNum);
+		params.put("startDate", startDate);
+		params.put("endDate", endDate);
+		params.put("page", page * size); // OFFSET 계산
+		params.put("size", size);
+
+		Map<String, Object> response = mypageService.getPointHistory(userNum, params);
+		return JsonResult.success(response);
 	}
 
 	// 프로필 이미지 업데이트
@@ -194,32 +202,30 @@ public class HmkMypageController {
 	// 비밀번호 존재 확인(socialLogin 확인용)
 	@GetMapping("/{userNum}/checkPassword")
 	public JsonResult checkPasswordExists(@PathVariable int userNum) {
-	    try {
-	        String userPw = mypageService.getUserPassword(userNum);
-	        // data 객체 안에 passwordExists 값을 넣어서 반환
-	        Map<String, Boolean> data = new HashMap<>();
-	        data.put("passwordExists", userPw != null && !userPw.isEmpty());
-	        return JsonResult.success(data);
-	    } catch (Exception e) {
-	        return JsonResult.fail(e.getMessage());
-	    }
+		try {
+			String userPw = mypageService.getUserPassword(userNum);
+			// data 객체 안에 passwordExists 값을 넣어서 반환
+			Map<String, Boolean> data = new HashMap<>();
+			data.put("passwordExists", userPw != null && !userPw.isEmpty());
+			return JsonResult.success(data);
+		} catch (Exception e) {
+			return JsonResult.fail(e.getMessage());
+		}
 	}
 
 	// 비밀번호 업데이트
 	@PutMapping("/{userNum}/updatePassword")
 	public JsonResult updatePassword(@PathVariable int userNum, @RequestBody HmkUserVo userVo) {
-	    userVo.setUserNum(userNum);
-	    boolean hasPassword = mypageService.getUserPassword(userNum) != null;
-	    
-	    if (!hasPassword) {
-	        boolean success = mypageService.updatePassword(userVo);
-	        return success ? JsonResult.success("비밀번호가 성공적으로 설정되었습니다.") 
-	                      : JsonResult.fail("비밀번호 설정에 실패했습니다.");
-	    } else {
-	        boolean success = mypageService.updatePassword(userVo);
-	        return success ? JsonResult.success("비밀번호가 성공적으로 변경되었습니다.") 
-	                      : JsonResult.fail("비밀번호 변경에 실패했습니다.");
-	    }
+		userVo.setUserNum(userNum);
+		boolean hasPassword = mypageService.getUserPassword(userNum) != null;
+
+		if (!hasPassword) {
+			boolean success = mypageService.updatePassword(userVo);
+			return success ? JsonResult.success("비밀번호가 성공적으로 설정되었습니다.") : JsonResult.fail("비밀번호 설정에 실패했습니다.");
+		} else {
+			boolean success = mypageService.updatePassword(userVo);
+			return success ? JsonResult.success("비밀번호가 성공적으로 변경되었습니다.") : JsonResult.fail("비밀번호 변경에 실패했습니다.");
+		}
 	}
 
 	// 회원 보관함 기프티콘 리스트 조회
@@ -260,36 +266,33 @@ public class HmkMypageController {
 			return JsonResult.fail("서버 오류로 인해 기프티콘 사용 처리에 실패했습니다.");
 		}
 	}
-	
+
 	// 알림 요약 정보 조회 엔드포인트
-    @GetMapping("/{userNum}/noticeSummary")
-    public JsonResult getNoticeSummary(@PathVariable int userNum, HttpServletRequest request) {
-        // JWT 토큰에서 사용자 번호 추출 (보안 강화)
-        Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
-        if (jwtUserNum == null || jwtUserNum != userNum) {
-            return JsonResult.fail("권한이 없는 사용자입니다.");
-        }
+	@GetMapping("/{userNum}/noticeSummary")
+	public JsonResult getNoticeSummary(@PathVariable int userNum, HttpServletRequest request) {
+		// JWT 토큰에서 사용자 번호 추출 (보안 강화)
+		Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
+		if (jwtUserNum == null || jwtUserNum != userNum) {
+			return JsonResult.fail("권한이 없는 사용자입니다.");
+		}
 
-        HmkNoticeSummaryVo summary = mypageService.getNoticeSummary(userNum);
-        System.out.println("알림 요약: "+summary);
-        return JsonResult.success(summary);
-    }
+		HmkNoticeSummaryVo summary = mypageService.getNoticeSummary(userNum);
+		System.out.println("알림 요약: " + summary);
+		return JsonResult.success(summary);
+	}
 
- // 알림 리스트 조회 엔드포인트
-    @GetMapping("/{userNum}/notices")
-    public JsonResult getNotices(
-            @PathVariable int userNum,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            HttpServletRequest request) {
-        // JWT 토큰에서 사용자 번호 추출 (보안 강화)
-        Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
-        if (jwtUserNum == null || jwtUserNum != userNum) {
-            return JsonResult.fail("권한이 없는 사용자입니다.");
-        }
+	// 알림 리스트 조회 엔드포인트
+	@GetMapping("/{userNum}/notices")
+	public JsonResult getNotices(@PathVariable int userNum, @RequestParam(required = false) String startDate,
+			@RequestParam(required = false) String endDate, HttpServletRequest request) {
+		// JWT 토큰에서 사용자 번호 추출 (보안 강화)
+		Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
+		if (jwtUserNum == null || jwtUserNum != userNum) {
+			return JsonResult.fail("권한이 없는 사용자입니다.");
+		}
 
-        List<HmkNoticeVo> notices = mypageService.getNotices(userNum, startDate, endDate);
-        System.out.println("알림들이 머가 있니?: " + notices);
-        return JsonResult.success(notices);
-    }
+		List<HmkNoticeVo> notices = mypageService.getNotices(userNum, startDate, endDate);
+		System.out.println("알림들이 머가 있니?: " + notices);
+		return JsonResult.success(notices);
+	}
 }

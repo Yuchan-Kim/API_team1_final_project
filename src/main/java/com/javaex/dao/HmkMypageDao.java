@@ -135,10 +135,15 @@ public class HmkMypageDao {
 		return sqlSession.selectOne("Mypage.getPointSummary", userNum);
 	}
 
-	// ** 포인트 상세 내역 조회**
-	public List<HmkPointHistoryVo> getPointHistory(int userNum, Map<String, Object> params) {
-		return sqlSession.selectList("Mypage.getPointHistory", params);
-	}
+	 // 포인트 상세 내역 조회 (페이징 처리)
+    public List<HmkPointHistoryVo> getPointHistory(Map<String, Object> params) {
+        return sqlSession.selectList("Mypage.getPointHistory", params);
+    }
+
+    // 전체 포인트 내역 수 조회 (페이징을 위한 총 개수)
+    public int getTotalPointHistoryCount(Map<String, Object> params) {
+        return sqlSession.selectOne("Mypage.getTotalPointHistoryCount", params);
+    }
 
 	// 알림 요약 정보 조회
 	public HmkNoticeSummaryVo getNoticeSummary(int userNum) {

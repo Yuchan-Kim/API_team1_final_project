@@ -462,48 +462,67 @@
 	<!-- 포인트 상세 내역 조회 -->
 	<select id="getPointHistory" parameterType="map"
 		resultType="com.javaex.vo.HmkPointHistoryVo">
-    <![CDATA[
-    SELECT 
-        DATE_FORMAT(ph.historyDate, '%Y-%m-%d') as date,
-        pp.purposeName,
-        ph.historyPoint,
-        ph.historyInfo,
-        (
-            SELECT COALESCE(
-                SUM(CASE 
-                    WHEN ph2.historyInfo = '+' THEN ph2.historyPoint 
-                    WHEN ph2.historyInfo = '-' THEN -ph2.historyPoint 
-                    ELSE 0 
-                END), 0
-            )
-            FROM pointHistory ph2
-            WHERE ph2.userNum = ph.userNum
-            AND (ph2.historyDate < ph.historyDate 
-                OR (ph2.historyDate = ph.historyDate 
-                    AND ph2.historyNum <= ph.historyNum)
-            )
-        ) as total
-    FROM pointHistory ph
-    JOIN pointPurpose pp ON ph.pointPurposeNum = pp.pointPurposeNum
-    WHERE ph.userNum = #{userNum}
-    ]]>
-
+	<![CDATA[
+	    SELECT 
+	        DATE_FORMAT(ph.historyDate, '%Y-%m-%d') AS date,
+	        ph.historyNum,
+	        pp.purposeName,
+	        ph.historyPoint,
+	        ph.historyInfo,
+	        (
+	            SELECT COALESCE(
+	                SUM(CASE 
+	                    WHEN ph2.historyInfo = '+' THEN ph2.historyPoint 
+	                    WHEN ph2.historyInfo = '-' THEN -ph2.historyPoint 
+	                    ELSE 0 
+	                END), 0
+	            )
+	            FROM pointHistory ph2
+	            WHERE ph2.userNum = ph.userNum
+	            AND (ph2.historyDate < ph.historyDate 
+	                OR (ph2.historyDate = ph.historyDate 
+	                    AND ph2.historyNum <= ph.historyNum)
+	            )
+	        ) AS total
+	    FROM pointHistory ph
+	    JOIN pointPurpose pp ON ph.pointPurposeNum = pp.pointPurposeNum
+	    WHERE ph.userNum = #{userNum}
+	]]>
 		<if test="startDate != null">
-        <![CDATA[
-        AND ph.historyDate >= #{startDate}
-        ]]>
-		</if>
-
-		<if test="endDate != null">
-        <![CDATA[
-        AND ph.historyDate <= #{endDate}
-        ]]>
-		</if>
-    
-    <![CDATA[
-    ORDER BY ph.historyDate DESC, ph.historyNum DESC
+    <![CDATA[ 
+        AND ph.historyDate >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
     ]]>
+    </if>
+		<if test="endDate != null">
+    <![CDATA[ 
+        AND ph.historyDate < STR_TO_DATE(#{endDate}, '%Y-%m-%d') + INTERVAL 1 DAY
+    ]]>
+    </if>
+	<![CDATA[
+	    ORDER BY ph.historyDate DESC, ph.historyNum DESC
+	    LIMIT #{size} OFFSET #{page}
+	]]>
 	</select>
+
+	<!-- 전체 포인트 내역 수 조회 추가 -->
+	<select id="getTotalPointHistoryCount" parameterType="map" resultType="int">
+	<![CDATA[
+	    SELECT COUNT(*)
+	    FROM pointHistory ph
+	    WHERE ph.userNum = #{userNum}
+	]]>
+		<if test="startDate != null">
+    <![CDATA[ 
+        AND ph.historyDate >= STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+    ]]>
+    </if>
+		<if test="endDate != null">
+    <![CDATA[ 
+        AND ph.historyDate < STR_TO_DATE(#{endDate}, '%Y-%m-%d') + INTERVAL 1 DAY
+    ]]>
+    </if>
+	</select>
+
 
 	<!-- 회원 보관함 기프티콘 리스트 조회 -->
 	<select id="getUserGiftCards" parameterType="int"
