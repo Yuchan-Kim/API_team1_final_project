@@ -13,6 +13,8 @@ import com.javaex.service.OpenAiService;
 import com.javaex.util.JsonResult;
 import com.javaex.vo.ChallengeVo;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/genebang")
 public class OpenAiController {
@@ -29,13 +31,28 @@ public class OpenAiController {
     	System.out.println("컨트롤러 데이터 확인"+challenges);
         return JsonResult.success(challenges);
     }
-//
-//    // 4. 선택된 챌린지 저장하기
-//    @PostMapping("/saveOpenAiMission")
-//    public JsonResult saveSelectedChallenge(@RequestBody ChallengeVo challengevo) {
-//   
-//    	openAiService.saveSelectedChallenge(challengevo);
-//            
-//        return JsonResult.success("챌린지가 성공적으로 저장되었습니다.");
-//    }
+
+    // 4. 선택된 챌린지 저장하기
+    @PostMapping("/saveOpenAiMission/{roomNum}")
+    public JsonResult saveSelectedChallenge(
+    		@PathVariable int roomNum,
+    		@RequestParam String AiMission,
+    		@RequestParam int Count,
+    		@RequestParam String MissionName,
+    		HttpServletRequest request) {
+    	System.out.println("rrrrrrrrrrr");
+    	System.out.println("AiMission: "+AiMission);
+    	System.out.println("Count: "+Count);
+    	System.out.println("MissionName: "+MissionName);
+    	
+    	ChallengeVo challengevo = new ChallengeVo();
+    	challengevo.setRoomNum(roomNum);
+    	challengevo.setAiMission(AiMission);
+    	challengevo.setCount(Count);
+    	challengevo.setMissionName(MissionName);
+    	
+    	openAiService.saveSelectedChallenge(challengevo);
+            
+        return JsonResult.success("챌린지가 성공적으로 저장되었습니다.");
+    }
 }

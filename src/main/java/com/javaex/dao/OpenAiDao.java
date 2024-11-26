@@ -39,12 +39,29 @@ public class OpenAiDao {
 		return mission;
 	}
 	
+	// 8번 요일 등록
+	public int insertRoomDay (ChallengeVo challengevo) {
+		session.insert("openAi.insertRoomDay", challengevo);
+		return challengevo.getRoomDayNum();
+	}
+	
 	// 미션 등록
     public int insertMission(ChallengeVo challengevo) {
-        int count = session.insert("generation.insertMission", challengevo);
+        int count = session.insert("openAi.insertMission", challengevo);
         return count;
     }
 	
-	
+    // 미션넘버 가져오기
+    public List<ChallengeVo> getMissionNum(ChallengeVo challengevo) {
+		List<ChallengeVo> missionNum = session.selectList("openAi.getMissionNum",challengevo);
+		return missionNum;
+	}
+    
+    // 일반미션 업데이트
+    public int updateMission(ChallengeVo challengevo) {
+        int count = session.update("openAi.updateMission", challengevo);
+        System.out.println(count);
+        return count;
+    }
 
 }

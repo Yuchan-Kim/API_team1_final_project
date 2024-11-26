@@ -152,6 +152,26 @@ public class OpenAiService {
 
     // 미션 저장 메서드
     public int saveSelectedChallenge(ChallengeVo challengeVo) {
-        return openAiDao.insertMission(challengeVo);
+    	
+    	// 8번 요일 등록
+    	int roomDayNum = openAiDao.insertRoomDay(challengeVo);
+    	challengeVo.setRoomDayNum(roomDayNum);
+    	
+    	// 챌린지미션 등록
+        openAiDao.insertMission(challengeVo);
+        
+        // 미션 넘버 리스트가져오기
+        List<ChallengeVo> missionList = openAiDao.getMissionNum(challengeVo);
+        
+        int count = -1;
+        for(int i = 0; i < missionList.size(); i++) {
+        	
+        	int missionNum = missionList.get(i).getMissionNum();
+        	challengeVo.setMissionNum(missionNum);
+        	
+        	count = openAiDao.updateMission(challengeVo);
+        }
+        
+        return count;
     }
 }

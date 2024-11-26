@@ -64,11 +64,41 @@
         ]]>
     </insert>
     
+    <!-- 8번요일 넣기 (챌린지용) -->
+    <insert id="insertRoomDay" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="roomDayNum">
+    	<![CDATA[ 
+    		INSERT INTO `roomDay` (dateNum, roomNum)
+        	VALUES (8, #{roomNum})
+    	]]>
+    </insert>
+    
     <!-- 미션 등록 -->
     <insert id="insertMission" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
-        	INSERT INTO challenges (missionTypeNum, roomDayNum, missionName, missionGoal)
-        	VALUES (3, 8, #{missionName}, #{missionGoal})
+        	INSERT INTO challenges (missionTypeNum, roomDayNum, missionName, missionGoal, missionAI)
+        	VALUES (3, #{roomDayNum}, #{aiMission}, #{count}, #{missionName})
         ]]>
     </insert>
+    
+    <!-- 미션넘버 가져오기 -->
+    <select id="getMissionNum" parameterType="com.javaex.vo.ChallengeVo" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+    		SELECT c.missionNum AS missionNum
+				FROM challenges c
+				JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+				JOIN roomInfo ri ON rd.roomNum = ri.roomNum
+				WHERE ri.roomNum = #{roomNum}
+			 AND c.missionName = #{missionName}
+    	]]>
+    </select>
+    
+    <!-- 일반 미션 업데이트 -->
+    <update id="updateMission" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+    		UPDATE challenges
+    		SET missionAI = true
+    		WHERE missionNum = #{missionNum}
+    	]]>
+    </update>
+    
 </mapper>
