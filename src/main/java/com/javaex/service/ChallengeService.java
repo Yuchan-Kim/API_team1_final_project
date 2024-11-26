@@ -27,6 +27,8 @@ public class ChallengeService {
 		System.out.println("ChallengeService.getRoomHeaderInfo()");
 		return challengeDao.getRoomHeaderInfo(roomNum, userNum);
 	}
+	
+	
 
 
 	// 사용자 권한 조회
@@ -132,23 +134,7 @@ public class ChallengeService {
 		return challengeDao.updateRoomStatus(roomNum, 4) > 0;
 	}
 
-	// 사용자 참가 여부 확인
-	public boolean checkUserJoined(int roomNum, int userNum) {
-		System.out.println("ChallengeService.checkUserJoined()");
-		return challengeDao.checkUserJoined(roomNum, userNum) > 0;
-	}
 
-	@Transactional
-    public boolean joinRoom(int roomNum, int userNum) {
-        System.out.println("ChallengeService.joinRoom()");
-        return challengeDao.joinRoom(roomNum, userNum) > 0;
-    }
-
-	
-	public ChallengeVo getUserDetails(int userNum, int roomNum) {
-        System.out.println("ChallengeService.getUserDetails()");
-        return challengeDao.getUserDetails(userNum, roomNum);
-    }
 
     public boolean insertPointHistory(int userNum, int points, int purposeNum, String info) {
         System.out.println("ChallengeService.insertPointHistory()");
@@ -207,5 +193,66 @@ public class ChallengeService {
 
 		return true;
 	}
+	
+	
+
+	
+	public ChallengeVo getUserStatus(int roomNum, int userNum) {
+	    System.out.println("ChallengeService.getUserStatus()");
+	    return challengeDao.getUserStatus(roomNum, userNum);
+	}
+	
+	
+	
+	@Transactional
+	public boolean joinRoom(int roomNum, int userNum) {
+	    System.out.println("ChallengeService.joinRoom() - roomNum: " + roomNum + ", userNum: " + userNum);
+	    boolean result = challengeDao.joinRoom(roomNum, userNum) > 0;
+	    System.out.println("ChallengeService.joinRoom() - joinRoom result: " + result);
+	    return result;
+	}
+
+	public boolean roomEnterPoint(int userNum, int roomEnterPoint) {
+	    System.out.println("ChallengeService.roomEnterPoint() - userNum: " + userNum + ", roomEnterPoint: " + roomEnterPoint);
+	    boolean result = challengeDao.roomEnterPoint(userNum, roomEnterPoint) > 0;
+	    System.out.println("ChallengeService.roomEnterPoint() - roomEnterPoint result: " + result);
+	    return result;
+	}
+
+	public boolean reactivateUser(int roomNum, int userNum) {
+	    System.out.println("ChallengeService.reactivateUser() - roomNum: " + roomNum + ", userNum: " + userNum);
+	    boolean result = challengeDao.updateEnteredUserStatus(roomNum, userNum, 1) > 0;
+	    System.out.println("ChallengeService.reactivateUser() - reactivateUser result: " + result);
+	    return result;
+	}
+
+	public int checkUserJoined(int roomNum, int userNum) {
+	    System.out.println("ChallengeService.checkUserJoined() - roomNum: " + roomNum + ", userNum: " + userNum);
+	    int result = challengeDao.checkUserJoined(roomNum, userNum);
+	    System.out.println("ChallengeService.checkUserJoined() - result: " + result);
+	    return result;
+	}
+
+	public ChallengeVo getUserDetails(int userNum, int roomNum) {
+	    System.out.println("ChallengeService.getUserDetails() - userNum: " + userNum + ", roomNum: " + roomNum);
+	    ChallengeVo userDetails = challengeDao.getUserDetails(userNum, roomNum);
+	    System.out.println("ChallengeService.getUserDetails() - userDetails: " + userDetails);
+	    return userDetails;
+	}
+
+	public int getEnteredUserNum(int roomNum) {
+	    System.out.println("ChallengeService.getEnteredUserNum() - roomNum: " + roomNum);
+	    int count = challengeDao.getEnteredUserNum(roomNum);
+	    System.out.println("ChallengeService.getEnteredUserNum() - participant count: " + count);
+	    return count;
+	}
+
+	public int checkPoint(int userNum) {
+	    System.out.println("ChallengeService.checkPoint() - userNum: " + userNum);
+	    int points = challengeDao.checkPoint(userNum);
+	    System.out.println("ChallengeService.checkPoint() - points: " + points);
+	    return points;
+	}
+
 
 }

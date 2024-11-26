@@ -1,22 +1,18 @@
 // ChallengeController.java
 package com.javaex.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 // 추가된 import 문
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -221,29 +217,162 @@ public class ChallengeController {
 
 	@PostMapping("/join/{roomNum}")
 	public JsonResult joinRoom(@PathVariable int roomNum, HttpServletRequest request) {
-	    System.out.println("ChallengeController.joinRoom()");
+	    System.out.println("ChallengeController.joinRoom() - Attempting to join room: " + roomNum);
 
 	    // JWT를 통해 사용자 인증
 	    int userNum = JwtUtil.getNoFromHeader(request);
+	    System.out.println("Authenticated userNum: " + userNum);
 	    if (userNum <= 0) {
+	        System.out.println("Authentication failed for userNum: " + userNum);
 	        return JsonResult.fail("인증되지 않은 사용자입니다.");
 	    }
 
-	    // 이미 참가했는지 확인 (enteredUserStatusNum != 2 인 경우)
-	    boolean alreadyJoined = challengeService.checkUserJoined(roomNum, userNum);
-	    if (alreadyJoined) {
+	    // 방 정보 조회
+	    List<ChallengeVo> roomInfo = challengeService.exeGetRoomInfo(roomNum);
+	    System.out.println("Room info retrieved: " + roomInfo);
+	    if (roomInfo == null || roomInfo.isEmpty()) {
+	        System.out.println("Room not found: " + roomNum);
+	        return JsonResult.fail("존재하지 않는 방입니다.");
+	    }
+
+	    // 이미 참가했는지 확인
+	    int alreadyJoined = challengeService.checkUserJoined(roomNum, userNum);
+	    System.out.println("User already joined: " + alreadyJoined);
+	    if (alreadyJoined > 0) {
+	        System.out.println("User already participated in room: " + roomNum);
 	        return JsonResult.fail("이미 참가한 챌린지입니다.");
 	    }
 
-	    // 참가 서비스 호출
-	    boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
-	    if (joinSuccess) {
-	        int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
-	        return JsonResult.success(enteredUserAuth);
-	    } else {
-	        return JsonResult.fail("참가에 실패했습니다.");
+	    // 현재 방의 최대 인원과 현재 참여자 수 조회
+	    int enteredUser = challengeService.getEnteredUserNum(roomNum);
+	    System.out.println("Current entered user count: " + enteredUser + " / Max: " + roomInfo.get(0).getRoomMaxNum());
+	    if (enteredUser >= roomInfo.get(0).getRoomMaxNum()) {
+	        System.out.println("Room is full: " + roomNum);
+	        return JsonResult.fail("인원이 다 차서 참여할 수 없습니다.");
 	    }
+
+	    // 유저 보유 포인트 확인
+	    int remainingPT = challengeService.checkPoint(userNum);
+	    System.out.println("User remaining points: " + remainingPT);
+	    if (remainingPT < roomInfo.get(0).getRoomPoint()) {
+	        System.out.println("Insufficient points for user: " + userNum);
+	        return JsonResult.fail("포인트가 부족합니다.");
+	    }
+
+	    // 유저 상태 확인
+	    ChallengeVo existingUser = challengeService.getUserStatus(roomNum, userNum);
+	    System.out.println("Existing user status: " + existingUser);
+
+	    // 방 유형에 따른 처리
+	    if (roomInfo.get(0).getRoomTypeName().equals("일반")) {
+	        System.out.println("Room type: 일반");
+	        // 일반 방 처리
+	        if (existingUser != null && existingUser.getEnteredUserStatusNum() == 2) {
+	            System.out.println("Reactivating user participation");
+	            boolean updateSuccess = challengeService.reactivateUser(roomNum, userNum);
+	            System.out.println("Reactivation success: " + updateSuccess);
+	            if (updateSuccess) {
+	                return JsonResult.success("참여 상태로 변경되었습니다.");
+	            } else {
+	                System.out.println("Failed to reactivate user participation");
+	                return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
+	            }
+	        } else if (existingUser == null) {
+	            System.out.println("Adding new participant");
+	            // 새로운 참가자 추가
+	            boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
+	            System.out.println("Join room success: " + joinSuccess);
+	            if (joinSuccess) {
+	                int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
+	                System.out.println("Entered user auth: " + enteredUserAuth);
+	                ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
+	                System.out.println("User details: " + userDetails);
+	                Map<String, Object> responseData = new HashMap<>();
+	                responseData.put("enteredUserAuth", enteredUserAuth);
+	                responseData.put("userDetails", userDetails);
+	                return JsonResult.success(responseData);
+	            } else {
+	                System.out.println("Failed to join room");
+	                return JsonResult.fail("참가에 실패했습니다.");
+	            }
+	        }
+	    } else {
+	        System.out.println("Room type: " + roomInfo.get(0).getRoomTypeName());
+	        // 챌린지 방 처리
+	        if (roomInfo.get(0).getRoomPoint() > 0 && roomInfo.get(0).getRoomRate() < 0) {
+	            System.out.println("Handling 챌린지 방 with roomPoint > 0 and roomRate >= 0");
+	            if (existingUser != null && existingUser.getEnteredUserStatusNum() == 2) {
+	                System.out.println("Reactivating user participation and deducting roomEnterPoint");
+	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
+	                boolean updateSuccess = challengeService.reactivateUser(roomNum, userNum);
+	                System.out.println("Reactivation success: " + updateSuccess);
+	                if (updateSuccess) {
+	                    return JsonResult.success("참여 상태로 변경되었습니다.");
+	                } else {
+	                    System.out.println("Failed to reactivate user participation");
+	                    return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
+	                }
+	            } else if (existingUser == null) {
+	                System.out.println("Deducting roomEnterPoint and adding new participant");
+	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
+	                boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
+	                System.out.println("Join room success: " + joinSuccess);
+	                if (joinSuccess) {
+	                    int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
+	                    System.out.println("Entered user auth: " + enteredUserAuth);
+	                    ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
+	                    System.out.println("User details: " + userDetails);
+	                    Map<String, Object> responseData = new HashMap<>();
+	                    responseData.put("enteredUserAuth", enteredUserAuth);
+	                    responseData.put("userDetails", userDetails);
+	                    return JsonResult.success(responseData);
+	                } else {
+	                    System.out.println("Failed to join room");
+	                    return JsonResult.fail("참가에 실패했습니다.");
+	                }
+	            }
+	        } else if (roomInfo.get(0).getRoomPoint() > 0 && roomInfo.get(0).getRoomRate() > 0) {
+	            System.out.println("Handling 챌린지 방 with roomPoint > 0 and roomRate > 0");
+	            if (existingUser != null && existingUser.getEnteredUserStatusNum() == 2) {
+	                System.out.println("Reactivating user participation and deducting roomEnterPoint");
+	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
+	                boolean updateSuccess = challengeService.reactivateUser(roomNum, userNum);
+	                System.out.println("Reactivation success: " + updateSuccess);
+	                if (updateSuccess) {
+	                    return JsonResult.success("참여 상태로 변경되었습니다.");
+	                } else {
+	                    System.out.println("Failed to reactivate user participation");
+	                    return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
+	                }
+	            } else if (existingUser == null) {
+	                System.out.println("Deducting roomEnterPoint and adding new participant");
+	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
+	                boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
+	                System.out.println("Join room success: " + joinSuccess);
+	                if (joinSuccess) {
+	                    int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
+	                    System.out.println("Entered user auth: " + enteredUserAuth);
+	                    ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
+	                    System.out.println("User details: " + userDetails);
+	                    Map<String, Object> responseData = new HashMap<>();
+	                    responseData.put("enteredUserAuth", enteredUserAuth);
+	                    responseData.put("userDetails", userDetails);
+	                    return JsonResult.success(responseData);
+	                } else {
+	                    System.out.println("Failed to join room");
+	                    return JsonResult.fail("참가에 실패했습니다.");
+	                }
+	            }
+	        }
+	    }
+
+	    // 모든 조건을 만족하지 못하는 경우 실패 응답 반환
+	    System.out.println("All conditions failed, returning failure");
+	    return JsonResult.fail("참가에 실패했습니다.");
 	}
+
+
+
 
 
 	// **모집 시작 엔드포인트**

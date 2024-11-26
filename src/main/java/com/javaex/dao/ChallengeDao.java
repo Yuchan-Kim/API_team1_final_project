@@ -28,6 +28,8 @@ public class ChallengeDao {
     public ChallengeVo getUserDetails(int userNum) {
         return sqlSession.selectOne(namespace + ".selectUserDetails", userNum);
     }
+    
+   
 
     // **포인트 히스토리 삽입 메서드**
     public int insertPointHistory(ChallengeVo pointHistory) {
@@ -75,13 +77,6 @@ public class ChallengeDao {
 		params.put("roomNum", roomNum);
 		return sqlSession.update(namespace + ".startChallenge", params);
 	}
-	public ChallengeVo getUserDetails(int userNum, int roomNum) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("userNum", userNum);
-        params.put("roomNum", roomNum);
-        return sqlSession.selectOne(namespace + ".getUserDetails", params);
-    }
-
  
 
 	// 방 삭제: roomInfo 데이터 삭제
@@ -139,53 +134,6 @@ public class ChallengeDao {
 		return sqlSession.update(namespace + ".updateRoomStatus", params);
 	}
 
-	// ChallengeDao.java - checkUserJoined 메서드
-	public int checkUserJoined(int roomNum, int userNum) {
-	    System.out.println("ChallengeDao.checkUserJoined()");
-	    Map<String, Object> params = new HashMap<>();
-	    params.put("roomNum", roomNum);
-	    params.put("userNum", userNum);
-	    params.put("excludeStatusNum", 2);
-	    return sqlSession.selectOne(namespace + ".checkUserJoined", params);
-	}
-
-
-	// ChallengeDao.java - joinRoom 메서드 수정
-	public int joinRoom(int roomNum, int userNum) {
-	    System.out.println("ChallengeDao.joinRoom() - roomNum: " + roomNum + ", userNum: " + userNum);
-	    ChallengeVo existingUser = sqlSession.selectOne(namespace + ".selectEnteredUser", Map.of("roomNum", roomNum, "userNum", userNum));
-	    
-	    if (existingUser != null) {
-	        System.out.println("Existing user found with enteredUserStatusNum: " + existingUser.getEnteredUserStatusNum());
-	        if (existingUser.getEnteredUserStatusNum() == 2) {
-	            // 기존 레코드를 업데이트하여 다시 참여 상태로 변경
-	            Map<String, Object> params = new HashMap<>();
-	            params.put("roomNum", roomNum);
-	            params.put("userNum", userNum);
-	            params.put("enteredUserStatusNum", 1);
-	            params.put("enteredUserAuth", 2); // 필요에 따라 수정
-	            int updatedRows = sqlSession.update(namespace + ".updateEnteredUser", params);
-	            System.out.println("Updated enteredUserStatusNum to 1, rows affected: " + updatedRows);
-	            return updatedRows;
-	        } else {
-	            // 이미 참여 중인 경우
-	            System.out.println("User is already participating in the room.");
-	            return 0;
-	        }
-	    } else {
-	        // 새로운 참가자 등록
-	        System.out.println("No existing user found. Inserting new enteredUser record.");
-	        Map<String, Object> params = new HashMap<>();
-	        params.put("roomNum", roomNum);
-	        params.put("userNum", userNum);
-	        params.put("enteredUserStatusNum", 1);
-	        params.put("enteredUserAuth", 2);
-	        int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
-	        System.out.println("Inserted new enteredUser record, rows affected: " + insertedRows);
-	        return insertedRows;
-	    }
-	}
-
 
 
 
@@ -211,13 +159,106 @@ public class ChallengeDao {
 		return sqlSession.update(namespace + ".updateEnteredUserAuth", params);
 	}
 
-	// enteredUserStatusNum 업데이트
+	
+
+	public ChallengeVo getUserStatus(int roomNum, int userNum) {
+	    System.out.println("ChallengeDao.getUserStatus()");
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("roomNum", roomNum);
+	    params.put("userNum", userNum);
+	    return sqlSession.selectOne("challenge.getUserStatus", params);
+	}
+
+	
+	
+	public int getEnteredUserNum(int roomNum) {
+	    return sqlSession.selectOne(namespace + ".getEnteredUserNum", roomNum);
+	}
+	
+	public int getroomMaxNum(int roomNum) {
+		return sqlSession.selectOne("challenge.getRoomMaxNum");
+	}
+	
+	public Integer checkPoint(int userNum) {
+	    Integer result = sqlSession.selectOne(namespace + ".getUserPoints", userNum);
+	    return result != null ? result : 0; // null일 경우 0 반환
+	}
+
+	public int joinRoom(int roomNum, int userNum) {
+	    System.out.println("ChallengeDao.joinRoom() - roomNum: " + roomNum + ", userNum: " + userNum);
+	    ChallengeVo existingUser = sqlSession.selectOne(namespace + ".selectEnteredUser", Map.of("roomNum", roomNum, "userNum", userNum));
+	    
+	    if (existingUser != null) {
+	        System.out.println("ChallengeDao.joinRoom() - Existing user found with enteredUserStatusNum: " + existingUser.getEnteredUserStatusNum());
+	        if (existingUser.getEnteredUserStatusNum() == 2) {
+	            // 기존 레코드를 업데이트하여 다시 참여 상태로 변경
+	            Map<String, Object> params = new HashMap<>();
+	            params.put("roomNum", roomNum);
+	            params.put("userNum", userNum);
+	            params.put("enteredUserStatusNum", 1);
+	            params.put("enteredUserAuth", 2); // 필요에 따라 수정
+	            int updatedRows = sqlSession.update(namespace + ".updateEnteredUser", params);
+	            System.out.println("ChallengeDao.joinRoom() - Updated enteredUserStatusNum to 1, rows affected: " + updatedRows);
+	            return updatedRows;
+	        } else {
+	            // 이미 참여 중인 경우
+	            System.out.println("ChallengeDao.joinRoom() - User is already participating in the room.");
+	            return 0;
+	        }
+	    } else {
+	        // 새로운 참가자 등록
+	        System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("roomNum", roomNum);
+	        params.put("userNum", userNum);
+	        params.put("enteredUserStatusNum", 1);
+	        params.put("enteredUserAuth", 2);
+	        int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
+	        System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
+	        return insertedRows;
+	    }
+	}
+
+	public int roomEnterPoint(int userNum, int roomEnterPoint) {
+	    System.out.println("ChallengeDao.roomEnterPoint() - userNum: " + userNum + ", roomEnterPoint: " + roomEnterPoint);
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("userNum", userNum);
+	    params.put("roomEnterPoint", roomEnterPoint);
+	    int result = sqlSession.insert(namespace + ".roomEnterPoint", params);
+	    System.out.println("ChallengeDao.roomEnterPoint() - Insert result: " + result);
+	    return result;
+	}
+
 	public int updateEnteredUserStatus(int roomNum, int userNum, int newStatus) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("roomNum", roomNum);
-		params.put("userNum", userNum);
-		params.put("enteredUserStatusNum", newStatus);
-		return sqlSession.update(namespace + ".updateEnteredUserStatus", params);
+	    System.out.println("ChallengeDao.updateEnteredUserStatus() - roomNum: " + roomNum + ", userNum: " + userNum + ", newStatus: " + newStatus);
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("roomNum", roomNum);
+	    params.put("userNum", userNum);
+	    params.put("enteredUserStatusNum", newStatus);
+	    int result = sqlSession.update("challenge.updateEnteredUserStatus", params);
+	    System.out.println("ChallengeDao.updateEnteredUserStatus() - Update result: " + result);
+	    return result;
+	}
+
+	public int checkUserJoined(int roomNum, int userNum) {
+	    System.out.println("ChallengeDao.checkUserJoined() - roomNum: " + roomNum + ", userNum: " + userNum);
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("roomNum", roomNum);
+	    params.put("userNum", userNum);
+	    params.put("excludeStatusNum", 2);
+	    int count = sqlSession.selectOne(namespace + ".checkUserJoined", params);
+	    System.out.println("ChallengeDao.checkUserJoined() - count: " + count);
+	    return count;
+	}
+
+	public ChallengeVo getUserDetails(int userNum, int roomNum) {
+	    System.out.println("ChallengeDao.getUserDetails() - userNum: " + userNum + ", roomNum: " + roomNum);
+	    Map<String, Object> params = new HashMap<>();
+	    params.put("userNum", userNum);
+	    params.put("roomNum", roomNum);
+	    ChallengeVo userDetails = sqlSession.selectOne(namespace + ".getUserDetails", params);
+	    System.out.println("ChallengeDao.getUserDetails() - userDetails: " + userDetails);
+	    return userDetails;
 	}
 
 }
