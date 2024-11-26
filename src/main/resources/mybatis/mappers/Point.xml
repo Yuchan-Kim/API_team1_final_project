@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Point">
+	<!-- 회원 가입 welcome 포인트-->
+	<insert id="insertSignupPoint" parameterType="map">
+	<![CDATA[
+	    INSERT INTO pointHistory (
+	        userNum, 
+	        pointPurposeNum, 
+	        historyDate, 
+	        historyPoint, 
+	        historyInfo
+	    )
+	    VALUES (
+	        #{userNum},
+	        (SELECT pointPurposeNum FROM pointPurpose WHERE purposeName = '회원가입 축하금'),
+	        DATE(NOW()),  
+	        10000,
+	        '+'
+	    )
+	]]>
+	</insert>
+</mapper>

@@ -23,5 +23,6 @@
 		<mapper resource="mybatis/mappers/rank.xml" /> 
 		<mapper resource="mybatis/mappers/Notice.xml" /> 
 		<mapper resource="mybatis/mappers/openai.xml" /> 
+		<mapper resource="mybatis/mappers/Point.xml" /> 
     </mappers>
 </configuration>

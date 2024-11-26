@@ -2,6 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Notice">
+	<!-- 회원 가입 환영 메세지-->
+	<insert id="insertSignupNotice" parameterType="int">
+	<![CDATA[
+	    INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+	    VALUES (
+	        #{userNum},
+	        '회원가입을 환영합니다!',
+	        'DONKEY: 도전키우기의 회원이 되신 것을 환영합니다. 축하 포인트 10,000P가 지급되었습니다.',
+	        0
+	    )
+	]]>
+	</insert>
+	
 	<!-- 방 생성 알림 추가 -->
 	<insert id="insertRoomCreationNotice" parameterType="map">
     <![CDATA[
