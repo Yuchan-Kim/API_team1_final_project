@@ -101,7 +101,7 @@
         WHERE userNum = #{userNum}
     ]]>
     </select>
-    
+
 	<!-- 알림 읽음 여부 업데이트 -->
 	<update id="updateNoticeReadStatus" parameterType="int">
     <![CDATA[
@@ -111,29 +111,61 @@
 	    ]]>
 	</update>
 
-	<!-- 알림 조회 시 읽음 여부도 함께 반환하도록 수정 -->
+	<!-- 알림 조회 -->
 	<select id="getNotices" parameterType="map"
 		resultType="com.javaex.vo.HmkNoticeVo">
-    <![CDATA[
-        SELECT 
-            n.noticeNum,
-            n.userNum,
-            n.noticeTitle,
-            n.noticeMsg,
-            n.isCheck,
-            DATE_FORMAT(n.createDate, '%Y-%m-%d') AS createDate,
-            n.msgSender,
-            u.userName AS senderNickname
-        FROM notice n
-        JOIN users u ON n.msgSender = u.userNum
-        WHERE n.userNum = #{userNum}
-    ]]>
+	<![CDATA[
+	    SELECT 
+	        n.noticeNum,
+	        n.userNum,
+	        n.noticeTitle,
+	        n.noticeMsg,
+	        n.isCheck,
+	        DATE_FORMAT(n.createDate, '%Y-%m-%d') AS createDate,
+	        n.msgSender,
+	        u.userName AS senderNickname,
+	        CASE 
+	            WHEN n.noticeTitle LIKE '%방%' THEN (
+	                -- 알림 제목에서 방 번호 추출
+	                SELECT DISTINCT ri.roomNum
+	                FROM roomInfo ri 
+	                JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+	                WHERE eu.userNum = n.userNum 
+	                AND eu.enteredUserStatusNum = 1
+	                AND (
+	                    -- 알림 생성 시간과 가장 가까운 방을 찾음
+	                    ri.roomStartDate <= n.createDate
+	                    OR ri.roomStartDate IS NULL
+	                )
+	                ORDER BY ABS(TIMESTAMPDIFF(SECOND, ri.roomStartDate, n.createDate))
+	                LIMIT 1
+	            )
+	            ELSE NULL 
+	        END as roomNum
+	    FROM notice n
+	    JOIN users u ON n.msgSender = u.userNum
+	    WHERE n.userNum = #{userNum}
+	]]>
 		<if test="startDate != null and startDate != ''">
-        <![CDATA[ AND n.createDate >= #{startDate} ]]>
-    </if>
+	    <![CDATA[ AND n.createDate >= #{startDate} ]]>
+	    </if>
 		<if test="endDate != null and endDate != ''">
-        <![CDATA[ AND n.createDate <= #{endDate} ]]>
-    </if>
-    <![CDATA[ ORDER BY n.createDate DESC ]]>
+	    <![CDATA[ AND n.createDate <= #{endDate} ]]>
+	    </if>
+	<![CDATA[ 
+	    ORDER BY n.createDate DESC 
+	]]>
 	</select>
+
+	<!-- 알림 요약 정보 조회 -->
+	<select id="getNoticeSummary" parameterType="int" resultType="map">
+	<![CDATA[
+	    SELECT 
+	        COUNT(*) AS totalNotice,
+	        SUM(CASE WHEN isCheck = 1 THEN 1 ELSE 0 END) AS readNotice,
+	        SUM(CASE WHEN isCheck = 0 THEN 1 ELSE 0 END) AS newNotice
+	    FROM notice
+	    WHERE userNum = #{userNum}
+	]]>
+</select>
 </mapper>

@@ -1,12 +1,14 @@
 package com.javaex.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.javaex.dao.HmkNoticeDao;
+import com.javaex.vo.HmkNoticeVo;
 
 @Service
 public class HmkNoticeService {
@@ -61,5 +63,19 @@ public class HmkNoticeService {
     // 알림 읽음 처리
     public boolean markNoticeAsRead(int noticeNum) {
         return noticeDao.updateNoticeReadStatus(noticeNum) > 0;
+    }
+    
+ // 알림 목록 조회 추가
+    public List<HmkNoticeVo> getNotices(int userNum, String startDate, String endDate) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userNum", userNum);
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        return noticeDao.getNotices(params);
+    }
+
+    // 알림 요약 정보 조회 추가
+    public Map<String, Integer> getNoticeSummary(int userNum) {
+        return noticeDao.getNoticeSummary(userNum);
     }
 }

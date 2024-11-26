@@ -1,10 +1,13 @@
 package com.javaex.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.javaex.vo.HmkNoticeVo;
 
 @Repository
 public class HmkNoticeDao {
@@ -40,6 +43,16 @@ public class HmkNoticeDao {
     // 알림 읽음 상태 업데이트
     public int updateNoticeReadStatus(int noticeNum) {
         return sqlSession.update("Notice.updateNoticeReadStatus", noticeNum);
+    }
+    
+    // 알림 목록 조회 메서드 추가
+    public List<HmkNoticeVo> getNotices(Map<String, Object> params) {
+        return sqlSession.selectList("Notice.getNotices", params);
+    }
+
+    // 알림 요약 정보 조회
+    public Map<String, Integer> getNoticeSummary(int userNum) {
+        return sqlSession.selectOne("Notice.getNoticeSummary", userNum);
     }
 }
 
