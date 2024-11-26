@@ -1,173 +1,157 @@
 package com.javaex.service;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.javaex.dao.OpenAiDao;
+import com.javaex.vo.ChallengeVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.javaex.dao.OpenAiDao;
-import com.javaex.vo.ChallengeVo;
-
 @Service
 public class OpenAiService {
 
-   @Value("${openai.api.key}")
-   private String apiKey;
+    @Value("${openai.api.key}")
+    private String apiKey;
 
-   @Value("${openai.model}")
-   private String model;
+    @Value("${openai.model}")
+    private String model;
 
-   @Value("${openai.temperature}")
-   private double temperature;
+    @Value("${openai.temperature}")
+    private double temperature;
 
-   @Value("${openai.max-tokens}")
-   private int maxTokens;
+    @Value("${openai.max-tokens}")
+    private int maxTokens;
 
-   private final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+    private final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
-   @Autowired
-   private OpenAiDao openAiDao;
+    @Autowired
+    private OpenAiDao openAiDao;
 
-   // 챌린지 추천 생성 메서드
-   public List<ChallengeVo> generateChallenges(int roomNum) {
-	   ChallengeVo keyword = openAiDao.getKeywords(roomNum);
-	   ChallengeVo maxNum = openAiDao.getMaxNum(roomNum);
-	   ChallengeVo period = openAiDao.getPeriodType(roomNum);
-	   List<ChallengeVo> missionList = openAiDao.getMissions(roomNum);
-	   System.out.println(missionList);
-	   
-	   // map에 데이터 추가
-	   Map<String, Object> roomDetails = new HashMap<>();
-	   roomDetails.put("keyword", keyword);
-	   roomDetails.put("maxNum", maxNum);
-	   roomDetails.put("period", period);
-	   roomDetails.put("missionList", missionList);
-       
-	   System.out.println("맵 데이터"+roomDetails.get("missionList"));
-	   
-       // 프롬프트 생성
-       String prompt = generatePrompt(roomDetails);
-       
-       // OpenAI API 호출
-       return callOpenAiApi(prompt);
-   }
+    public List<ChallengeVo> generateChallenges(int roomNum) {
+        ChallengeVo keyword = openAiDao.getKeywords(roomNum);
+        ChallengeVo maxNum = openAiDao.getMaxNum(roomNum);
+        ChallengeVo period = openAiDao.getPeriodType(roomNum);
+        List<ChallengeVo> missionList = openAiDao.getMissions(roomNum);
 
-	// 프롬프트 생성 메서드
-	private String generatePrompt(Map<String, Object> roomDetails) {
-	    StringBuilder prompt = new StringBuilder();
-	    
-	    // 키워드, 최대인원, 기간 추가
-	    prompt.append("키워드: ").append(roomDetails.get("keyword")).append(", ");
-	    prompt.append("최대 인원: ").append(roomDetails.get("maxNum")).append("명, ");
-	    prompt.append("기간: ").append(roomDetails.get("period")).append("주\n");
-	    prompt.append("미션 리스트: \n");
-	    
-	    // 미션 리스트 가져오기
-	    @SuppressWarnings("unchecked")
-	    List<ChallengeVo> missions = (List<ChallengeVo>) roomDetails.get("missionList");
-	
-	    // 미션 리스트를 프롬프트에 추가
-	    for (ChallengeVo mission : missions) {
-	        prompt.append("- 미션 이름: ").append(mission.getMissionName()).append(", ");
-	        prompt.append("미션 방법: ").append(mission.getMissionMethod()).append("\n");
-	    }
-	
-	    prompt.append("키워드와 가장 관련된 일일 목표 하나를 선택해 주세요.\n"
-	    		+ "횟수를 기준으로 목표를 상, 중, 하 3개만 만들어주세요.\n"
-	    		+ "예시). 골프 모임일때 인원은 10명이고, 기간은 2주, 키워드: 골프, "
-	    		+ "일일목표가 스윙 20번 연습하기, 출석체크하기, "
-	    		+ "스트레칭 하기 일때 가장 관련있는 일일 목표는 스윙 20번 연습하기 입니다. "
-	    		+ "이때 그룹 챌린지를 난이도별로 설정하게 되면, "
-	    		+ "상: \"스윙 20번 연습하기\" 140번 달성 (달성률 100퍼센트), "
-	    		+ "중: \"스윙 20번 연습하기\" 100번 달성, "
-	    		+ "하: \"스윙 20번 연습하기\" 50번 달성"
-	    		+ "챌린지 제목과 횟수, 첼린지 제목만,횟수 숫자로만, 선택된 일반미션의 제목을 따로 보내주세요.");
-	
-	    return prompt.toString();
-	}
+        // 데이터 준비
+        Map<String, Object> roomDetails = new HashMap<>();
+        roomDetails.put("keyword", keyword);
+        roomDetails.put("maxNum", maxNum);
+        roomDetails.put("period", period);
+        roomDetails.put("missionList", missionList);
 
-	private List<ChallengeVo> callOpenAiApi(String prompt) {
-	    RestTemplate restTemplate = new RestTemplate();
+        // 프롬프트 생성
+        String prompt = generatePrompt(roomDetails);
 
-	    // HTTP 헤더 설정
-	    HttpHeaders headers = new HttpHeaders();
-	    headers.add("Authorization", "Bearer " + apiKey);
-	    headers.add("Content-Type", "application/json");
+        // OpenAI API 호출 및 응답 처리
+        return callOpenAiApi(prompt);
+    }
 
-	    // 요청 바디 생성
-	    Map<String, Object> requestBody = new HashMap<>();
-	    requestBody.put("model", model);
-	    requestBody.put("messages", List.of(
-	            Map.of("role", "system", "content", "You are an assistant that helps generate group challenges."),
-	            Map.of("role", "user", "content", prompt)
-	    ));
-	    requestBody.put("max_tokens", maxTokens);
-	    requestBody.put("temperature", temperature);
+    private String generatePrompt(Map<String, Object> roomDetails) {
+        StringBuilder prompt = new StringBuilder();
 
-	    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+        prompt.append("키워드: ").append(roomDetails.get("keyword")).append(", ");
+        prompt.append("참여 인원: ").append(roomDetails.get("maxNum")).append("명, ");
+        prompt.append("기간: ").append(roomDetails.get("period")).append("주\n");
+        prompt.append("미션 리스트: \n");
 
-	    try {
-	        // API 호출
-	        ResponseEntity<Map> response = restTemplate.exchange(OPENAI_API_URL, HttpMethod.POST, entity, Map.class);
+        @SuppressWarnings("unchecked")
+        List<ChallengeVo> missions = (List<ChallengeVo>) roomDetails.get("missionList");
+        for (ChallengeVo mission : missions) {
+            prompt.append("- 미션 이름: ").append(mission.getMissionName()).append(", ");
+            prompt.append("미션 방법: ").append(mission.getMissionMethod()).append("\n");
+        }
 
-	        // 응답 처리
-	        Map<String, Object> responseBody = response.getBody();
-	        if (responseBody != null && responseBody.containsKey("choices")) {
-	            List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
-	            if (!choices.isEmpty()) {
-	                Map<String, Object> choice = choices.get(0);
-	                String content = (String) ((Map<String, Object>) choice.get("message")).get("content");
+        prompt.append("키워드와 가장 관련된 일일 목표 하나를 선택해 주세요.\n")
+        		.append("참여 인원과 기간을 고려해서 '상'은 95% '중'은 80% '하'는 70%로\n")
+                .append("횟수를 기준으로 목표를 상, 중, 하 각자 1개씩 만들어주세요.\n")
+                .append("다음 형식으로 응답해주세요:\n")
+                .append("[\n")
+                .append("  {\"title\": \"관련된 미션 10회 달성하기 (상)\", \"count\": 10, \"selectedMission\": \"선택된 미션\"},\n")
+                .append("  ...\n")
+                .append("]");
 
-	                // 응답을 콘솔에 출력
-	                System.out.println("AI 응답 내용: \n" + content);
+        return prompt.toString();
+    }
 
-	                // 응답을 기반으로 ChallengeVo 리스트 생성
-	                return parseAiResponse(content);
-	            }
-	        }
-	    } catch (HttpClientErrorException e) {
-	        System.err.println("HTTP Error: " + e.getStatusCode());
-	        System.err.println("Error Response: " + e.getResponseBodyAsString());
-	    } catch (Exception e) {
-	        System.err.println("Unexpected Error: " + e.getMessage());
-	    }
+    private List<ChallengeVo> callOpenAiApi(String prompt) {
+        RestTemplate restTemplate = new RestTemplate();
 
-	    return List.of(); // 실패 시 빈 리스트 반환
-	}
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-   // AI 응답 파싱 메서드
-   private List<ChallengeVo> parseAiResponse(String content) {
-       // AI 응답을 ChallengeVo 리스트로 변환하는 로직 작성
-       // 예시로 간단하게 응답을 한 줄씩 나누어 ChallengeVo 객체를 생성
-       List<ChallengeVo> challenges = new ArrayList<>();
-       String[] lines = content.split("\n");
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", model);
+        requestBody.put("messages", List.of(
+                Map.of("role", "system", "content", "You are an assistant that helps generate group challenges."),
+                Map.of("role", "user", "content", prompt)
+        ));
+        requestBody.put("max_tokens", maxTokens);
+        requestBody.put("temperature", temperature);
 
-       for (String line : lines) {
-           if (line.trim().isEmpty()) continue;
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-           ChallengeVo challenge = new ChallengeVo();
-           challenge.setMissionName(line); // 예시로 응답 내용 전체를 미션 이름으로 설정
-           challenges.add(challenge);
-       }
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(OPENAI_API_URL, HttpMethod.POST, entity, Map.class);
+            Map<String, Object> responseBody = response.getBody();
+            if (responseBody != null && responseBody.containsKey("choices")) {
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+                if (!choices.isEmpty()) {
+                    Map<String, Object> choice = choices.get(0);
+                    String content = (String) ((Map<String, Object>) choice.get("message")).get("content");
 
-       return challenges;
-   }
-   
-   // 미션 및 이미지 생성 서비스
-	public int saveSelectedChallenge(ChallengeVo challengevo) {
-        // 미션 등록
-        int conut = openAiDao.insertMission(challengevo);
-        return conut;
+                    System.out.println("AI 응답 내용:\n" + content);
+
+                    // 응답 JSON을 List<ChallengeVo>로 변환
+                    return parseAiResponseWithGson(content);
+                }
+            }
+        } catch (HttpClientErrorException e) {
+            System.err.println("HTTP Error: " + e.getStatusCode());
+            System.err.println("Error Response: " + e.getResponseBodyAsString());
+        } catch (Exception e) {
+            System.err.println("Unexpected Error: " + e.getMessage());
+        }
+
+        return List.of();
+    }
+
+    private List<ChallengeVo> parseAiResponseWithGson(String jsonResponse) {
+        List<ChallengeVo> challenges = new ArrayList<>();
+        try {
+            Gson gson = new Gson();
+            ChallengeVo[] parsedChallenges = gson.fromJson(jsonResponse, ChallengeVo[].class);
+
+            for (ChallengeVo challenge : parsedChallenges) {
+                ChallengeVo vo = new ChallengeVo();
+                vo.setAiMission(challenge.getTitle());
+                vo.setCount(challenge.getCount());
+                vo.setMissionName(challenge.getSelectedMission());
+                challenges.add(vo);
+            }
+
+            System.out.println("Gson으로 파싱된 챌린지 리스트: " + challenges);
+        } catch (JsonSyntaxException e) {
+            System.err.println("JSON 파싱 중 오류 발생: " + e.getMessage());
+        }
+
+        return challenges;
+    }
+
+
+    // 미션 저장 메서드
+    public int saveSelectedChallenge(ChallengeVo challengeVo) {
+        return openAiDao.insertMission(challengeVo);
     }
 }

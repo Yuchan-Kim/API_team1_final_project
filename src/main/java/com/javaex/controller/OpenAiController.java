@@ -23,11 +23,10 @@ public class OpenAiController {
     // 3. 방 번호로 챌린지 추천 생성하기
     @PostMapping("/generateChallenges/{roomNum}")
     public JsonResult generateChallenges(
-    		@PathVariable int roomNum
-    		) {
-    	System.out.println("ㅁㄴㄹㄴㅁ");
+    		@PathVariable int roomNum) {
         
     	List<ChallengeVo> challenges = openAiService.generateChallenges(roomNum);
+    	System.out.println("컨트롤러 데이터 확인"+challenges);
         return JsonResult.success(challenges);
     }
 //

@@ -3,11 +3,17 @@ package com.javaex.vo;
 import java.util.Date;
 
 public class ChallengeVo {
+	
+    private int count;            // JSON의 "count" 매핑
+    private String selectedMission; // JSON의 "selectedMission" 매핑
+
 	private String roomDescription;
 	private int roomStatusNum; 		// 방 상태 번호 (1: 모집 중, 2: 챌린지 시작, 3: 챌린지 진행 중, 4: 챌린지 완료)
 	private String roomKeyword;
 	private boolean isJoined; 		// 사용자 참여 여부
 	private int enteredUserStatusNum;
+	private String aiMission;		// ai 미션
+	
 	// 로직용
 	private int roomDayNum;			//요일번호
 	
@@ -88,6 +94,16 @@ public class ChallengeVo {
 	}
 	
 	
+	public int getCount() {
+		return count;
+	}
+
+
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+	
 	
 	public int getPoint() {
 		return point;
@@ -107,10 +123,30 @@ public class ChallengeVo {
 
 
 
+	public String getAiMission() {
+		return aiMission;
+	}
+
+
+	public void setAiMission(String aiMission) {
+		this.aiMission = aiMission;
+	}
+
+
 	public void setPoint(int point) {
 		this.point = point;
 	}
 
+
+
+	public String getSelectedMission() {
+		return selectedMission;
+	}
+
+
+	public void setSelectedMission(String selectedMission) {
+		this.selectedMission = selectedMission;
+	}
 
 
 	public int getPointPurposeNum() {
@@ -799,6 +835,7 @@ public class ChallengeVo {
 				+ announceAddedBy + ", announceAddedByName=" + announceAddedByName + ", announceTime=" + announceTime
 				+ "]";
 	}
+	
 
 
 }
