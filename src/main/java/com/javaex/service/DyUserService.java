@@ -13,15 +13,23 @@ public class DyUserService {
 	private DyUserDao dyUserDao;
 	
 	/* 회원가입 */
+//	public int exeUserJoin(DyUserVo dyUserVo) {	 
+//		System.out.println("DyUserService.exeUserJoin()");
+//		
+//		int count = dyUserDao.insertUser(dyUserVo);
+//		
+//		return count;
+//		
+//	}
+	//-------------------------<ham 셋집 살이>---------------------------------------//
 	public int exeUserJoin(DyUserVo dyUserVo) {	 
 		System.out.println("DyUserService.exeUserJoin()");
 		
-		int count = dyUserDao.insertUser(dyUserVo);
+		dyUserDao.insertUser(dyUserVo); // userVo에 userNum이 설정됨
 		
-		return count;
-		
+		return dyUserVo.getUserNum(); // 생성된 userNum을 반환
 	}
-	
+	//-------------------------</ham 셋집 살이>---------------------------------------//
 	
 	/* 카카오 회원가입 */
 	public int exeKakaoJoin(DyUserVo dyUserVo) {	 

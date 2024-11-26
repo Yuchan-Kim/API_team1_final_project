@@ -14,7 +14,11 @@ public class HmkNoticeDao {
 	
 	@Autowired
     private SqlSession sqlSession;
-
+	
+	// 가입 축하 알림
+	public int insertSignupNotice(int userNum) {
+        return sqlSession.insert("Notice.insertSignupNotice", userNum);
+    }
     // 방 생성 알림 추가
     public int insertRoomCreationNotice(Map<String, Object> params) {
         return sqlSession.insert("Notice.insertRoomCreationNotice", params);

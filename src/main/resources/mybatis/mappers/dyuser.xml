@@ -6,12 +6,26 @@
 	<!-- 쿼리문작성 -->
 
 	<!-- 회원가입 -->
-	<insert id="insert" parameterType="com.javaex.vo.DyUserVo">
+	<!-- <insert id="insert" parameterType="com.javaex.vo.DyUserVo">
 		<![CDATA[
 			insert into users (`userNum`, `regionNum`, `userEmail`, `userPw`, `userName`, `joinDate`) 
 			values(null, 1, #{userEmail}, #{userPw}, #{userName}, now())
 		]]>
-	</insert>
+	</insert>-->
+	
+	<!-- 회원가입시 생성된 userNum을 가져와서 DyUserVo 객체의 userNum 속성에 설정 -->
+	<insert id="insert" parameterType="com.javaex.vo.DyUserVo" useGeneratedKeys="true" keyProperty="userNum">
+        <![CDATA[
+        INSERT INTO users (regionNum, userEmail, userPw, userName, joinDate)
+        VALUES (
+            1,
+            #{userEmail},
+            #{userPw},
+            #{userName},
+            #{joinDate}
+        )
+        ]]>
+    </insert>
 	
 	
 	<!-- 카카오 회원가입 -->

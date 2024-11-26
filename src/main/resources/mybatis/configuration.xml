@@ -24,5 +24,6 @@
 		<mapper resource="mybatis/mappers/Notice.xml" /> 
 		<mapper resource="mybatis/mappers/openai.xml" /> 
 		<mapper resource="mybatis/mappers/Point.xml" /> 
+		<mapper resource="mybatis/mappers/DJcs.xml" />
     </mappers>
 </configuration>

@@ -5,16 +5,17 @@
 	<!-- 회원 가입 환영 메세지-->
 	<insert id="insertSignupNotice" parameterType="int">
 	<![CDATA[
-	    INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+	    INSERT INTO notice (userNum, noticeTitle, noticeMsg, isCheck, msgSender)
 	    VALUES (
 	        #{userNum},
 	        '회원가입을 환영합니다!',
-	        'DONKEY: 도전키우기의 회원이 되신 것을 환영합니다. 축하 포인트 10,000P가 지급되었습니다.',
+	        'DONKEY: 동기키우기의 회원이 되신 것을 환영합니다. 축하 포인트 10,000P가 지급되었습니다.',
+	        0,
 	        0
 	    )
 	]]>
 	</insert>
-	
+
 	<!-- 방 생성 알림 추가 -->
 	<insert id="insertRoomCreationNotice" parameterType="map">
     <![CDATA[
@@ -174,11 +175,11 @@
 	<select id="getNoticeSummary" parameterType="int" resultType="map">
 	<![CDATA[
 	    SELECT 
-	        COUNT(*) AS totalNotice,
-	        SUM(CASE WHEN isCheck = 1 THEN 1 ELSE 0 END) AS readNotice,
-	        SUM(CASE WHEN isCheck = 0 THEN 1 ELSE 0 END) AS newNotice
-	    FROM notice
-	    WHERE userNum = #{userNum}
+            COUNT(*) AS totalNotice,
+            SUM(CASE WHEN isCheck = 1 THEN 1 ELSE 0 END) AS readNotice,
+            SUM(CASE WHEN COALESCE(isCheck, 0) = 0 THEN 1 ELSE 0 END) AS newNotice
+        FROM notice
+        WHERE userNum = #{userNum}
 	]]>
 </select>
 </mapper>
