@@ -24,6 +24,12 @@ public class DJcsDao {
 		return FAQList;	
 	}
 	
-
+   public List<DyFAQVo> getFAQList2() {
+//	  System.out.println("DJcsDao.getFAQList2()");
+      
+      List<DyFAQVo> FAQList =sqlSession.selectList("DJcs.selectList2");
+      
+      return FAQList;   
+   }
 	
 }

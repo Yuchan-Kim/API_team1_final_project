@@ -28,4 +28,13 @@ public class DJcsController {
 	}
 	
 	
+   @GetMapping("/api/getPrompt")
+   public JsonResult faqForm2() {
+//	   System.out.println("DJcsController.faqForm2()");
+
+       List<DyFAQVo> FAQList = DJcsService.exeFAQList2();
+
+       return JsonResult.success(FAQList);
+   }
+	
 }

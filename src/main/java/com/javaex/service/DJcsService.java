@@ -25,6 +25,16 @@ public class DJcsService {
 		
 		return FAQList;
 	}
+	
+   public List<DyFAQVo> exeFAQList2() {
+//	  System.out.println("DJcsService.exeFAQList2()");
+      
+      List<DyFAQVo> FAQList = DJcsDao.getFAQList2();
+      
+      //System.out.println(FAQList);
+      
+      return FAQList;
+   }
 
 	
 }

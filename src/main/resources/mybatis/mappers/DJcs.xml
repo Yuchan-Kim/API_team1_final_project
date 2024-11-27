@@ -15,5 +15,14 @@
 		]]>
 	</select>
 	
+	<select id="selectList2" resultType="com.javaex.vo.DyFAQVo">
+      <![CDATA[
+         SELECT faqTitle, faqContent 
+         from FAQ 
+         order by faqNum asc
+      ]]>
+   </select>
+   
+	
 
 </mapper>
