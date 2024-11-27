@@ -71,14 +71,23 @@ public class DyUserController {
 	public JsonResult kakaoJoin(@RequestBody DyUserVo dyUserVo) {	
 		System.out.println("DyUserController.kakaoJoin()");
 		
-		int count = dyUserService.exeKakaoJoin(dyUserVo);
-		
-		if(count != 1) { 		//등록안됨
-			return JsonResult.fail("회원등록에 실패했습니다.");
-		}else { 				//등록됨
-			return JsonResult.success(count);
-		}
-		
+	    try {
+	        // 카카오 회원가입 처리
+	        int count = dyUserService.exeKakaoJoin(dyUserVo);
+
+	        if (count != 1) { // 회원 등록 실패
+	            return JsonResult.fail("회원등록에 실패했습니다.");
+	        } else { // 회원 등록 성공
+	            int userNum = dyUserVo.getUserNum(); 
+	            welcomeService.celebrateNewUser(userNum); // 가입 축하 처리
+	            
+	            return JsonResult.success(count); // 회원가입 성공 반환
+	        }
+	    } catch (Exception e) {
+	        System.err.println("회원가입 처리 중 오류 발생");
+	        e.printStackTrace(); 
+	        return JsonResult.fail(e.getMessage());
+	    }
 	}
 	
 
