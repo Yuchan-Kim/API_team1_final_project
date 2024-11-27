@@ -23,15 +23,25 @@ public class JM_ChallengeDao {
 		return userList;
 	}
 	
+	// 방번호로 요일 리스트 가져오기
+	public List<ChallengeVo> dateList(int roomNum) {
+		System.out.println("ChallengeDao.dateList");
+
+		List<ChallengeVo> dateList = session.selectList("JM-challenge.getDateNum", roomNum);
+		System.out.println("ChallengeDao123" + dateList);
+
+		return dateList;
+	}
+	
 	// 방번호로 미션 리스트 가져오기
-		public List<ChallengeVo> missionList2(int roomNum) {
-			System.out.println("ChallengeDao.missionList");
+	public List<ChallengeVo> missionList2(int roomNum) {
+		System.out.println("ChallengeDao.missionList");
 
-			List<ChallengeVo> missionList = session.selectList("JM-challenge.getMissionByRoomNum2", roomNum);
-			System.out.println("ChallengeDao" + missionList);
+		List<ChallengeVo> missionList = session.selectList("JM-challenge.getMissionByRoomNum2", roomNum);
+		System.out.println("ChallengeDao" + missionList);
 
-			return missionList;
-		}
+		return missionList;
+	}
 	
 	// 방번호로 미션리스트 + 유저 제출여부 가져오기
 	public List<ChallengeVo> missionList(ChallengeVo challengevo) {

@@ -93,12 +93,24 @@ public class ChallengeVo {
     private int pointPurposeNum;
     private String historyInfo;
     private double achievementRate;
+    private int userPoints;
+    
 
 	public ChallengeVo() {
 
 	}
 	
 	
+	public int getUserPoints() {
+		return userPoints;
+	}
+
+
+	public void setUserPoints(int userPoints) {
+		this.userPoints = userPoints;
+	}
+
+
 	public int getCount() {
 		return count;
 	}
