@@ -29,7 +29,7 @@
 	
 	
 	<!-- 카카오 회원가입 -->
-	<insert id="kakaoinsert" parameterType="com.javaex.vo.DyUserVo">
+	<insert id="kakaoinsert" parameterType="com.javaex.vo.DyUserVo" useGeneratedKeys="true" keyProperty="userNum">
 		<![CDATA[
 			insert into users (`userNum`, `regionNum`, `userEmail`, `userName`, `socialLogin`, `joinDate`) 
 			values(null, 1, #{userEmail}, #{userName}, "kakao", now())
