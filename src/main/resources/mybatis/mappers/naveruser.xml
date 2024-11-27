@@ -7,8 +7,8 @@
 	<insert id="insertNaver"
 		parameterType="com.javaex.vo.HmkSocialUserVo">
     <![CDATA[
-        INSERT INTO users (regionNum, userEmail, userName, socialLogin)
-        VALUES (#{regionNum}, #{userEmail}, #{userName}, #{socialLogin})
+        INSERT INTO users (regionNum, userEmail, userName, socialLogin, joinDate)
+        VALUES (1, #{userEmail}, #{userName}, #{socialLogin}, now())
     ]]>
 	</insert>
 
