@@ -21,8 +21,18 @@ public class OpenAiController {
 
     @Autowired
     private OpenAiService openAiService;
+    
+    // 방 번호로 챌린지 추천 생성하기
+    @PostMapping("/generatePlaceholder/{roomNum}")
+    public JsonResult generatePlaceholder(
+    		@PathVariable int roomNum) {
+        
+    	List<ChallengeVo> placeholder = openAiService.generatePlaceholder(roomNum);
+    	System.out.println("플레이스 데이터 확인"+placeholder);
+        return JsonResult.success(placeholder);
+    }
 
-    // 3. 방 번호로 챌린지 추천 생성하기
+    // 방 번호로 챌린지 추천 생성하기
     @PostMapping("/generateChallenges/{roomNum}")
     public JsonResult generateChallenges(
     		@PathVariable int roomNum) {
@@ -32,7 +42,7 @@ public class OpenAiController {
         return JsonResult.success(challenges);
     }
 
-    // 4. 선택된 챌린지 저장하기
+    // 선택된 챌린지 저장하기
     @PostMapping("/saveOpenAiMission/{roomNum}")
     public JsonResult saveSelectedChallenge(
     		@PathVariable int roomNum,
