@@ -70,144 +70,114 @@ public class ChallengeController {
 		}
 	}
 
-	  // **챌린지 시작 엔드포인트**
-    @PutMapping("/start-challenge/{roomNum}")
-    public JsonResult startChallenge(
-            @PathVariable int roomNum, 
-            HttpServletRequest request) {
-        System.out.println("ChallengeController.startChallenge()");
+	// ChallengeController.java
 
-        // JWT를 통해 사용자 인증
-        int userNum = JwtUtil.getNoFromHeader(request);
-        if (userNum <= 0) {
-            return  JsonResult.fail("인증되지 않은 사용자입니다.");
-        }
+	@PutMapping("/start-challenge/{roomNum}")
+	public JsonResult startChallenge(
+	        @PathVariable int roomNum, 
+	        HttpServletRequest request) {
+	    System.out.println("ChallengeController.startChallenge()");
 
-        // 사용자 권한 확인 (예: 방장인지 확인)
-        int auth = challengeService.getUserAuth(roomNum, userNum);
-        if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
-            return  JsonResult.fail("권한이 없습니다.");
-        }
+	    // JWT를 통해 사용자 인증
+	    int userNum = JwtUtil.getNoFromHeader(request);
+	    if (userNum <= 0) {
+	        return JsonResult.fail("인증되지 않은 사용자입니다.");
+	    }
 
-        // 챌린지 시작 로직 호출
-        boolean updateSuccess = challengeService.startChallenge(roomNum);
-        if (updateSuccess) {
-            // 방 정보 조회
-            ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
-            String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
-            int roomMakerNum = roomInfo != null ? roomInfo.getUserNum() : 0;
+	    // 사용자 권한 확인 (예: 방장인지 확인)
+	    int auth = challengeService.getUserAuth(roomNum, userNum);
+	    if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
+	        return JsonResult.fail("권한이 없습니다.");
+	    }
 
-            // 알림 생성
-            challengeService.createNotices(roomNum, roomTitle, "챌린지 시작 알림", roomTitle + "의 챌린지가 시작되었습니다.", roomMakerNum);
+	    // 챌린지 시작 로직 호출
+	    boolean updateSuccess = challengeService.startChallenge(roomNum);
+	    if (updateSuccess) {
+	        // 방 정보 조회
+	        ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
+	        String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
 
-            return JsonResult.success("챌린지가 시작되었습니다.");
-        } else {
-            return  JsonResult.fail("챌린지 시작에 실패했습니다.");
-        }
-    }
+	        // 알림 생성 (msgSender는 서비스 계층에서 처리됨)
+	        challengeService.createNotices(roomNum, roomTitle, "챌린지 시작 알림", roomTitle + "의 챌린지가 시작되었습니다.");
+
+	        return JsonResult.success("챌린지가 시작되었습니다.");
+	    } else {
+	        return JsonResult.fail("챌린지 시작에 실패했습니다.");
+	    }
+	}
+
  // **챌린지 종료 엔드포인트 (roomStatusNum을 3으로 변경)**
-    @PutMapping("/end-challenge/{roomNum}")
-    public JsonResult endChallenge(
-            @PathVariable int roomNum, 
-            HttpServletRequest request) {
-        System.out.println("ChallengeController.endChallenge()");
+	// ChallengeController.java
 
-        // JWT를 통해 사용자 인증
-        int userNum = JwtUtil.getNoFromHeader(request);
-        if (userNum <= 0) {
-            return JsonResult.fail("인증되지 않은 사용자입니다.");
-        }
+	@PutMapping("/end-challenge/{roomNum}")
+	public JsonResult endChallenge(
+	        @PathVariable int roomNum, 
+	        HttpServletRequest request) {
+	    System.out.println("ChallengeController.endChallenge()");
 
-        // 사용자 권한 확인
-        int auth = challengeService.getUserAuth(roomNum, userNum);
-        if (auth < 1) {
-            return JsonResult.fail("권한이 없습니다.");
-        }
+	    // JWT를 통해 사용자 인증
+	    int userNum = JwtUtil.getNoFromHeader(request);
+	    if (userNum <= 0) {
+	        return JsonResult.fail("인증되지 않은 사용자입니다.");
+	    }
 
-        // 챌린지 종료 업데이트
-        boolean updateSuccess = challengeService.endChallenge(roomNum);
-        if (!updateSuccess) {
-            return JsonResult.fail("챌린지 종료에 실패했습니다.");
-        }
+	    // 사용자 권한 확인
+	    int auth = challengeService.getUserAuth(roomNum, userNum);
+	    if (auth < 1) {
+	        return JsonResult.fail("권한이 없습니다.");
+	    }
 
-        // 포인트 계산
-        ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
-        if (userDetails == null) {
-            return JsonResult.fail("유저 정보를 불러올 수 없습니다.");
-        }
+	    // 챌린지 종료 업데이트
+	    boolean updateSuccess = challengeService.endChallenge(roomNum);
+	    if (!updateSuccess) {
+	        return JsonResult.fail("챌린지 종료에 실패했습니다.");
+	    }
 
-        int roomEnterPoint = userDetails.getRoomPoint();
-        double achievementRate = userDetails.getAchievementRate();
-        int bettingPoints;
-        int pointPurposeNum;
-        String historyInfo;
+	    // 포인트 계산 및 저장 로직...
 
-        if (achievementRate < 85) {
-            bettingPoints = (int) (roomEnterPoint * (achievementRate / 100));
-            pointPurposeNum = 3;
-            historyInfo = "+";
-        } else if (achievementRate >= 85 && achievementRate < 100) {
-            bettingPoints = roomEnterPoint;
-            pointPurposeNum = 2;
-            historyInfo = "+";
-        } else {
-            bettingPoints = roomEnterPoint + (int) (roomEnterPoint * 0.20);
-            pointPurposeNum = 1;
-            historyInfo = "+";
-        }
+	    // 방 정보 조회
+	    ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
+	    String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
 
-        // 포인트 이력 저장
-        boolean pointSaved = challengeService.insertPointHistory(userNum, bettingPoints, pointPurposeNum, historyInfo);
-        if (!pointSaved) {
-            return JsonResult.fail("포인트 이력 저장에 실패했습니다.");
-        }
+	    // 알림 생성 (msgSender는 서비스 계층에서 처리됨)
+	    challengeService.createNotices(roomNum, roomTitle, "챌린지 종료 알림", roomTitle + "의 챌린지가 종료되었습니다.");
 
-        // 방 정보 조회
-        ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
-        String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
-        int roomMakerNum = roomInfo != null ? roomInfo.getUserNum() : 0;
+	    return JsonResult.success("챌린지가 성공적으로 종료되었습니다.");
+	}
 
-        // 알림 생성
-        challengeService.createNotices(roomNum, roomTitle, "챌린지 종료 알림", roomTitle + "의 챌린지가 종료되었습니다.", roomMakerNum);
+	@PutMapping("/complete-period/{roomNum}")
+	public JsonResult completePeriod(
+	        @PathVariable int roomNum, 
+	        HttpServletRequest request) {
+	    System.out.println("ChallengeController.completePeriod()");
 
-        return JsonResult.success("챌린지가 성공적으로 종료되었습니다.");
-    }
+	    // JWT를 통해 사용자 인증
+	    int userNum = JwtUtil.getNoFromHeader(request);
+	    if (userNum <= 0) {
+	        return JsonResult.fail("인증되지 않은 사용자입니다.");
+	    }
 
- // **기간 완료 엔드포인트 (roomStatusNum을 4로 변경)**
-    @PutMapping("/complete-period/{roomNum}")
-    public JsonResult completePeriod(
-            @PathVariable int roomNum, 
-            HttpServletRequest request) {
-        System.out.println("ChallengeController.completePeriod()");
+	    // 사용자 권한 확인 (예: 방장인지 확인)
+	    int auth = challengeService.getUserAuth(roomNum, userNum);
+	    if (auth < 1) { // 방장 권한 확인
+	        return JsonResult.fail("권한이 없습니다.");
+	    }
 
-        // JWT를 통해 사용자 인증
-        int userNum = JwtUtil.getNoFromHeader(request);
-        if (userNum <= 0) {
-            return JsonResult.fail("인증되지 않은 사용자입니다.");
-        }
+	    // roomStatusNum을 4로 업데이트
+	    boolean updateSuccess = challengeService.completePeriod(roomNum);
+	    if (updateSuccess) {
+	        // 방 정보 조회
+	        ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
+	        String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
 
-        // 사용자 권한 확인 (예: 방장인지 확인)
-        int auth = challengeService.getUserAuth(roomNum, userNum);
-        if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
-            return JsonResult.fail("권한이 없습니다.");
-        }
+	        // 알림 생성 (msgSender는 서비스 계층에서 처리됨)
+	        challengeService.createNotices(roomNum, roomTitle, "챌린지 기간 완료 알림", roomTitle + "의 챌린지 기간이 완료되었습니다.");
 
-        // roomStatusNum을 4로 업데이트
-        boolean updateSuccess = challengeService.completePeriod(roomNum);
-        if (updateSuccess) {
-            // 방 정보 조회
-            ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
-            String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
-            int roomMakerNum = roomInfo != null ? roomInfo.getUserNum() : 0;
-
-            // 알림 생성
-            challengeService.createNotices(roomNum, roomTitle, "챌린지 기간 완료 알림", roomTitle + "의 챌린지 기간이 완료되었습니다.", roomMakerNum);
-
-            return JsonResult.success("챌린지 기간이 완료되었습니다.");
-        } else {
-            return JsonResult.fail("챌린지 기간 완료에 실패했습니다.");
-        }
-    }
+	        return JsonResult.success("챌린지 기간이 완료되었습니다.");
+	    } else {
+	        return JsonResult.fail("챌린지 기간 완료에 실패했습니다.");
+	    }
+	}
 
 
 	@PostMapping("/join/{roomNum}")

@@ -275,10 +275,13 @@
         VALUES (#{userNum}, 11, NOW(), #{returnPoint}, "+");
     </insert>
 <!-- 알림 삽입 -->
-    <insert id="insertNotice" parameterType="com.javaex.vo.ChallengeVo">
-        INSERT INTO notice (userNum, msgSender, noticeTitle, noticeMsg, isCheck, createDate)
-        VALUES (#{userNum}, #{announceAddedBy}, #{title}, #{announcement}, #{isCheck}, NOW())
-    </insert>
+    <!-- ChallengeMapper.xml -->
+
+<insert id="insertNoticeForRoom" parameterType="com.javaex.vo.ChallengeVo">
+    INSERT INTO notice (userNum, msgSender, noticeTitle, noticeMsg, isCheck, createDate)
+    VALUES (#{userNum}, #{msgSender}, #{noticeTitle}, #{noticeMsg}, #{isCheck}, NOW())
+</insert>
+
 
     <!-- 특정 방에 참여한 모든 사용자 조회 -->
     <select id="selectParticipants" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
@@ -286,4 +289,11 @@
         FROM enteredUser eu
         WHERE eu.roomNum = #{roomNum} AND eu.enteredUserStatusNum = 1
     </select>
+    
+    <select id="selectRoomOwner" parameterType="int" resultType="int">
+    SELECT userNum 
+    FROM enteredUser
+    WHERE roomNum = #{roomNum} AND enteredUserAuth = 1
+    LIMIT 1
+</select>
 </mapper>
