@@ -58,8 +58,8 @@ public class JM_RoomGenerationService {
 	}
 	
 	// 성실도 가져오기
-	public int getUserScore (int userNum) {
-		int userScore = dao.getUserScore(userNum);
+	public double getUserScore (int userNum) {
+		double userScore = dao.getUserScore(userNum);
 		return userScore;
 	}
 	
