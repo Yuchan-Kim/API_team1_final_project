@@ -127,7 +127,7 @@ public class JM_RoomGenerationController {
 	public JsonResult getUserScore(HttpServletRequest request) {
 		    
 		int userNum = JwtUtil.getNoFromHeader(request);
-		int userScore = service.getUserScore(userNum);
+		double userScore = service.getUserScore(userNum);
 		System.out.println("보유 성실도 확인"+userScore);
 		return JsonResult.success(userScore);
 	}

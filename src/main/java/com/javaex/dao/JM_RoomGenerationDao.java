@@ -51,11 +51,11 @@ public class JM_RoomGenerationDao {
 		return userPoint;
 	}
 	
-	// 보유 포인트 가져오기
-	public int getUserScore(int userNum) {
+	// 성실도 가져오기
+	public double getUserScore(int userNum) {
 		System.out.println("따자하오"+userNum);
-		int userPoint = session.selectOne("generation.getUserScore",userNum);
-		return userPoint;
+		double userScore = session.selectOne("generation.getUserScore",userNum);
+		return userScore;
 	}
 	
 	// 방 상세설정 업데이트
