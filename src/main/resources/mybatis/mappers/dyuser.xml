@@ -22,7 +22,7 @@
             #{userEmail},
             #{userPw},
             #{userName},
-            #{joinDate}
+            now()
         )
         ]]>
     </insert>
