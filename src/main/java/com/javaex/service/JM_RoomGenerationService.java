@@ -45,6 +45,24 @@ public class JM_RoomGenerationService {
 		return newRoomTitle;
 	}
 	
+	// 방 타입넘버 가져오기
+	public int getRoomType (int roomNum) {
+		int roomTypeNum = dao.getRoomType(roomNum);
+		return roomTypeNum;
+	}
+	
+	// 보유 포인트 가져오기
+	public int getUserPoint (int userNum) {
+		int userPoint = dao.getUserPoint(userNum);
+		return userPoint;
+	}
+	
+	// 성실도 가져오기
+	public int getUserScore (int userNum) {
+		int userScore = dao.getUserScore(userNum);
+		return userScore;
+	}
+	
 	// 방 상세설정 업데이트
 	public ChallengeVo exeRoomUpdateStep4(ChallengeVo  challengevo) {
 					

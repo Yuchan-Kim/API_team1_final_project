@@ -38,6 +38,26 @@ public class JM_RoomGenerationDao {
 		return null;
 	}
 	
+	// 방타입 넘버 가져오기
+	public int getRoomType(int roomNum) {
+		int roomTypeNum = session.selectOne("generation.getRoomType",roomNum);
+		return roomTypeNum;
+	}
+	
+	// 보유 포인트 가져오기
+	public int getUserPoint(int userNum) {
+		System.out.println("따자하오"+userNum);
+		int userPoint = session.selectOne("generation.getUserPoint",userNum);
+		return userPoint;
+	}
+	
+	// 보유 포인트 가져오기
+	public int getUserScore(int userNum) {
+		System.out.println("따자하오"+userNum);
+		int userPoint = session.selectOne("generation.getUserScore",userNum);
+		return userPoint;
+	}
+	
 	// 방 상세설정 업데이트
 	public ChallengeVo roomUpdateStep4(ChallengeVo challengevo) {
 					

@@ -87,6 +87,15 @@
     	]]>
     </select>
     
+    <!-- 미션 요일 가져오기 -->
+    <select id="getDateNum" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+    		SELECT rd.dateNum AS roomDayNum
+			FROM roomDay rd
+			WHERE rd.roomNum = #{roomNum}
+    	]]>
+    </select>
+    
     <!-- 방 미션 리스트 -->
     <select id="getMissionByRoomNum2" resultType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
