@@ -55,10 +55,10 @@
     </select>
     
     <!-- 성실도 가져오기 -->
-    <select id="getUserScore" parameterType="int" resultType="int">
+    <select id="getUserScore" parameterType="int" resultType="double">
     	<![CDATA[ 
     		SELECT 
-	            t2.achievement_rate as participationScore
+	            t2.achievement_rate as count
 	        FROM (
 	            -- <<챌린지 상태별 카운트>>
 	            SELECT 
