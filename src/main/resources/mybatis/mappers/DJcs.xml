@@ -10,7 +10,8 @@
 		<![CDATA[
 			SELECT faqTitle, faqContent 
 			from FAQ 
-			order by faqNum asc;
+			order by faqNum asc
+			limit 11
 		]]>
 	</select>
 	
