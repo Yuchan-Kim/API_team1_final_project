@@ -274,7 +274,7 @@ public class ChallengeDao {
      */
     public boolean insertNotice(ChallengeVo notice) {
         System.out.println("ChallengeDao.insertNotice()");
-        int result = sqlSession.insert(namespace + ".insertNotice", notice);
+        int result = sqlSession.insert(namespace + ".insertNoticeForRoom", notice);
         return result > 0;
     }
 
@@ -287,5 +287,11 @@ public class ChallengeDao {
         System.out.println("ChallengeDao.getParticipants() - roomNum: " + roomNum);
         return sqlSession.selectList(namespace + ".selectParticipants", roomNum);
     }
+    
+
+ // 방 소유자(userNum) 조회 메서드 추가
+ public Integer getRoomOwner(int roomNum) {
+     return sqlSession.selectOne(namespace + ".selectRoomOwner", roomNum);
+ }
 
 }

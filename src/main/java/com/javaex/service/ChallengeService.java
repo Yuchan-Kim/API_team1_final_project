@@ -278,40 +278,49 @@ public class ChallengeService {
 	    return points;
 	}
 	
+	// ChallengeService.java
+
 	@Transactional
-    public void createNotices(int roomNum, String roomTitle, String statusTitle, String statusMessage, int msgSender) {
-        System.out.println("ChallengeService.createNotices()");
+	public void createNotices(int roomNum, String roomTitle, String statusTitle, String statusMessage) {
+	    System.out.println("ChallengeService.createNotices()");
 
-        // 해당 방에 참여한 모든 사용자 조회
-        List<ChallengeVo> participants = challengeDao.getParticipants(roomNum);
+	    // 방 소유자(userNum) 조회
+	    Integer roomOwnerNum = challengeDao.getRoomOwner(roomNum);
+	    if (roomOwnerNum == null) {
+	        System.err.println("방 소유자를 찾을 수 없습니다. roomNum: " + roomNum);
+	        return;
+	    }
 
-        if (participants != null && !participants.isEmpty()) {
-            for (ChallengeVo participant : participants) {
-                int userNum = participant.getUserNum();
+	    // 해당 방에 참여한 모든 사용자 조회
+	    List<ChallengeVo> participants = challengeDao.getParticipants(roomNum);
 
-                // 방장이 자신에게 알림을 보내지 않도록 예외 처리 (선택 사항)
-                if (userNum == msgSender) {
-                    continue;
-                }
+	    if (participants != null && !participants.isEmpty()) {
+	        for (ChallengeVo participant : participants) {
+	            int userNum = participant.getUserNum();
 
-                // ChallengeVo를 NoticeVo로 변경할 것을 권장
-                // 여기서는 ChallengeVo를 사용
-                ChallengeVo notice = new ChallengeVo();
-                notice.setUserNum(userNum);
-                notice.setMsgSender(msgSender);
-                notice.setNoticeTitle(statusTitle);
-                notice.setNoticeMsg(statusMessage);
-                notice.setIsCheck(0); // 읽지 않음
+	            // 방 소유자에게는 알림을 보내지 않도록 예외 처리
+	            if (userNum == roomOwnerNum) {
+	                continue;
+	            }
 
-                // 알림 삽입
-                boolean inserted = challengeDao.insertNotice(notice);
-                if (!inserted) {
-                    System.err.println("Failed to insert notice for userNum: " + userNum);
-                }
-            }
-        } else {
-            System.out.println("No participants found for roomNum: " + roomNum);
-        }
-    }
+	            // Notice 객체 생성
+	            ChallengeVo notice = new ChallengeVo();
+	            notice.setUserNum(userNum);
+	            notice.setMsgSender(roomOwnerNum);
+	            notice.setNoticeTitle(statusTitle);
+	            notice.setNoticeMsg(statusMessage);
+	            notice.setIsCheck(0); // 읽지 않음
+
+	            // 알림 삽입
+	            boolean inserted = challengeDao.insertNotice(notice);
+	            if (!inserted) {
+	                System.err.println("사용자에게 알림을 삽입하지 못했습니다. userNum: " + userNum);
+	            }
+	        }
+	    } else {
+	        System.out.println("참여자가 없습니다. roomNum: " + roomNum);
+	    }
+	}
+
 	
 }
