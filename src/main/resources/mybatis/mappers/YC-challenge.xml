@@ -192,7 +192,7 @@
 </select>
 
     <!-- 유저 세부 정보 조회 -->
-    <select id="selectedUserDetail" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
+    <select id="selectUserDetails" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
         SELECT 
             eu.userNum AS userNum,
             ri.roomEnterPoint AS roomPoint,
