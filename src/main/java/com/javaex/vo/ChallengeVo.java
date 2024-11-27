@@ -13,7 +13,12 @@ public class ChallengeVo {
 	private boolean isJoined; 		// 사용자 참여 여부
 	private int enteredUserStatusNum;
 	private String aiMission;		// ai 미션
-	
+	private int noticeNum;
+    private int msgSender;
+    private String noticeTitle;
+    private String noticeMsg;
+    private int isCheck;
+    private Date createDate;
 	// 로직용
 	private int roomDayNum;			//요일번호
 	
@@ -98,6 +103,66 @@ public class ChallengeVo {
 		return count;
 	}
 
+
+
+	public int getNoticeNum() {
+		return noticeNum;
+	}
+
+
+	public void setNoticeNum(int noticeNum) {
+		this.noticeNum = noticeNum;
+	}
+
+
+	public int getMsgSender() {
+		return msgSender;
+	}
+
+
+	public void setMsgSender(int msgSender) {
+		this.msgSender = msgSender;
+	}
+
+
+	public String getNoticeTitle() {
+		return noticeTitle;
+	}
+
+
+	public void setNoticeTitle(String noticeTitle) {
+		this.noticeTitle = noticeTitle;
+	}
+
+
+	public String getNoticeMsg() {
+		return noticeMsg;
+	}
+
+
+	public void setNoticeMsg(String noticeMsg) {
+		this.noticeMsg = noticeMsg;
+	}
+
+
+	public int getIsCheck() {
+		return isCheck;
+	}
+
+
+	public void setIsCheck(int isCheck) {
+		this.isCheck = isCheck;
+	}
+
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 
 
 	public void setCount(int count) {

@@ -28,9 +28,6 @@ public class ChallengeService {
 		return challengeDao.getRoomHeaderInfo(roomNum, userNum);
 	}
 	
-	
-
-
 	// 사용자 권한 조회
 	public int getUserAuth(int roomNum, int userNum) {
 		System.out.println("ChallengeService.getUserAuth()");
@@ -49,9 +46,12 @@ public class ChallengeService {
 		return challengeDao.startChallenge(roomNum) > 0;
 	}
 
-	public boolean deleteRoom(int roomNum) {
+	public boolean deleteRoom(int roomNum, int userNum) {
         System.out.println("ChallengeService.deleteRoom() - roomNum: " + roomNum);
-
+        List<ChallengeVo> returnPoint = challengeDao.getRoomInfo(roomNum);
+        challengeDao.returnEnterPoint(userNum,returnPoint.get(0).getRoomPoint());
+        
+        
         boolean allDeleted = true;
 
         // 삭제 순서: evaluationImg -> evaluations -> missionImg -> challenges -> roomDay -> announcements -> roomChat -> enteredUser -> roomInfo
@@ -134,8 +134,6 @@ public class ChallengeService {
 		return challengeDao.updateRoomStatus(roomNum, 4) > 0;
 	}
 
-
-
     public boolean insertPointHistory(int userNum, int points, int purposeNum, String info) {
         System.out.println("ChallengeService.insertPointHistory()");
         ChallengeVo pointHistory = new ChallengeVo();
@@ -167,6 +165,42 @@ public class ChallengeService {
 
 		// 현재 유저의 enteredUserAuth 조회
 		Integer enteredUserAuth = challengeDao.getUserAuth(roomNum, userNum);
+		
+		
+
+		if (enteredUserAuth == null) {
+			return false; // 유저가 방에 참여하지 않았음
+		}
+		
+		 List<ChallengeVo> returnPoint = challengeDao.getRoomInfo(roomNum);
+	        challengeDao.returnEnterPoint(userNum,returnPoint.get(0).getRoomPoint());
+
+		// 나가는 유저의 enteredUserAuth를 0으로 변경
+		challengeDao.updateEnteredUserAuth(roomNum, userNum, 0);
+
+		if (participantCount >= 2) {
+			if (enteredUserAuth == 1) {
+				// 나가는 유저가 방장인 경우, 다음 유저에게 방장 권한 부여
+				Integer nextUserNum = challengeDao.getNextUserNum(roomNum, userNum);
+				if (nextUserNum != null) {
+					challengeDao.updateEnteredUserAuth(roomNum, nextUserNum, 1);
+				}
+			}
+			// 나가는 유저의 enteredUserStatusNum을 2으로 설정하여 비활성화
+			challengeDao.updateEnteredUserStatus(roomNum, userNum, 2);
+		} 
+
+		return true;
+	}
+	
+	public boolean leaveRoom_noRefund(int roomNum, int userNum) {
+		System.out.println("ChallengeService.leaveRoom()");
+
+		// 현재 방의 참여자 수 조회
+		int participantCount = challengeDao.getParticipantCount(roomNum);
+
+		// 현재 유저의 enteredUserAuth 조회
+		Integer enteredUserAuth = challengeDao.getUserAuth(roomNum, userNum);
 
 		if (enteredUserAuth == null) {
 			return false; // 유저가 방에 참여하지 않았음
@@ -185,24 +219,14 @@ public class ChallengeService {
 			}
 			// 나가는 유저의 enteredUserStatusNum을 2으로 설정하여 비활성화
 			challengeDao.updateEnteredUserStatus(roomNum, userNum, 2);
-		} else {
-			// 참여자가 1명 이하이면 방 삭제
-			challengeDao.deleteEnteredUsers(roomNum);
-			challengeDao.deleteRoom(roomNum);
 		}
-
 		return true;
 	}
-	
-	
-
 	
 	public ChallengeVo getUserStatus(int roomNum, int userNum) {
 	    System.out.println("ChallengeService.getUserStatus()");
 	    return challengeDao.getUserStatus(roomNum, userNum);
 	}
-	
-	
 	
 	@Transactional
 	public boolean joinRoom(int roomNum, int userNum) {
@@ -253,6 +277,41 @@ public class ChallengeService {
 	    System.out.println("ChallengeService.checkPoint() - points: " + points);
 	    return points;
 	}
+	
+	@Transactional
+    public void createNotices(int roomNum, String roomTitle, String statusTitle, String statusMessage, int msgSender) {
+        System.out.println("ChallengeService.createNotices()");
 
+        // 해당 방에 참여한 모든 사용자 조회
+        List<ChallengeVo> participants = challengeDao.getParticipants(roomNum);
 
+        if (participants != null && !participants.isEmpty()) {
+            for (ChallengeVo participant : participants) {
+                int userNum = participant.getUserNum();
+
+                // 방장이 자신에게 알림을 보내지 않도록 예외 처리 (선택 사항)
+                if (userNum == msgSender) {
+                    continue;
+                }
+
+                // ChallengeVo를 NoticeVo로 변경할 것을 권장
+                // 여기서는 ChallengeVo를 사용
+                ChallengeVo notice = new ChallengeVo();
+                notice.setUserNum(userNum);
+                notice.setMsgSender(msgSender);
+                notice.setNoticeTitle(statusTitle);
+                notice.setNoticeMsg(statusMessage);
+                notice.setIsCheck(0); // 읽지 않음
+
+                // 알림 삽입
+                boolean inserted = challengeDao.insertNotice(notice);
+                if (!inserted) {
+                    System.err.println("Failed to insert notice for userNum: " + userNum);
+                }
+            }
+        } else {
+            System.out.println("No participants found for roomNum: " + roomNum);
+        }
+    }
+	
 }

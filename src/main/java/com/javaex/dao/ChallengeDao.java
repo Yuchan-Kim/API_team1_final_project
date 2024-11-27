@@ -29,6 +29,12 @@ public class ChallengeDao {
         return sqlSession.selectOne(namespace + ".selectUserDetails", userNum);
     }
     
+    public void returnEnterPoint(int userNum , int returnPoint) {
+    	Map<String,Object> params = new HashMap<>();
+    	params.put("userNum", userNum);
+    	params.put("returnPoint", returnPoint);
+    	sqlSession.insert(namespace +".returnEnterPoint", params);
+    }
    
 
     // **포인트 히스토리 삽입 메서드**
@@ -260,5 +266,26 @@ public class ChallengeDao {
 	    System.out.println("ChallengeDao.getUserDetails() - userDetails: " + userDetails);
 	    return userDetails;
 	}
+	
+	/**
+     * 알림 삽입
+     * @param notice ChallengeVo 객체 (userNum, msgSender, noticeTitle, noticeMsg, isCheck 필드 필요)
+     * @return 삽입 성공 여부
+     */
+    public boolean insertNotice(ChallengeVo notice) {
+        System.out.println("ChallengeDao.insertNotice()");
+        int result = sqlSession.insert(namespace + ".insertNotice", notice);
+        return result > 0;
+    }
+
+    /**
+     * 특정 방에 참여한 모든 사용자 조회
+     * @param roomNum 방 번호
+     * @return 참여자 목록
+     */
+    public List<ChallengeVo> getParticipants(int roomNum) {
+        System.out.println("ChallengeDao.getParticipants() - roomNum: " + roomNum);
+        return sqlSession.selectList(namespace + ".selectParticipants", roomNum);
+    }
 
 }

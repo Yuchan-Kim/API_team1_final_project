@@ -70,63 +70,42 @@ public class ChallengeController {
 		}
 	}
 
-	// **방 시작 시간 업데이트 엔드포인트 (현재 시간으로 설정 및 roomStatusNum 변경)**
-	@PutMapping("/start-challenge/{roomNum}")
-	public JsonResult startChallenge(
-			@PathVariable int roomNum, 
-			HttpServletRequest request) {
-		System.out.println("ChallengeController.startChallenge()");
-
-		// JWT를 통해 사용자 인증
-		int userNum = JwtUtil.getNoFromHeader(request);
-		if (userNum <= 0) {
-			return  JsonResult.fail("인증되지 않은 사용자입니다.");
-		}
-
-		// 사용자 권한 확인 (예: 방장인지 확인)
-		int auth = challengeService.getUserAuth(roomNum, userNum);
-		if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
-			return  JsonResult.fail("권한이 없습니다.");
-		}
-
-		// 현재 시간을 roomStartDate로 설정하고 roomStatusNum을 3으로 업데이트
-		boolean updateSuccess = challengeService.startChallenge(roomNum);
-		if (updateSuccess) {
-			return JsonResult.success("챌린지가 시작되었습니다.");
-		} else {
-			return  JsonResult.fail("챌린지 시작에 실패했습니다.");
-		}
-	}
-
-	 // 방 삭제 엔드포인트 수정 (이미 존재)
-    @DeleteMapping("/delete-room/{roomNum}")
-    public JsonResult deleteRoom(
-            @PathVariable int roomNum,
+	  // **챌린지 시작 엔드포인트**
+    @PutMapping("/start-challenge/{roomNum}")
+    public JsonResult startChallenge(
+            @PathVariable int roomNum, 
             HttpServletRequest request) {
-        System.out.println("ChallengeController.deleteRoom() - roomNum: " + roomNum);
+        System.out.println("ChallengeController.startChallenge()");
 
         // JWT를 통해 사용자 인증
         int userNum = JwtUtil.getNoFromHeader(request);
         if (userNum <= 0) {
-            return JsonResult.fail("인증되지 않은 사용자입니다.");
+            return  JsonResult.fail("인증되지 않은 사용자입니다.");
         }
 
         // 사용자 권한 확인 (예: 방장인지 확인)
         int auth = challengeService.getUserAuth(roomNum, userNum);
-        if (auth < 1) { // 방장 권한 확인
-            return JsonResult.fail("권한이 없습니다.");
+        if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
+            return  JsonResult.fail("권한이 없습니다.");
         }
 
-        // 방 삭제 서비스 호출
-        boolean deleteSuccess = challengeService.deleteRoom(roomNum);
-        if (deleteSuccess) {
-            return JsonResult.success("방이 성공적으로 삭제되었습니다.");
+        // 챌린지 시작 로직 호출
+        boolean updateSuccess = challengeService.startChallenge(roomNum);
+        if (updateSuccess) {
+            // 방 정보 조회
+            ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
+            String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
+            int roomMakerNum = roomInfo != null ? roomInfo.getUserNum() : 0;
+
+            // 알림 생성
+            challengeService.createNotices(roomNum, roomTitle, "챌린지 시작 알림", roomTitle + "의 챌린지가 시작되었습니다.", roomMakerNum);
+
+            return JsonResult.success("챌린지가 시작되었습니다.");
         } else {
-            return JsonResult.fail("방 삭제에 실패했습니다.");
+            return  JsonResult.fail("챌린지 시작에 실패했습니다.");
         }
     }
-
-	// **챌린지 종료 엔드포인트 (roomStatusNum을 3으로 변경)**
+ // **챌린지 종료 엔드포인트 (roomStatusNum을 3으로 변경)**
     @PutMapping("/end-challenge/{roomNum}")
     public JsonResult endChallenge(
             @PathVariable int roomNum, 
@@ -183,37 +162,53 @@ public class ChallengeController {
             return JsonResult.fail("포인트 이력 저장에 실패했습니다.");
         }
 
+        // 방 정보 조회
+        ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
+        String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
+        int roomMakerNum = roomInfo != null ? roomInfo.getUserNum() : 0;
+
+        // 알림 생성
+        challengeService.createNotices(roomNum, roomTitle, "챌린지 종료 알림", roomTitle + "의 챌린지가 종료되었습니다.", roomMakerNum);
+
         return JsonResult.success("챌린지가 성공적으로 종료되었습니다.");
     }
 
+ // **기간 완료 엔드포인트 (roomStatusNum을 4로 변경)**
+    @PutMapping("/complete-period/{roomNum}")
+    public JsonResult completePeriod(
+            @PathVariable int roomNum, 
+            HttpServletRequest request) {
+        System.out.println("ChallengeController.completePeriod()");
 
-	// **기간 완료 엔드포인트 (roomStatusNum을 4로 변경)**
-	@PutMapping("/complete-period/{roomNum}")
-	public JsonResult completePeriod(
-			@PathVariable int roomNum, 
-			HttpServletRequest request) {
-		System.out.println("ChallengeController.completePeriod()");
+        // JWT를 통해 사용자 인증
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
 
-		// JWT를 통해 사용자 인증
-		int userNum = JwtUtil.getNoFromHeader(request);
-		if (userNum <= 0) {
-			return JsonResult.fail("인증되지 않은 사용자입니다.");
-		}
+        // 사용자 권한 확인 (예: 방장인지 확인)
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
+            return JsonResult.fail("권한이 없습니다.");
+        }
 
-		// 사용자 권한 확인 (예: 방장인지 확인)
-		int auth = challengeService.getUserAuth(roomNum, userNum);
-		if (auth < 1) { // 필요한 권한 수준에 따라 조정 (예: 1 이상은 방장)
-			return JsonResult.fail("권한이 없습니다.");
-		}
+        // roomStatusNum을 4로 업데이트
+        boolean updateSuccess = challengeService.completePeriod(roomNum);
+        if (updateSuccess) {
+            // 방 정보 조회
+            ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
+            String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
+            int roomMakerNum = roomInfo != null ? roomInfo.getUserNum() : 0;
 
-		// roomStatusNum을 4로 업데이트
-		boolean updateSuccess = challengeService.completePeriod(roomNum);
-		if (updateSuccess) {
-			return JsonResult.success("챌린지 기간이 완료되었습니다.");
-		} else {
-			return JsonResult.fail("챌린지 기간 완료에 실패했습니다.");
-		}
-	}
+            // 알림 생성
+            challengeService.createNotices(roomNum, roomTitle, "챌린지 기간 완료 알림", roomTitle + "의 챌린지 기간이 완료되었습니다.", roomMakerNum);
+
+            return JsonResult.success("챌린지 기간이 완료되었습니다.");
+        } else {
+            return JsonResult.fail("챌린지 기간 완료에 실패했습니다.");
+        }
+    }
+
 
 	@PostMapping("/join/{roomNum}")
 	public JsonResult joinRoom(@PathVariable int roomNum, HttpServletRequest request) {
@@ -438,6 +433,34 @@ public class ChallengeController {
 		}
 	}
 
+	
+	// 방 삭제 엔드포인트 수정 (이미 존재)
+    @DeleteMapping("/delete-room/{roomNum}")
+    public JsonResult deleteRoom(
+            @PathVariable int roomNum,
+            HttpServletRequest request) {
+        System.out.println("ChallengeController.deleteRoom() - roomNum: " + roomNum);
+
+        // JWT를 통해 사용자 인증
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        // 사용자 권한 확인 (예: 방장인지 확인)
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) { // 방장 권한 확인
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        // 방 삭제 서비스 호출
+        boolean deleteSuccess = challengeService.deleteRoom(roomNum, userNum);
+        if (deleteSuccess) {
+            return JsonResult.success("방이 성공적으로 삭제되었습니다.");
+        } else {
+            return JsonResult.fail("방 삭제에 실패했습니다.");
+        }
+    }
 	 // 방 나가기 엔드포인트 추가
     @PutMapping("/leave-room/{roomNum}")
     public JsonResult leaveRoom(
@@ -453,6 +476,27 @@ public class ChallengeController {
 
         // 방 나가기 서비스 호출
         boolean leaveSuccess = challengeService.leaveRoom(roomNum, userNum);
+        if (leaveSuccess) {
+            return JsonResult.success("챌린지를 나갔습니다.");
+        } else {
+            return JsonResult.fail("챌린지 나가기에 실패했습니다.");
+        }
+    }
+    
+    @PutMapping("/leave-room-no-refund/{roomNum}")
+    public JsonResult leaveRoom_noRefund(
+            @PathVariable int roomNum,
+            HttpServletRequest request) {
+        System.out.println("ChallengeController.leaveRoom() - roomNum: " + roomNum);
+
+        // JWT를 통해 사용자 인증
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        // 방 나가기 서비스 호출
+        boolean leaveSuccess = challengeService.leaveRoom_noRefund(roomNum, userNum);
         if (leaveSuccess) {
             return JsonResult.success("챌린지를 나갔습니다.");
         } else {

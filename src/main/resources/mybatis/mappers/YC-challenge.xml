@@ -41,6 +41,8 @@
             c.categoryName AS categoryName,
             ri.roomKeyword AS roomKeyword,
             r.regionName AS regionName,
+            ri.roomMinNum AS roomMinNum,
+            COUNT(eu_active.userNum) AS enteredUserNum,
             COALESCE(eu.enteredUserStatusNum, 0) AS enteredUserStatusNum
         FROM roomInfo ri
         JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
@@ -48,15 +50,22 @@
         JOIN regions r ON ri.regionNum = r.regionNum
         JOIN period p ON ri.periodNum = p.periodNum
         LEFT JOIN enteredUser eu ON ri.roomNum = eu.roomNum AND eu.userNum = #{userNum}
-        WHERE ri.roomNum = #{roomNum};
+        LEFT JOIN enteredUser eu_active ON ri.roomNum = eu_active.roomNum AND eu_active.enteredUserStatusNum = 1
+        WHERE ri.roomNum = #{roomNum}
+        GROUP BY ri.roomTitle, ri.roomDescription, ri.roomStartDate, ri.roomStatusNum, p.periodType, rt.roomTypeName, c.categoryName, ri.roomKeyword, r.regionName, ri.roomMinNum, eu.enteredUserStatusNum
     </select>
-
     <!-- 사용자 권한 조회 -->
     <select id="selectUserAuth" parameterType="map" resultType="int">
-        SELECT enteredUserAuth AS userAuth 
-        FROM enteredUser 
+        SELECT enteredUserAuth FROM enteredUser 
         WHERE roomNum = #{roomNum} AND userNum = #{userNum};
     </select>
+    <!-- 사용자 권한 조회 -->
+       
+    <select id="getUserAuth" parameterType="map" resultType="int">
+        SELECT enteredUserAuth FROM enteredUser
+        WHERE roomNum = #{roomNum} AND userNum = #{userNum}
+    </select>
+
     
     <!-- 방 시작 시간 업데이트 -->
     <update id="updateRoomStartDate" parameterType="map">
@@ -175,6 +184,12 @@
         FROM enteredUser
         WHERE roomNum = #{roomNum} AND userNum = #{userNum};
     </select>
+    
+    <select id="getEnteredUserNum" parameterType="int" resultType="int">
+    SELECT COUNT(*)
+    FROM enteredUser
+    WHERE roomNum = #{roomNum} AND enteredUserStatusNum = 1
+</select>
 
     <!-- 유저 세부 정보 조회 -->
     <select id="getUserDetails" parameterType="map" resultType="com.javaex.vo.ChallengeVo">
@@ -194,7 +209,7 @@
         INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
         VALUES (#{userNum}, #{point}, #{pointPurposeNum}, #{historyInfo}, NOW());
     </insert>
-
+    
     <!-- 참여자 수 조회 -->
     <select id="getParticipantCount" parameterType="int" resultType="int">
         SELECT COUNT(*) AS enteredUserNum
@@ -250,10 +265,25 @@
     
     <!-- roomEnterPoint 삽입 -->
     <insert id="roomEnterPoint" parameterType="map">
-        <![CDATA[
-            INSERT INTO pointHistory (userNum, pointPurposeNum, historyDate, historyPoint, historyInfo)
-            VALUES (#{userNum}, 6, NOW(), #{roomEnterPoint}, "-")
-        ]]>
+        INSERT INTO pointHistory (userNum, pointPurposeNum, historyDate, historyPoint, historyInfo)
+        VALUES (#{userNum}, 6, NOW(), #{roomEnterPoint}, "-")
+    </insert>
+    
+    <!-- returnEnterPoint 삽입 -->
+    <insert id="returnEnterPoint" parameterType="map">
+        INSERT INTO pointHistory (userNum, pointPurposeNum, historyDate, historyPoint, historyInfo)
+        VALUES (#{userNum}, 11, NOW(), #{returnPoint}, "+");
+    </insert>
+<!-- 알림 삽입 -->
+    <insert id="insertNotice" parameterType="com.javaex.vo.ChallengeVo">
+        INSERT INTO notice (userNum, msgSender, noticeTitle, noticeMsg, isCheck, createDate)
+        VALUES (#{userNum}, #{announceAddedBy}, #{title}, #{announcement}, #{isCheck}, NOW())
     </insert>
 
+    <!-- 특정 방에 참여한 모든 사용자 조회 -->
+    <select id="selectParticipants" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+        SELECT eu.userNum
+        FROM enteredUser eu
+        WHERE eu.roomNum = #{roomNum} AND eu.enteredUserStatusNum = 1
+    </select>
 </mapper>
