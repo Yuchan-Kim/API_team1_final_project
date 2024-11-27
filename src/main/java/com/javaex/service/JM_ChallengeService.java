@@ -28,6 +28,7 @@ public class JM_ChallengeService {
 		System.out.println("ChallengeService.exeUserList");
 		// 각 데이터를 가져옴
 	    List<ChallengeVo> userList = dao.userList(roomNum);
+	    List<ChallengeVo> dateList = dao.dateList(roomNum);
 	    List<ChallengeVo> missionList = dao.missionList2(roomNum);
 	    ChallengeVo roomInfo = dao.roomInfo(roomNum);
 	    ChallengeVo roomAnnoun = dao.roomAnnoun(roomNum);
@@ -35,6 +36,7 @@ public class JM_ChallengeService {
 	    // Map에 데이터 추가
 	    Map<String, Object> roomDetails = new HashMap<>();
 	    roomDetails.put("userList", userList);
+	    roomDetails.put("dateList", dateList);
 	    roomDetails.put("missionList", missionList);
 	    roomDetails.put("roomInfo", roomInfo);
 	    roomDetails.put("roomAnnoun", roomAnnoun);

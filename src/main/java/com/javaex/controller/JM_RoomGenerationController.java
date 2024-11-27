@@ -2,17 +2,22 @@ package com.javaex.controller;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.javaex.service.JM_RoomGenerationService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
 import com.javaex.vo.ChallengeVo;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -95,6 +100,36 @@ public class JM_RoomGenerationController {
 		ChallengeVo isSaved = service.exeRoomUpdateStep3(categoryVo);
 		    
 		return JsonResult.success("타이틀,설명,이미지가 성공적으로 저장되었습니다.");
+	}
+	
+	// 방 타입 가져오기
+	@GetMapping("api/step4/roomType/{roomNum}")
+    public JsonResult getRoomType(
+    		@PathVariable int roomNum) {
+        
+    	int roomTypeNum = service.getRoomType(roomNum);
+    	System.out.println("컨트롤러 데이터 확인"+roomTypeNum);
+        return JsonResult.success(roomTypeNum);
+    }
+	
+	// 보유 포인트 가져오기
+	@GetMapping("api/room/points")
+	public JsonResult getUserPoint(HttpServletRequest request) {
+	    
+		int userNum = JwtUtil.getNoFromHeader(request);
+	    int userPoint = service.getUserPoint(userNum);
+	    System.out.println("보유 포인트 확인"+userPoint);
+	    return JsonResult.success(userPoint);
+	 }
+	
+	// 성실도 가져오기
+	@GetMapping("api/room/score")
+	public JsonResult getUserScore(HttpServletRequest request) {
+		    
+		int userNum = JwtUtil.getNoFromHeader(request);
+		int userScore = service.getUserScore(userNum);
+		System.out.println("보유 성실도 확인"+userScore);
+		return JsonResult.success(userScore);
 	}
 	
 	// 방 상세설정 업데이트

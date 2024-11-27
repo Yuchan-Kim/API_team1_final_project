@@ -35,6 +35,62 @@
     	]]>
     </update>
     
+    <!-- 방타입넘버 가져오기 -->
+    <select id="getRoomType" parameterType="int" resultType="int">
+    	<![CDATA[ 
+    		SELECT roomTypeNum AS roomTypeNum
+    		FROM roomInfo
+    		WHERE roomNum = #{roomNum}
+    	]]>
+    </select>
+    
+    <!-- 보유포인트 가져오기 -->
+    <select id="getUserPoint" parameterType="int" resultType="int">
+    	<![CDATA[ 
+    		SELECT COALESCE(SUM(CASE WHEN historyInfo = '+' THEN historyPoint ELSE 0 END) - 
+                 SUM(CASE WHEN historyInfo = '-' THEN historyPoint ELSE 0 END), 0) as totalPoints
+		    FROM pointHistory
+		    WHERE userNum = #{userNum}
+    	]]>
+    </select>
+    
+    <!-- 성실도 가져오기 -->
+    <select id="getUserScore" parameterType="int" resultType="int">
+    	<![CDATA[ 
+    		SELECT 
+	            t2.achievement_rate as participationScore
+	        FROM (
+	            -- <<챌린지 상태별 카운트>>
+	            SELECT 
+	                SUM(CASE WHEN rs.roomStatusName = '시작' THEN 1 ELSE 0 END) as ongoing_challenges,
+	                SUM(CASE WHEN rs.roomStatusName IN ('모집 전', '모집 중') THEN 1 ELSE 0 END) as upcoming_challenges,
+	                SUM(CASE WHEN rs.roomStatusName = '종료' THEN 1 ELSE 0 END) as completed_challenges
+	            FROM roomInfo ri
+	            JOIN roomStatus rs ON ri.roomStatusNum = rs.roomStatusNum
+	            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+	            WHERE eu.userNum = #{userNum}
+	            AND eu.enteredUserStatusNum = 1
+	        ) t1,
+	        (
+	            -- <<종합 달성률 계산>>
+	            SELECT 
+	                ROUND(
+	                    (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
+	                    NULLIF(COUNT(*), 0), 
+	                    2
+	                ) as achievement_rate
+	            FROM challenges c
+	            JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+	            JOIN roomInfo ri ON rd.roomNum = ri.roomNum
+	            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+	            LEFT JOIN evaluation e ON c.missionNum = e.missionNum 
+	                                AND e.submitUser = eu.userNum
+	            WHERE eu.userNum = #{userNum}
+	            AND eu.enteredUserStatusNum = 1
+	        ) t2
+    	]]>
+    </select>
+    
      <!-- 방 상세설정 업데이트 -->
     <update id="updateStep4" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
