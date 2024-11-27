@@ -25,7 +25,6 @@ import com.javaex.vo.HmkChartDataVo;
 import com.javaex.vo.HmkGiftVo;
 import com.javaex.vo.HmkNoticeSummaryVo;
 import com.javaex.vo.HmkNoticeVo;
-import com.javaex.vo.HmkPointHistoryVo;
 import com.javaex.vo.HmkPointSummaryVo;
 import com.javaex.vo.HmkUserVo;
 
@@ -49,6 +48,9 @@ public class HmkMypageController {
 		List<HmkChallengeVo> ongoingChallenges = mypageService.getOngoingChallenges(userNum);
 		List<HmkChallengeVo> upcomingChallenges = mypageService.getUpcomingChallenges(userNum);
 		List<HmkChallengeVo> completedChallenges = mypageService.getCompletedChallenges(userNum);
+		
+		System.out.println("방장인 방의 상태값: " + createdChallenges);
+		
 		// 응답 데이터 구조화
 		Map<String, Object> responseData = new HashMap<>();
 		// 사용자 기본 정보

@@ -9,19 +9,24 @@ public class HmkChallengeVo {
 	private String roomStartDate;
 	private String endDate;
 	private String roomThumbNail;
+	private int roomStatusNum;
 	
 	//생성자
 	public HmkChallengeVo() {
 		super();
 	}
-	public HmkChallengeVo(int roomNum, String roomTitle, String roomStartDate, String endDate, String roomThumbNail) {
+	
+	public HmkChallengeVo(int roomNum, String roomTitle, String roomStartDate, String endDate, String roomThumbNail,
+			int roomStatusNum) {
 		super();
 		this.roomNum = roomNum;
 		this.roomTitle = roomTitle;
 		this.roomStartDate = roomStartDate;
 		this.endDate = endDate;
 		this.roomThumbNail = roomThumbNail;
+		this.roomStatusNum = roomStatusNum;
 	}
+
 	// getter - setter
 	public int getRoomNum() {
 		return roomNum;
@@ -54,13 +59,23 @@ public class HmkChallengeVo {
 		this.roomThumbNail = roomThumbNail;
 	}
 	
-	//일반 메소드
 	
+	public int getRoomStatusNum() {
+		return roomStatusNum;
+	}
+
+	public void setRoomStatusNum(int roomStatusNum) {
+		this.roomStatusNum = roomStatusNum;
+	}
+
 	@Override
 	public String toString() {
-		return "ChallengeVo [roomNum=" + roomNum + ", roomTitle=" + roomTitle + ", roomStartDate=" + roomStartDate
-				+ ", endDate=" + endDate + ", roomThumbNail=" + roomThumbNail + "]";
+		return "HmkChallengeVo [roomNum=" + roomNum + ", roomTitle=" + roomTitle + ", roomStartDate=" + roomStartDate
+				+ ", endDate=" + endDate + ", roomThumbNail=" + roomThumbNail + ", roomStatusNum=" + roomStatusNum
+				+ "]";
 	}
+	
+	//일반 메소드
 	
 
 	
