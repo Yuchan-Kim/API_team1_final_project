@@ -11,6 +11,7 @@ public class HmkChallengeVo {
 	private String roomThumbNail;
 	private int roomStatusNum;
 	
+	
 	//생성자
 	public HmkChallengeVo() {
 		super();
