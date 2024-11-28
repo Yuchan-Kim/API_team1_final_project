@@ -12,6 +12,7 @@
             ri.roomDescription AS roomDescription,
             ri.roomStartDate AS roomStartDate,
             ri.roomStatusNum AS roomStatusNum,
+            ri.roomThumbNail as roomThumbNail,
             p.periodType AS periodType,
             rt.roomTypeName AS roomTypeName,
             c.categoryName AS categoryName,

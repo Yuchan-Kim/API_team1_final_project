@@ -414,25 +414,6 @@ public class ChallengeService {
         return challengeDao.getParticipantCount(roomNum);
     }
     
-    // 최소 참가 인원 수정
-    public boolean updateRoomMinNum(int roomNum, int roomMinNum, int userNum) {
-        int currentParticipants = challengeDao.getParticipantCount(roomNum);
-        ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
-
-        if (roomInfo.getRoomStatusNum() == 1) {
-            if (roomMinNum < 2) {
-                return false;
-            }
-        } else if (roomInfo.getRoomStatusNum() == 2) {
-            if (roomMinNum < currentParticipants) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-        return challengeDao.updateRoomMinNum(roomNum, roomMinNum) > 0;
-    }
 
     // 최대 참가 인원 수정
     public boolean updateRoomMaxNum(int roomNum, int roomMaxNum, int userNum) {

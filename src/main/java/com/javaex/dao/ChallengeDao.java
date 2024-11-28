@@ -212,32 +212,16 @@ public class ChallengeDao {
 				return 0;
 			}
 		} else {
-			
-			ChallengeVo roomMaker = sqlSession.selectOne(namespace +".selectParticipants2", roomNum);
-			if (roomMaker.getRoomMaker() == userNum) {
-				// 새로운 참가자 등록
-				System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
-				Map<String, Object> params = new HashMap<>();
-				params.put("roomNum", roomNum);
-				params.put("userNum", userNum);
-				params.put("enteredUserStatusNum", 1);
-				params.put("enteredUserAuth", 1);
-				int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
-				System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
-				return insertedRows;
-			}else {
-				// 새로운 참가자 등록
-				System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
-				Map<String, Object> params = new HashMap<>();
-				params.put("roomNum", roomNum);
-				params.put("userNum", userNum);
-				params.put("enteredUserStatusNum", 1);
-				params.put("enteredUserAuth", 2);
-				int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
-				System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
-				return insertedRows;
-			}
-			
+			// 새로운 참가자 등록
+			System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
+			Map<String, Object> params = new HashMap<>();
+			params.put("roomNum", roomNum);
+			params.put("userNum", userNum);
+			params.put("enteredUserStatusNum", 1);
+			params.put("enteredUserAuth", 2);
+			int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
+			System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
+			return insertedRows;
 		}
 	}
 

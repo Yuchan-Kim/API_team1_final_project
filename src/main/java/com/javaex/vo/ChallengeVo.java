@@ -895,26 +895,6 @@ public class ChallengeVo {
 
 
 
-	@Override
-	public String toString() {
-		return "ChallengeVo [roomDescription=" + roomDescription + ", roomStatusNum=" + roomStatusNum + ", roomKeyword="
-				+ roomKeyword + ", isJoined=" + isJoined + ", order=" + order + ", userNum=" + userNum + ", userName="
-				+ userName + ", userEmail=" + userEmail + ", userStatus=" + userStatus + ", userAuth=" + userAuth
-				+ ", regionName=" + regionName + ", missionNum=" + missionNum + ", missionName=" + missionName
-				+ ", missionMethod=" + missionMethod + ", missionGoal=" + missionGoal + ", missionAI=" + missionAI
-				+ ", submitUser=" + submitUser + ", submitDate=" + submitDate + ", submitComment=" + submitComment
-				+ ", missionImgRoute=" + missionImgRoute + ", missionImgName=" + missionImgName + ", evalNum=" + evalNum
-				+ ", evalType=" + evalType + ", evalUser=" + evalUser + ", evalDate=" + evalDate + ", evalImgNum="
-				+ evalImgNum + ", evalImgRoute=" + evalImgRoute + ", evalImgName=" + evalImgName + ", roomNum="
-				+ roomNum + ", roomTitle=" + roomTitle + ", roomInfo=" + roomInfo + ", roomTypeName=" + roomTypeName
-				+ ", roomStatusName=" + roomStatusName + ", categoryName=" + categoryName + ", periodType=" + periodType
-				+ ", roomStartDate=" + roomStartDate + ", missionInstruction=" + missionInstruction + ", announceNum="
-				+ announceNum + ", title=" + title + ", announcement=" + announcement + ", announceAddedBy="
-				+ announceAddedBy + ", announceAddedByName=" + announceAddedByName + ", announceTime=" + announceTime
-				+ "]";
-	}
-
-
 	public int getRoomMaker() {
 		return roomMaker;
 	}
@@ -923,6 +903,36 @@ public class ChallengeVo {
 	public void setRoomMaker(int roomMaker) {
 		this.roomMaker = roomMaker;
 	}
+
+
+	@Override
+	public String toString() {
+		return "ChallengeVo [count=" + count + ", selectedMission=" + selectedMission + ", roomDescription="
+				+ roomDescription + ", roomStatusNum=" + roomStatusNum + ", roomKeyword=" + roomKeyword + ", isJoined="
+				+ isJoined + ", enteredUserStatusNum=" + enteredUserStatusNum + ", aiMission=" + aiMission
+				+ ", noticeNum=" + noticeNum + ", msgSender=" + msgSender + ", noticeTitle=" + noticeTitle
+				+ ", noticeMsg=" + noticeMsg + ", isCheck=" + isCheck + ", createDate=" + createDate + ", roomDayNum="
+				+ roomDayNum + ", order=" + order + ", userNum=" + userNum + ", userName=" + userName + ", userEmail="
+				+ userEmail + ", userStatus=" + userStatus + ", userAuth=" + userAuth + ", regionName=" + regionName
+				+ ", regionNum=" + regionNum + ", missionNum=" + missionNum + ", missionTypeNum=" + missionTypeNum
+				+ ", missionName=" + missionName + ", missionMethod=" + missionMethod + ", missionGoal=" + missionGoal
+				+ ", missionAI=" + missionAI + ", submitUser=" + submitUser + ", submitDate=" + submitDate
+				+ ", submitComment=" + submitComment + ", missionImgRoute=" + missionImgRoute + ", missionImgName="
+				+ missionImgName + ", evalNum=" + evalNum + ", evalType=" + evalType + ", evalUser=" + evalUser
+				+ ", evalDate=" + evalDate + ", evalImgNum=" + evalImgNum + ", evalImgRoute=" + evalImgRoute
+				+ ", evalImgName=" + evalImgName + ", roomNum=" + roomNum + ", roomTitle=" + roomTitle + ", roomInfo="
+				+ roomInfo + ", roomTypeNum=" + roomTypeNum + ", roomTypeName=" + roomTypeName + ", roomStatusName="
+				+ roomStatusName + ", categoryName=" + categoryName + ", periodType=" + periodType + ", roomStartDate="
+				+ roomStartDate + ", missionInstruction=" + missionInstruction + ", roomThumbNail=" + roomThumbNail
+				+ ", roomMinNum=" + roomMinNum + ", roomMaxNum=" + roomMaxNum + ", roomPoint=" + roomPoint
+				+ ", roomRate=" + roomRate + ", evaluationType=" + evaluationType + ", announceNum=" + announceNum
+				+ ", title=" + title + ", announcement=" + announcement + ", announceAddedBy=" + announceAddedBy
+				+ ", announceAddedByName=" + announceAddedByName + ", announceTime=" + announceTime + ", categoryNum="
+				+ categoryNum + ", point=" + point + ", pointPurposeNum=" + pointPurposeNum + ", historyInfo="
+				+ historyInfo + ", achievementRate=" + achievementRate + ", userPoints=" + userPoints + ", roomMaker="
+				+ roomMaker + "]";
+	}
+	
 	
 
 

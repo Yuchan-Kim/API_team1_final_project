@@ -37,8 +37,11 @@ public class ChallengeController {
 	public JsonResult getRoomInfo(@PathVariable int roomNum) {
 		System.out.println("ChallengeController.getRoomInfo()");
 		List<ChallengeVo> roomInfoList = challengeService.exeGetRoomInfo(roomNum);
+		
 		if (roomInfoList != null && !roomInfoList.isEmpty()) {
+			System.out.println("아ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ" +roomInfoList.get(0).getRoomMaxNum());
 			return JsonResult.success(roomInfoList);
+			
 		} else {
 			return JsonResult.fail("데이터를 불러오는데 실패했습니다");
 		}
@@ -480,12 +483,14 @@ public class ChallengeController {
             return JsonResult.fail("권한이 없습니다.");
         }
 
-        Integer regionNum = (Integer) payload.get("regionNum");
+        String regionNum = (String) payload.get("regionNum");
+        Integer regionId = Integer.parseInt(regionNum);
+
         if (regionNum == null) {
             return JsonResult.fail("지역 번호가 필요합니다.");
         }
 
-        boolean updateSuccess = challengeService.updateRegion(roomNum, regionNum);
+        boolean updateSuccess = challengeService.updateRegion(roomNum, regionId);
         if (updateSuccess) {
             return JsonResult.success("지역이 성공적으로 업데이트되었습니다.");
         } else {
@@ -587,10 +592,12 @@ public class ChallengeController {
         }
 
         Object roomMinNumObj = payload.get("roomMinNum");
-        Integer roomMinNum = null;
+        Integer roomMinNum = null; // 초기값 설정
 
         if (roomMinNumObj instanceof Integer) {
             roomMinNum = (Integer) roomMinNumObj;
+        } else if (roomMinNumObj instanceof Number) {
+            roomMinNum = ((Number) roomMinNumObj).intValue();
         } else if (roomMinNumObj instanceof String) {
             try {
                 roomMinNum = Integer.parseInt((String) roomMinNumObj);
@@ -605,13 +612,14 @@ public class ChallengeController {
             return JsonResult.fail("유효한 최소 참가 인원이 필요합니다.");
         }
 
-        boolean updateSuccess = challengeService.updateRoomMinNum(roomNum, roomMinNum, userNum);
+        boolean updateSuccess = challengeService.updateRoomMinNum(roomNum, roomMinNum);
         if (updateSuccess) {
             return JsonResult.success("최소 참가 인원이 성공적으로 업데이트되었습니다.");
         } else {
             return JsonResult.fail("최소 참가 인원 업데이트에 실패했습니다.");
         }
     }
+
 
 
     // 최대 참가 인원 수정
@@ -707,8 +715,22 @@ public class ChallengeController {
             return JsonResult.fail("권한이 없습니다.");
         }
 
-        Integer roomEnterRate = (Integer) payload.get("roomEnterRate");
-        if (roomEnterRate == null || roomEnterRate < 0 || roomEnterRate > 100) {
+        Object roomEnterRateObj = payload.get("roomEnterRate");
+        Integer roomEnterRate = null;
+
+        if (roomEnterRateObj instanceof Number) {
+            roomEnterRate = ((Number) roomEnterRateObj).intValue();
+        } else if (roomEnterRateObj instanceof String) {
+            try {
+                roomEnterRate = Integer.parseInt((String) roomEnterRateObj);
+            } catch (NumberFormatException e) {
+                return JsonResult.fail("유효한 방 참가 비율(0-100%)이 필요합니다.");
+            }
+        } else {
+            return JsonResult.fail("유효한 방 참가 비율(0-100%)이 필요합니다.");
+        }
+
+        if (roomEnterRate < 0 || roomEnterRate > 100) {
             return JsonResult.fail("유효한 방 참가 비율(0-100%)이 필요합니다.");
         }
 
@@ -719,6 +741,7 @@ public class ChallengeController {
             return JsonResult.fail("방 참가 비율 업데이트에 실패했습니다.");
         }
     }
+
 
     // 9. 평가 유형 수정
     @PutMapping("/update-evaluationtype/{roomNum}")
