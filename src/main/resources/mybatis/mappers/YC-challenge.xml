@@ -291,9 +291,8 @@
     </select>
     
      <!-- 특정 방에 참여한 모든 사용자 조회 -->
-    <select id="selectParticipants2" parameterType="int" resultType="int">
+    <select id="selectParticipants2" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
         select roomMaker from roomInfo where roomNum = #{roomNum};
-
     </select>
     
     <select id="selectRoomOwner" parameterType="int" resultType="int">

@@ -94,6 +94,7 @@ public class ChallengeVo {
     private String historyInfo;
     private double achievementRate;
     private int userPoints;
+    private int roomMaker;
     
 
 	public ChallengeVo() {
@@ -911,6 +912,16 @@ public class ChallengeVo {
 				+ announceNum + ", title=" + title + ", announcement=" + announcement + ", announceAddedBy="
 				+ announceAddedBy + ", announceAddedByName=" + announceAddedByName + ", announceTime=" + announceTime
 				+ "]";
+	}
+
+
+	public int getRoomMaker() {
+		return roomMaker;
+	}
+
+
+	public void setRoomMaker(int roomMaker) {
+		this.roomMaker = roomMaker;
 	}
 	
 
