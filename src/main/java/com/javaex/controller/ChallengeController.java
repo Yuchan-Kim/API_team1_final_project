@@ -252,12 +252,8 @@ public class ChallengeController {
 	            if (joinSuccess) {
 	                int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
 	                System.out.println("Entered user auth: " + enteredUserAuth);
-	                ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
-	                System.out.println("User details: " + userDetails);
-	                Map<String, Object> responseData = new HashMap<>();
-	                responseData.put("enteredUserAuth", enteredUserAuth);
-	                responseData.put("userDetails", userDetails);
-	                return JsonResult.success(responseData);
+	               
+	                return JsonResult.success(enteredUserAuth);
 	            } else {
 	                System.out.println("Failed to join room");
 	                return JsonResult.fail("참가에 실패했습니다.");
@@ -287,12 +283,8 @@ public class ChallengeController {
 	                if (joinSuccess) {
 	                    int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
 	                    System.out.println("Entered user auth: " + enteredUserAuth);
-	                    ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
-	                    System.out.println("User details: " + userDetails);
-	                    Map<String, Object> responseData = new HashMap<>();
-	                    responseData.put("enteredUserAuth", enteredUserAuth);
-	                    responseData.put("userDetails", userDetails);
-	                    return JsonResult.success(responseData);
+	                    
+	                    return JsonResult.success(enteredUserAuth);
 	                } else {
 	                    System.out.println("Failed to join room");
 	                    return JsonResult.fail("참가에 실패했습니다.");
@@ -319,12 +311,8 @@ public class ChallengeController {
 	                if (joinSuccess) {
 	                    int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
 	                    System.out.println("Entered user auth: " + enteredUserAuth);
-	                    ChallengeVo userDetails = challengeService.getUserDetails(userNum, roomNum);
-	                    System.out.println("User details: " + userDetails);
-	                    Map<String, Object> responseData = new HashMap<>();
-	                    responseData.put("enteredUserAuth", enteredUserAuth);
-	                    responseData.put("userDetails", userDetails);
-	                    return JsonResult.success(responseData);
+	                   
+	                    return JsonResult.success(enteredUserAuth);
 	                } else {
 	                    System.out.println("Failed to join room");
 	                    return JsonResult.fail("참가에 실패했습니다.");
