@@ -1,6 +1,8 @@
 package com.javaex.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +87,49 @@ public class AdminDao {
     public int deleteItem(int itemNum) {
         System.out.println("AdminDao.deleteItem()");
         return sqlSession.delete(namespace + ".deleteItem", itemNum);
+    }
+    
+ // 테이블 데이터 조회
+    public List<AdminVo> getTableData(String tableName) {
+        System.out.println("AdminDao.getTableData() - Table: " + tableName);
+        return sqlSession.selectList(namespace + ".getTableData", tableName);
+    }
+
+    // 테이블 데이터 추가
+    public int insertTableData(String tableName, AdminVo adminVo) {
+        System.out.println("AdminDao.insertTableData() - Table: " + tableName);
+        Map<String, Object> params = new HashMap<>();
+        params.put("tableName", tableName);
+        params.put("adminVo", adminVo);
+        return sqlSession.insert(namespace + ".insertTableData", params);
+    }
+
+    // 테이블 데이터 수정
+    public int updateTableData(String tableName, AdminVo adminVo) {
+        System.out.println("AdminDao.updateTableData() - Table: " + tableName);
+        Map<String, Object> params = new HashMap<>();
+        params.put("tableName", tableName);
+        params.put("adminVo", adminVo);
+        return sqlSession.update(namespace + ".updateTableData", params);
+    }
+
+    // 테이블 데이터 삭제
+    public int deleteTableData(String tableName, int id) {
+        System.out.println("AdminDao.deleteTableData() - Table: " + tableName);
+        Map<String, Object> params = new HashMap<>();
+        params.put("tableName", tableName);
+        params.put("id", id);
+        return sqlSession.delete(namespace + ".deleteTableData", params);
+    }
+    
+    public int insertNotice(AdminVo notice) {
+        System.out.println("AdminDao.insertNotice()");
+        return sqlSession.insert(namespace + ".insertNotice", notice);
+    }
+
+    public List<Integer> getAllUserNums() {
+        System.out.println("AdminDao.getAllUserNums()");
+        return sqlSession.selectList(namespace + ".getAllUserNums");
     }
 
 

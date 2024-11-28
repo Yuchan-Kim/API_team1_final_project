@@ -172,5 +172,57 @@
     WHERE itemNum = #{itemNum}
 </delete>
 
+<!-- 테이블 데이터 조회 -->
+    <select id="getTableData" parameterType="String" resultType="com.javaex.vo.AdminVo">
+        SELECT * FROM ${tableName}
+    </select>
+
+    <!-- 테이블 데이터 추가 -->
+    <insert id="insertTableData">
+        INSERT INTO ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <foreach collection="adminVo" item="value" index="key">
+                <if test="value != null">
+                    ${key},
+                </if>
+            </foreach>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <foreach collection="adminVo" item="value" index="key">
+                <if test="value != null">
+                    #{adminVo.${key}},
+                </if>
+            </foreach>
+        </trim>
+    </insert>
+
+    <!-- 테이블 데이터 수정 -->
+    <update id="updateTableData">
+        UPDATE ${tableName}
+        <set>
+            <foreach collection="adminVo" item="value" index="key">
+                <if test="value != null and key != 'id'">
+                    ${key} = #{adminVo.${key}},
+                </if>
+            </foreach>
+        </set>
+        WHERE id = #{adminVo.id}
+    </update>
+
+    <!-- 테이블 데이터 삭제 -->
+    <delete id="deleteTableData">
+        DELETE FROM ${tableName} WHERE id = #{id}
+    </delete>
+    
+    <insert id="insertNotice" parameterType="com.javaex.vo.AdminVo">
+    INSERT INTO notice (userNum, noticeTitle, noticeMsg, isCheck, createDate, msgSender, noticeType)
+    VALUES (#{userNum}, #{noticeTitle}, #{noticeMsg}, 0, NOW(), #{msgSender}, #{noticeType})
+</insert>
+
+<!-- 모든 유저 번호 가져오기 -->
+<select id="getAllUserNums" resultType="int">
+    SELECT userNum FROM users
+</select>
+
 
 </mapper>

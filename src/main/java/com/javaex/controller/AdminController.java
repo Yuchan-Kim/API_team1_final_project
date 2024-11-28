@@ -2,6 +2,7 @@ package com.javaex.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,10 @@ public class AdminController {
 	
 	@Autowired
 	private AdminService service;
+	
+	private static final List<String> ALLOWED_TABLES = Arrays.asList(
+	        "categories", "roomType", "period", "regions", "missionType", "pointPurpose"
+	    );
 	
 	@GetMapping("/key-stats")
 	public JsonResult getKeyStats() {
@@ -243,4 +248,83 @@ public class AdminController {
 	        return JsonResult.fail("상품 삭제에 실패했습니다.");
 	    }
 	}
+	
+	// 테이블 데이터 조회
+    @GetMapping("/{tableName}")
+    public JsonResult getTableData(@PathVariable String tableName) {
+        System.out.println("AdminController.getTableData() - Table: " + tableName);
+        if (!ALLOWED_TABLES.contains(tableName)) {
+            return JsonResult.fail("허용되지 않은 테이블입니다.");
+        }
+        List<AdminVo> data = service.getTableData(tableName);
+        if (data != null) {
+            return JsonResult.success(data);
+        } else {
+            return JsonResult.fail(tableName + " 데이터를 불러오는 중 오류 발생");
+        }
+    }
+
+    // 테이블 데이터 추가
+    @PostMapping("/{tableName}")
+    public JsonResult addTableData(@PathVariable String tableName, @RequestBody AdminVo adminVo) {
+        System.out.println("AdminController.addTableData() - Table: " + tableName);
+        if (!ALLOWED_TABLES.contains(tableName)) {
+            return JsonResult.fail("허용되지 않은 테이블입니다.");
+        }
+        boolean success = service.addTableData(tableName, adminVo);
+        if (success) {
+            return JsonResult.success(tableName + " 데이터가 성공적으로 추가되었습니다.");
+        } else {
+            return JsonResult.fail(tableName + " 데이터 추가에 실패했습니다.");
+        }
+    }
+
+    // 테이블 데이터 수정
+    @PutMapping("/{tableName}/{id}")
+    public JsonResult updateTableData(
+        @PathVariable String tableName,
+        @PathVariable int id,
+        @RequestBody AdminVo adminVo
+    ) {
+        System.out.println("AdminController.updateTableData() - Table: " + tableName);
+        if (!ALLOWED_TABLES.contains(tableName)) {
+            return JsonResult.fail("허용되지 않은 테이블입니다.");
+        }
+        adminVo.setId(id); // ID 설정
+        boolean success = service.updateTableData(tableName, adminVo);
+        if (success) {
+            return JsonResult.success(tableName + " 데이터가 성공적으로 수정되었습니다.");
+        } else {
+            return JsonResult.fail(tableName + " 데이터 수정에 실패했습니다.");
+        }
+    }
+
+    // 테이블 데이터 삭제
+    @DeleteMapping("/{tableName}/{id}")
+    public JsonResult deleteTableData(@PathVariable String tableName, @PathVariable int id) {
+        System.out.println("AdminController.deleteTableData() - Table: " + tableName);
+        if (!ALLOWED_TABLES.contains(tableName)) {
+            return JsonResult.fail("허용되지 않은 테이블입니다.");
+        }
+        boolean success = service.deleteTableData(tableName, id);
+        if (success) {
+            return JsonResult.success(tableName + " 데이터가 성공적으로 삭제되었습니다.");
+        } else {
+            return JsonResult.fail(tableName + " 데이터 삭제에 실패했습니다.");
+        }
+    }
+    
+ // 알림 발송
+    @PostMapping("/send-notification")
+    public JsonResult sendNotification(@RequestBody AdminVo request) {
+        System.out.println("AdminController.sendNotification()");
+        boolean success = service.sendNotification(request);
+        if (success) {
+            return JsonResult.success("알림이 성공적으로 발송되었습니다.");
+        } else {
+            return JsonResult.fail("알림 발송에 실패했습니다.");
+        }
+    }
+	
+	
 }
