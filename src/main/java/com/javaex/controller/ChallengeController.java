@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.javaex.service.ChallengeService;
 import com.javaex.util.JsonResult;
@@ -473,7 +475,304 @@ public class ChallengeController {
             return JsonResult.fail("챌린지 나가기에 실패했습니다.");
         }
     }
+    
+    
+    
+ // 1. 지역 수정
+    @PutMapping("/update-region/{roomNum}")
+    public JsonResult updateRegion(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        System.out.println("ChallengeController.updateRegion()");
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
 
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        Integer regionNum = (Integer) payload.get("regionNum");
+        if (regionNum == null) {
+            return JsonResult.fail("지역 번호가 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRegion(roomNum, regionNum);
+        if (updateSuccess) {
+            return JsonResult.success("지역이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("지역 업데이트에 실패했습니다.");
+        }
+    }
+
+    // 2. 방 키워드 수정
+    @PutMapping("/update-keyword/{roomNum}")
+    public JsonResult updateKeyword(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        System.out.println("ChallengeController.updateKeyword()");
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        String roomKeyword = (String) payload.get("roomKeyword");
+        if (roomKeyword == null || roomKeyword.trim().isEmpty()) {
+            return JsonResult.fail("방 키워드가 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomKeyword(roomNum, roomKeyword);
+        if (updateSuccess) {
+            return JsonResult.success("방 키워드가 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("방 키워드 업데이트에 실패했습니다.");
+        }
+    }
+
+    // 3. 방 제목 수정
+    @PutMapping("/update-title/{roomNum}")
+    public JsonResult updateTitle(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        System.out.println("ChallengeController.updateTitle()");
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        String roomTitle = (String) payload.get("roomTitle");
+        if (roomTitle == null || roomTitle.trim().isEmpty()) {
+            return JsonResult.fail("방 제목이 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomTitle(roomNum, roomTitle);
+        if (updateSuccess) {
+            return JsonResult.success("방 제목이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("방 제목 업데이트에 실패했습니다.");
+        }
+    }
+
+    // 4. 방 썸네일 수정
+    @PutMapping("/update-thumbnail/{roomNum}")
+    public JsonResult updateThumbnail(@PathVariable int roomNum, @RequestParam("roomThumbnail") MultipartFile roomThumbnail, HttpServletRequest request) {
+        System.out.println("ChallengeController.updateThumbnail()");
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        if (roomThumbnail.isEmpty()) {
+            return JsonResult.fail("방 썸네일 파일을 업로드해주세요.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomThumbnail(roomNum, roomThumbnail);
+        if (updateSuccess) {
+            return JsonResult.success("방 썸네일이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("방 썸네일 업데이트에 실패했습니다.");
+        }
+    }
+
+ // 최소 참가 인원 수정
+    @PutMapping("/update-minnum/{roomNum}")
+    public JsonResult updateMinNum(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        Object roomMinNumObj = payload.get("roomMinNum");
+        Integer roomMinNum = null;
+
+        if (roomMinNumObj instanceof Integer) {
+            roomMinNum = (Integer) roomMinNumObj;
+        } else if (roomMinNumObj instanceof String) {
+            try {
+                roomMinNum = Integer.parseInt((String) roomMinNumObj);
+            } catch (NumberFormatException e) {
+                return JsonResult.fail("유효한 최소 참가 인원이 필요합니다.");
+            }
+        } else {
+            return JsonResult.fail("유효한 최소 참가 인원이 필요합니다.");
+        }
+
+        if (roomMinNum < 1) {
+            return JsonResult.fail("유효한 최소 참가 인원이 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomMinNum(roomNum, roomMinNum, userNum);
+        if (updateSuccess) {
+            return JsonResult.success("최소 참가 인원이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("최소 참가 인원 업데이트에 실패했습니다.");
+        }
+    }
+
+
+    // 최대 참가 인원 수정
+    @PutMapping("/update-maxnum/{roomNum}")
+    public JsonResult updateMaxNum(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        Object roomMaxNumObj = payload.get("roomMaxNum");
+        Integer roomMaxNum = null;
+
+        if (roomMaxNumObj instanceof Integer) {
+            roomMaxNum = (Integer) roomMaxNumObj;
+        } else if (roomMaxNumObj instanceof String) {
+            try {
+                roomMaxNum = Integer.parseInt((String) roomMaxNumObj);
+            } catch (NumberFormatException e) {
+                return JsonResult.fail("유효한 최대 참가 인원이 필요합니다.");
+            }
+        } else {
+            return JsonResult.fail("유효한 최대 참가 인원이 필요합니다.");
+        }
+
+        if (roomMaxNum < 1) {
+            return JsonResult.fail("유효한 최대 참가 인원이 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomMaxNum(roomNum, roomMaxNum, userNum);
+        if (updateSuccess) {
+            return JsonResult.success("최대 참가 인원이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("최대 참가 인원 업데이트에 실패했습니다.");
+        }
+    }
+
+    // 방 참가 포인트 수정
+    @PutMapping("/update-enterpoint/{roomNum}")
+    public JsonResult updateEnterPoint(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth != 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        Object roomEnterPointObj = payload.get("roomEnterPoint");
+        Integer roomEnterPoint = null;
+
+        if (roomEnterPointObj instanceof Integer) {
+            roomEnterPoint = (Integer) roomEnterPointObj;
+        } else if (roomEnterPointObj instanceof String) {
+            try {
+                roomEnterPoint = Integer.parseInt((String) roomEnterPointObj);
+            } catch (NumberFormatException e) {
+                return JsonResult.fail("유효한 방 참가 포인트가 필요합니다.");
+            }
+        } else {
+            return JsonResult.fail("유효한 방 참가 포인트가 필요합니다.");
+        }
+
+        if (roomEnterPoint < 0) {
+            return JsonResult.fail("유효한 방 참가 포인트가 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomEnterPoint(roomNum, roomEnterPoint, userNum);
+        if (updateSuccess) {
+            return JsonResult.success("방 참가 포인트가 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("방 참가 포인트 업데이트에 실패했습니다.");
+        }
+    }
+    // 8. 방 참가 비율 수정
+    @PutMapping("/update-enterrate/{roomNum}")
+    public JsonResult updateEnterRate(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        System.out.println("ChallengeController.updateEnterRate()");
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        Integer roomEnterRate = (Integer) payload.get("roomEnterRate");
+        if (roomEnterRate == null || roomEnterRate < 0 || roomEnterRate > 100) {
+            return JsonResult.fail("유효한 방 참가 비율(0-100%)이 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateRoomEnterRate(roomNum, roomEnterRate);
+        if (updateSuccess) {
+            return JsonResult.success("방 참가 비율이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("방 참가 비율 업데이트에 실패했습니다.");
+        }
+    }
+
+    // 9. 평가 유형 수정
+    @PutMapping("/update-evaluationtype/{roomNum}")
+    public JsonResult updateEvaluationType(@PathVariable int roomNum, @RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        System.out.println("ChallengeController.updateEvaluationType()");
+        int userNum = JwtUtil.getNoFromHeader(request);
+        if (userNum <= 0) {
+            return JsonResult.fail("인증되지 않은 사용자입니다.");
+        }
+
+        int auth = challengeService.getUserAuth(roomNum, userNum);
+        if (auth < 1) {
+            return JsonResult.fail("권한이 없습니다.");
+        }
+
+        Integer evaluationType = (Integer) payload.get("evaluationType");
+        if (evaluationType == null || evaluationType < 1) {
+            return JsonResult.fail("유효한 평가 유형이 필요합니다.");
+        }
+
+        boolean updateSuccess = challengeService.updateEvaluationType(roomNum, evaluationType);
+        if (updateSuccess) {
+            return JsonResult.success("평가 유형이 성공적으로 업데이트되었습니다.");
+        } else {
+            return JsonResult.fail("평가 유형 업데이트에 실패했습니다.");
+        }
+    }
+    
+ // 지역 목록 가져오기
+    @GetMapping("/regions")
+    public JsonResult getRegions() {
+        List<ChallengeVo> regions = challengeService.getRegions();
+        return JsonResult.success(regions);
+    }
+    
+    
+ // 현재 참가자 수 가져오기
+    @GetMapping("/participant-count/{roomNum}")
+    public JsonResult getParticipantCount(@PathVariable int roomNum) {
+        int count = challengeService.getParticipantCount(roomNum);
+        return JsonResult.success(count);
+    }
 
 
 }

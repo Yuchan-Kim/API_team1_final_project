@@ -212,16 +212,32 @@ public class ChallengeDao {
 				return 0;
 			}
 		} else {
-			// 새로운 참가자 등록
-			System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
-			Map<String, Object> params = new HashMap<>();
-			params.put("roomNum", roomNum);
-			params.put("userNum", userNum);
-			params.put("enteredUserStatusNum", 1);
-			params.put("enteredUserAuth", 2);
-			int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
-			System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
-			return insertedRows;
+			
+			int roomMaker = sqlSession.selectOne(namespace +".selectParticipants", roomNum);
+			if (roomMaker == 0) {
+				// 새로운 참가자 등록
+				System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
+				Map<String, Object> params = new HashMap<>();
+				params.put("roomNum", roomNum);
+				params.put("userNum", userNum);
+				params.put("enteredUserStatusNum", 1);
+				params.put("enteredUserAuth", 1);
+				int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
+				System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
+				return insertedRows;
+			}else {
+				// 새로운 참가자 등록
+				System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
+				Map<String, Object> params = new HashMap<>();
+				params.put("roomNum", roomNum);
+				params.put("userNum", userNum);
+				params.put("enteredUserStatusNum", 1);
+				params.put("enteredUserAuth", 2);
+				int insertedRows = sqlSession.insert(namespace + ".joinRoom", params);
+				System.out.println("ChallengeDao.joinRoom() - Inserted new enteredUser record, rows affected: " + insertedRows);
+				return insertedRows;
+			}
+			
 		}
 	}
 
@@ -293,5 +309,104 @@ public class ChallengeDao {
 	public Integer getRoomOwner(int roomNum) {
 		return sqlSession.selectOne(namespace + ".selectRoomOwner", roomNum);
 	}
+	
+	
+    // 1. 지역 수정
+    public int updateRegion(int roomNum, int regionNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("regionNum", regionNum);
+        return sqlSession.update(namespace + ".updateRegion", params);
+    }
+
+    // 2. 방 키워드 수정
+    public int updateRoomKeyword(int roomNum, String roomKeyword) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomKeyword", roomKeyword);
+        return sqlSession.update(namespace + ".updateRoomKeyword", params);
+    }
+
+    // 3. 방 제목 수정
+    public int updateRoomTitle(int roomNum, String roomTitle) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomTitle", roomTitle);
+        return sqlSession.update(namespace + ".updateRoomTitle", params);
+    }
+
+    // 4. 방 썸네일 수정
+    public int updateRoomThumbnail(int roomNum, String newThumbnailPath) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomThumbnail", newThumbnailPath);
+        return sqlSession.update(namespace + ".updateRoomThumbnail", params);
+    }
+
+    // 5. 최소 참가 인원 수정
+    public int updateRoomMinNum(int roomNum, int roomMinNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomMinNum", roomMinNum);
+        return sqlSession.update(namespace + ".updateRoomMinNum", params);
+    }
+
+    // 6. 최대 참가 인원 수정
+    public int updateRoomMaxNum(int roomNum, int roomMaxNum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomMaxNum", roomMaxNum);
+        return sqlSession.update(namespace + ".updateRoomMaxNum", params);
+    }
+
+    // 7. 방 참가 포인트 수정
+    public int updateRoomEnterPoint(int roomNum, int roomEnterPoint) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomEnterPoint", roomEnterPoint);
+        return sqlSession.update(namespace + ".updateRoomEnterPoint", params);
+    }
+
+    // 8. 방 참가 비율 수정
+    public int updateRoomEnterRate(int roomNum, int roomEnterRate) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("roomEnterRate", roomEnterRate);
+        return sqlSession.update(namespace + ".updateRoomEnterRate", params);
+    }
+
+    // 9. 평가 유형 수정
+    public int updateEvaluationType(int roomNum, int evaluationType) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomNum", roomNum);
+        params.put("evaluationType", evaluationType);
+        return sqlSession.update(namespace + ".updateEvaluationType", params);
+    }
+
+    // 방 썸네일 조회 (기존 썸네일 삭제를 위해 추가)
+    public ChallengeVo getRoomInfoByRoomNum(int roomNum) {
+        return sqlSession.selectOne(namespace + ".selectRoomInfoByRoomNum", roomNum);
+    }
+    
+ // 지역 목록 가져오기
+    public List<ChallengeVo> getRegions() {
+        return sqlSession.selectList(namespace + ".getRegions");
+    }
+
+
+    // 유저 포인트 조회
+    public int getUserPoints(int userNum) {
+        return sqlSession.selectOne(namespace + ".getUserPoints", userNum);
+    }
+
+    // 포인트 히스토리 추가
+    public int addPointHistory(int userNum, int point, int pointPurposeNum, String historyInfo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userNum", userNum);
+        params.put("point", point);
+        params.put("pointPurposeNum", pointPurposeNum);
+        params.put("historyInfo", historyInfo);
+        return sqlSession.insert(namespace + ".addPointHistory", params);
+    }
 
 }

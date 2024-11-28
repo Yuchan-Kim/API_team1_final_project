@@ -296,4 +296,106 @@
     WHERE roomNum = #{roomNum} AND enteredUserAuth = 1
     LIMIT 1
 </select>
+
+ <!-- 1. 지역 수정 -->
+    <update id="updateRegion" parameterType="map">
+        UPDATE roomInfo
+        SET regionNum = #{regionNum}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 2. 방 키워드 수정 -->
+    <update id="updateRoomKeyword" parameterType="map">
+        UPDATE roomInfo
+        SET roomKeyword = #{roomKeyword}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 3. 방 제목 수정 -->
+    <update id="updateRoomTitle" parameterType="map">
+        UPDATE roomInfo
+        SET roomTitle = #{roomTitle}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 4. 방 썸네일 수정 -->
+    <update id="updateRoomThumbnail" parameterType="map">
+        UPDATE roomInfo
+        SET roomThumbnail = #{roomThumbnail}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 5. 최소 참가 인원 수정 -->
+    <update id="updateRoomMinNum" parameterType="map">
+        UPDATE roomInfo
+        SET roomMinNum = #{roomMinNum}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 6. 최대 참가 인원 수정 -->
+    <update id="updateRoomMaxNum" parameterType="map">
+        UPDATE roomInfo
+        SET roomMaxNum = #{roomMaxNum}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 7. 방 참가 포인트 수정 -->
+    <update id="updateRoomEnterPoint" parameterType="map">
+        UPDATE roomInfo
+        SET roomEnterPoint = #{roomEnterPoint}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 8. 방 참가 비율 수정 -->
+    <update id="updateRoomEnterRate" parameterType="map">
+        UPDATE roomInfo
+        SET roomEnterRate = #{roomEnterRate}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 9. 평가 유형 수정 -->
+    <update id="updateEvaluationType" parameterType="map">
+        UPDATE roomInfo
+        SET evaluationType = #{evaluationType}
+        WHERE roomNum = #{roomNum};
+    </update>
+
+    <!-- 방 썸네일 조회 (기존 정보 조회) -->
+    <select id="selectRoomInfoByRoomNum" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+        SELECT 
+            roomThumbnail
+        FROM roomInfo
+        WHERE roomNum = #{roomNum};
+    </select>
+
+
+<!-- 지역 목록 가져오기 -->
+    <select id="getRegions" resultType="com.javaex.vo.ChallengeVo">
+        SELECT regionNum, regionName FROM regions;
+    </select>
+
+   
+
+
+    <!-- 포인트 히스토리 추가 -->
+    <insert id="addPointHistory" parameterType="map">
+        INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
+        VALUES (#{userNum}, #{point}, #{pointPurposeNum}, #{historyInfo}, NOW());
+    </insert>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </mapper>

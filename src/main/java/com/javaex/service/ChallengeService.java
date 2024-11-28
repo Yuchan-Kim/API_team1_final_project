@@ -1,11 +1,16 @@
 // ChallengeService.java
 package com.javaex.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.javaex.dao.ChallengeDao;
 import com.javaex.vo.ChallengeVo;
@@ -322,5 +327,166 @@ public class ChallengeService {
 	    }
 	}
 
-	
+	// 1. 지역 수정
+    public boolean updateRegion(int roomNum, int regionNum) {
+        System.out.println("ChallengeService.updateRegion()");
+        return challengeDao.updateRegion(roomNum, regionNum) > 0;
+    }
+
+    // 2. 방 키워드 수정
+    public boolean updateRoomKeyword(int roomNum, String roomKeyword) {
+        System.out.println("ChallengeService.updateRoomKeyword()");
+        return challengeDao.updateRoomKeyword(roomNum, roomKeyword) > 0;
+    }
+
+    // 3. 방 제목 수정
+    public boolean updateRoomTitle(int roomNum, String roomTitle) {
+        System.out.println("ChallengeService.updateRoomTitle()");
+        return challengeDao.updateRoomTitle(roomNum, roomTitle) > 0;
+    }
+
+    // 4. 방 썸네일 수정
+    @Transactional
+    public boolean updateRoomThumbnail(int roomNum, MultipartFile roomThumbnail) {
+        System.out.println("ChallengeService.updateRoomThumbnail()");
+        try {
+            // 파일 저장 로직 (예: 로컬 파일 시스템)
+            String uploadDir = "/path/to/your/uploads/room_thumbnails/"; // 실제 경로로 변경
+            String originalFilename = roomThumbnail.getOriginalFilename();
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+            String newFilename = "room_" + roomNum + "_" + System.currentTimeMillis() + fileExtension;
+            Path filePath = Paths.get(uploadDir, newFilename);
+            Files.createDirectories(filePath.getParent());
+            roomThumbnail.transferTo(filePath.toFile());
+
+            // 기존 썸네일 파일 삭제 (선택 사항)
+            ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
+            if (roomInfo != null && roomInfo.getRoomThumbNail() != null) {
+                Path oldFilePath = Paths.get(uploadDir, roomInfo.getRoomThumbNail());
+                Files.deleteIfExists(oldFilePath);
+            }
+
+            // DB 업데이트
+            return challengeDao.updateRoomThumbnail(roomNum, newFilename) > 0;
+        } catch (IOException e) {
+            System.err.println("방 썸네일 업데이트 중 오류 발생: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // 5. 최소 참가 인원 수정
+    public boolean updateRoomMinNum(int roomNum, int roomMinNum) {
+        System.out.println("ChallengeService.updateRoomMinNum()");
+        return challengeDao.updateRoomMinNum(roomNum, roomMinNum) > 0;
+    }
+
+    // 6. 최대 참가 인원 수정
+    public boolean updateRoomMaxNum(int roomNum, int roomMaxNum) {
+        System.out.println("ChallengeService.updateRoomMaxNum()");
+        return challengeDao.updateRoomMaxNum(roomNum, roomMaxNum) > 0;
+    }
+
+    // 7. 방 참가 포인트 수정
+    public boolean updateRoomEnterPoint(int roomNum, int roomEnterPoint) {
+        System.out.println("ChallengeService.updateRoomEnterPoint()");
+        return challengeDao.updateRoomEnterPoint(roomNum, roomEnterPoint) > 0;
+    }
+
+    // 8. 방 참가 비율 수정
+    public boolean updateRoomEnterRate(int roomNum, int roomEnterRate) {
+        System.out.println("ChallengeService.updateRoomEnterRate()");
+        return challengeDao.updateRoomEnterRate(roomNum, roomEnterRate) > 0;
+    }
+
+    // 9. 평가 유형 수정
+    public boolean updateEvaluationType(int roomNum, int evaluationType) {
+        System.out.println("ChallengeService.updateEvaluationType()");
+        return challengeDao.updateEvaluationType(roomNum, evaluationType) > 0;
+    }
+    
+    // 지역 목록 가져오기
+    public List<ChallengeVo> getRegions() {
+        return challengeDao.getRegions();
+    }
+
+    // 현재 참가자 수 가져오기
+    public int getParticipantCount(int roomNum) {
+        return challengeDao.getParticipantCount(roomNum);
+    }
+    
+    // 최소 참가 인원 수정
+    public boolean updateRoomMinNum(int roomNum, int roomMinNum, int userNum) {
+        int currentParticipants = challengeDao.getParticipantCount(roomNum);
+        ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
+
+        if (roomInfo.getRoomStatusNum() == 1) {
+            if (roomMinNum < 2) {
+                return false;
+            }
+        } else if (roomInfo.getRoomStatusNum() == 2) {
+            if (roomMinNum < currentParticipants) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return challengeDao.updateRoomMinNum(roomNum, roomMinNum) > 0;
+    }
+
+    // 최대 참가 인원 수정
+    public boolean updateRoomMaxNum(int roomNum, int roomMaxNum, int userNum) {
+        int currentParticipants = challengeDao.getParticipantCount(roomNum);
+        ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
+
+        if (roomMaxNum > 20) {
+            return false;
+        }
+
+        if (roomInfo.getRoomStatusNum() == 1) {
+            if (roomMaxNum <= roomInfo.getRoomMinNum()) {
+                return false;
+            }
+        } else if (roomInfo.getRoomStatusNum() == 2) {
+            if (roomMaxNum < currentParticipants) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        return challengeDao.updateRoomMaxNum(roomNum, roomMaxNum) > 0;
+    }
+
+    // 방 참가 포인트 수정
+    @Transactional
+    public boolean updateRoomEnterPoint(int roomNum, int newEnterPoint, int userNum) {
+        ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
+        int originalEnterPoint = roomInfo.getRoomPoint();
+
+        if (newEnterPoint < originalEnterPoint) {
+            int pointDifference = originalEnterPoint - newEnterPoint;
+            // 포인트 반환 로직
+            challengeDao.addPointHistory(userNum, pointDifference, 11, "+");
+        } else if (newEnterPoint > originalEnterPoint) {
+            int pointDifference = newEnterPoint - originalEnterPoint;
+            int userPoints = challengeDao.getUserPoints(userNum);
+
+            if (userPoints < pointDifference) {
+                return false;
+            }
+
+            // 포인트 차감 로직
+            challengeDao.addPointHistory(userNum, pointDifference, 11, "-");
+        }
+
+        return challengeDao.updateRoomEnterPoint(roomNum, newEnterPoint) > 0;
+    }
+
+    // 유저 포인트 조회
+    public int getUserPoints(int userNum) {
+        return challengeDao.getUserPoints(userNum);
+    }
+
+
 }
