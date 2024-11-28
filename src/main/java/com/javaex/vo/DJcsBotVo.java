@@ -4,7 +4,7 @@ public class DJcsBotVo {
 	
 	//필드
 	private int userNum;
-	private String csbotWriter;
+	private int csbotWriter;
 	private String csbotAnswer;
 	
 	
@@ -13,8 +13,7 @@ public class DJcsBotVo {
 		super();
 	}
 
-
-	public DJcsBotVo(int userNum, String csbotWriter, String csbotAnswer) {
+	public DJcsBotVo(int userNum, int csbotWriter, String csbotAnswer) {
 		super();
 		this.userNum = userNum;
 		this.csbotWriter = csbotWriter;
@@ -31,16 +30,13 @@ public class DJcsBotVo {
 		this.userNum = userNum;
 	}
 
-
-	public String getCsbotWriter() {
+	public int getCsbotWriter() {
 		return csbotWriter;
 	}
 
-
-	public void setCsbotWriter(String csbotWriter) {
+	public void setCsbotWriter(int csbotWriter) {
 		this.csbotWriter = csbotWriter;
 	}
-
 
 	public String getCsbotAnswer() {
 		return csbotAnswer;
@@ -56,7 +52,6 @@ public class DJcsBotVo {
 	public String toString() {
 		return "DJcsBotVo [userNum=" + userNum + ", csbotWriter=" + csbotWriter + ", csbotAnswer=" + csbotAnswer + "]";
 	}
-
 
 	
 }
