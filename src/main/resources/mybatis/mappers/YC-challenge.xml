@@ -292,9 +292,8 @@
     
      <!-- 특정 방에 참여한 모든 사용자 조회 -->
     <select id="selectParticipants2" parameterType="int" resultType="int">
-        SELECT count(eu.userNum)
-        FROM enteredUser eu
-        WHERE eu.roomNum = #{roomNum} AND eu.enteredUserStatusNum = 1
+        select roomMaker from roomInfo where roomNum = #{roomNum};
+
     </select>
     
     <select id="selectRoomOwner" parameterType="int" resultType="int">

@@ -214,7 +214,7 @@ public class ChallengeDao {
 		} else {
 			
 			int roomMaker = sqlSession.selectOne(namespace +".selectParticipants2", roomNum);
-			if (roomMaker == 0) {
+			if (roomMaker == userNum) {
 				// 새로운 참가자 등록
 				System.out.println("ChallengeDao.joinRoom() - No existing user found. Inserting new enteredUser record.");
 				Map<String, Object> params = new HashMap<>();
