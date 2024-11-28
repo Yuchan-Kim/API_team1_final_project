@@ -35,6 +35,7 @@ public class OpenAiService {
     @Autowired
     private OpenAiDao openAiDao;
     
+    
  // 일반 미션 생성 로직
     public List<ChallengeVo> generatePlaceholder(int roomNum) {
         // 키워드 및 기존 미션 리스트 가져오기
