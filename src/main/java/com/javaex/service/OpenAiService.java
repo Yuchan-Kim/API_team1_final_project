@@ -1,19 +1,26 @@
 package com.javaex.service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.javaex.dao.OpenAiDao;
-import com.javaex.vo.ChallengeVo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.javaex.dao.OpenAiDao;
+import com.javaex.vo.ChallengeVo;
 
 @Service
 public class OpenAiService {
@@ -135,16 +142,17 @@ public class OpenAiService {
     
     // ai 챌린지 생성
     public List<ChallengeVo> generateChallenges(int roomNum) {
+        // 필요한 데이터 가져오기
         ChallengeVo keyword = openAiDao.getKeywords(roomNum);
         ChallengeVo maxNum = openAiDao.getMaxNum(roomNum);
-        ChallengeVo period = openAiDao.getPeriodType(roomNum);
+        ChallengeVo day = openAiDao.getDay(roomNum);
         List<ChallengeVo> missionList = openAiDao.getMissions(roomNum);
 
         // 데이터 준비
         Map<String, Object> roomDetails = new HashMap<>();
-        roomDetails.put("keyword", keyword);
-        roomDetails.put("maxNum", maxNum);
-        roomDetails.put("period", period);
+        roomDetails.put("keyword", keyword != null ? keyword : "없음");
+        roomDetails.put("maxNum", maxNum != null ? maxNum : 0);
+        roomDetails.put("day", day != null ? day : 0);
         roomDetails.put("missionList", missionList);
 
         // 프롬프트 생성
@@ -159,7 +167,7 @@ public class OpenAiService {
 
         prompt.append("키워드: ").append(roomDetails.get("keyword")).append(", ");
         prompt.append("참여 인원: ").append(roomDetails.get("maxNum")).append("명, ");
-        prompt.append("기간: ").append(roomDetails.get("period")).append("주\n");
+        prompt.append("일 수: ").append(roomDetails.get("day")).append("일\n");
         prompt.append("미션 리스트: \n");
 
         @SuppressWarnings("unchecked")
@@ -169,14 +177,16 @@ public class OpenAiService {
             prompt.append("미션 방법: ").append(mission.getMissionMethod()).append("\n");
         }
 
-        prompt.append("키워드와 가장 관련된 일일 목표 하나를 선택해 주세요.\n")
-        		.append("참여 인원과 기간을 고려해서 '상'은 95% '중'은 80% '하'는 70%로\n")
-                .append("횟수를 기준으로 목표를 상, 중, 하 각자 1개씩 만들어주세요.\n")
-                .append("다음 형식으로 응답해주세요:\n")
-                .append("[\n")
-                .append("  {\"title\": \"관련된 미션 10회 달성하기 (상)\", \"count\": 10, \"selectedMission\": \"선택된 미션\"},\n")
-                .append("  ...\n")
-                .append("]");
+        prompt.append("키워드랑 가장 연관성 있는 일반 미션을 하나를 선택해서 **\"총인원의 미션 달성 기준으로\"**, \n")
+            .append("기간, 일수, 총 인원들을 고려해 \n")
+            .append("‘난이도상은 일수 × 총 인원 x 0.95’, ‘난이도중은 일수 × 총 인원 x 0.80’, ‘난이도하는 일수 × 총 인원 x 0.70’로 \n")
+            .append("**총인원의 목표 횟수**를 계산하여 추천 챌린지를 ‘상’, ‘중’, ‘하’ 각 1개씩 만들어주세요.\n\n")
+            .append("다음 형식으로 응답해주세요:\n")
+            .append("[\n")
+            .append("  {\"title\": \"관련된 미션 X회 달성하기 (상)\", \"count\": X, \"selectedMission\": \"선택된 미션\"},\n")
+            .append("  {\"title\": \"관련된 미션 X회 달성하기 (중)\", \"count\": X, \"selectedMission\": \"선택된 미션\"},\n")
+            .append("  {\"title\": \"관련된 미션 X회 달성하기 (하)\", \"count\": X, \"selectedMission\": \"선택된 미션\"}\n")
+            .append("]\n");
 
         return prompt.toString();
     }
@@ -191,8 +201,8 @@ public class OpenAiService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", model);
         requestBody.put("messages", List.of(
-                Map.of("role", "system", "content", "You are an assistant that helps generate group challenges."),
-                Map.of("role", "user", "content", prompt)
+            Map.of("role", "system", "content", "You are an assistant that helps generate group challenges."),
+            Map.of("role", "user", "content", prompt)
         ));
         requestBody.put("max_tokens", maxTokens);
         requestBody.put("temperature", temperature);
@@ -214,7 +224,7 @@ public class OpenAiService {
                     return parseAiResponseWithGson(content);
                 }
             }
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             System.err.println("HTTP Error: " + e.getStatusCode());
             System.err.println("Error Response: " + e.getResponseBodyAsString());
         } catch (Exception e) {
@@ -231,11 +241,9 @@ public class OpenAiService {
             ChallengeVo[] parsedChallenges = gson.fromJson(jsonResponse, ChallengeVo[].class);
 
             for (ChallengeVo challenge : parsedChallenges) {
-                ChallengeVo vo = new ChallengeVo();
-                vo.setAiMission(challenge.getTitle());
-                vo.setCount(challenge.getCount());
-                vo.setMissionName(challenge.getSelectedMission());
-                challenges.add(vo);
+                challenge.setAiMission(challenge.getTitle());
+                challenge.setMissionName(challenge.getSelectedMission());
+                challenges.add(challenge);
             }
 
             System.out.println("Gson으로 파싱된 챌린지 리스트: " + challenges);
@@ -245,6 +253,7 @@ public class OpenAiService {
 
         return challenges;
     }
+
 
 
     // 미션 저장 메서드

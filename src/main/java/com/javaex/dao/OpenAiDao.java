@@ -32,6 +32,12 @@ public class OpenAiDao {
 		return period;
 	}
 	
+	// 일수 가져오기
+	public ChallengeVo getDay(int roomNum) {
+		ChallengeVo period = session.selectOne("openAi.getDay",roomNum);
+		return period;
+	}
+	
 	// 미션리스트 가져오기
 	public List<ChallengeVo> getMissions(int roomNum) {
 		List<ChallengeVo> mission = session.selectList("openAi.getMissions",roomNum);

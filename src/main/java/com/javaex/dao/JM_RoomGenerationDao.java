@@ -117,20 +117,23 @@ public class JM_RoomGenerationDao {
     
     // 방 참가
     public int joinRoom(ChallengeVo challengevo) {
-        session.insert("generation.joinRoom",challengevo );
-        return challengevo.getCount();
+        int result = session.insert("generation.joinRoom", challengevo);
+        System.out.println("joinRoom 실행 결과: " + result);
+        return result;
     }
-    
-    // 방  입장포인트 가져오기
+
+    // 방 입장 포인트 가져오기
     public int getRoomPoint(ChallengeVo challengevo) {
-    	int roomPoint = session.selectOne("generation.getRoomPoint",challengevo );
+        int roomPoint = session.selectOne("generation.getRoomPoint", challengevo);
+        System.out.println("getRoomPoint 실행 결과: " + roomPoint);
         return roomPoint;
     }
-    
-    // point 뺏기
+
+    // 포인트 차감
     public int minusPoint(ChallengeVo challengevo) {
-        int count = session.insert("generation.minusPoint",challengevo );
-        return count;
+        int result = session.update("generation.minusPoint", challengevo);
+        System.out.println("minusPoint 실행 결과: " + result);
+        return result;
     }
 
 

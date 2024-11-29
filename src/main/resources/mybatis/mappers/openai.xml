@@ -55,6 +55,22 @@
     		WHERE roomNum = #{roomNum}
     	]]>
     </select>
+    
+    <!-- 방 일수 가져오기 -->
+    <select id="getDay" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+    		 SELECT 
+			    (SELECT COUNT(DISTINCT d.dateName)
+			     FROM roomDay rd
+			     JOIN day d ON rd.dateNum = d.dateNum
+			     WHERE rd.roomNum = 74
+			     AND rd.dateNum != 8) 
+			    * 
+			    (SELECT periodNum
+			     FROM roomInfo
+			     WHERE roomNum = 74) AS count;
+    	]]>
+    </select>
 
     <!-- 선택된 챌린지 저장 -->
     <insert id="insertSelectedChallenge" parameterType="com.javaex.vo.ChallengeVo">

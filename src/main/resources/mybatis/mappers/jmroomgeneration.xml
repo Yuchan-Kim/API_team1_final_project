@@ -169,7 +169,7 @@
     </insert>
     
     <!-- 방 참가 -->
-    <insert id="joinRoom" parameterType="com.javaex.vo.ChallengeVo" useGeneratedKeys="true" keyProperty="roomNum">
+    <insert id="joinRoom" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
         	INSERT INTO enteredUser (roomNum, userNum, enteredUserStatusNum, enteredUserAuth)
         	VALUES (#{roomNum}, #{userNum}, 1, 1);
@@ -177,7 +177,7 @@
     </insert>
     
     <!-- 방 입장포인트 가져오기 	-->
-    <select id="getRoomPoint" parameterType="com.javaex.vo.ChallengeVo" resultType="com.javaex.vo.ChallengeVo">
+    <select id="getRoomPoint" parameterType="com.javaex.vo.ChallengeVo" resultType="int">
     	<![CDATA[ 
     		SELECT roomEnterPoint AS roomPoint
     		FROM roomInfo
@@ -186,7 +186,7 @@
     </select>
     
     <!-- 포인트 히스토리 삽입 -->
-    <insert id="minusPoint" parameterType="map">
+    <insert id="minusPoint" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
         	INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
         	VALUES (#{userNum}, #{roomPoint}, 6, "-", NOW());
