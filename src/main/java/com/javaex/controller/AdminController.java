@@ -159,17 +159,18 @@ public class AdminController {
             @RequestParam(value = "image", required = false) MultipartFile image
     ) {
         System.out.println("AdminController.addItem()");
+        String fileName ="";
         try {
             String imagePath = null;
             if (image != null && !image.isEmpty()) { 
                 // 이미지 저장 경로 설정 (예: /uploads/items/)
-                String uploadDir = "/app/upload";
+                String uploadDir = "app/upload/";
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
                 // 파일 이름 설정 (중복 방지를 위해 UUID 사용 권장)
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
                 String filePath = uploadDir + fileName;
                 image.transferTo(new File(filePath));
                 imagePath = "/" + filePath; // 접근 가능한 경로로 설정
@@ -179,7 +180,7 @@ public class AdminController {
             itemVo.setItemName(itemName);
             itemVo.setItemCost(price);
             itemVo.setItemBrandNum(itemBrandNum);
-            itemVo.setItemImg(imagePath);
+            itemVo.setItemImg(fileName);
             
             boolean success = service.addItem(itemVo);
             if (success) {
@@ -207,7 +208,7 @@ public class AdminController {
 
 	        if (image != null && !image.isEmpty()) {
 	            // 이미지 저장 경로 설정
-	            String uploadDir = "/app/upload/";
+	            String uploadDir = "app/upload/";
 	            File dir = new File(uploadDir);
 	            if (!dir.exists()) {
 	                dir.mkdirs();
