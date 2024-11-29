@@ -78,7 +78,7 @@ public class JM_RoomGenerationController {
 			@RequestParam int roomNum, // 요청 데이터 객체
 			@RequestParam String roomTitle, // 요청 데이터 객체
 			@RequestParam String roomInfo, // 요청 데이터 객체
-			@RequestParam String roomThumbNail, // 요청 데이터 객체
+			@RequestParam("file") MultipartFile file,
 		    HttpServletRequest request) {
 		// JWT에서 사용자 번호 추출
 		int userNum = JwtUtil.getNoFromHeader(request);
@@ -86,18 +86,17 @@ public class JM_RoomGenerationController {
 		System.out.println("RoomNum: " + roomNum);
 		System.out.println("RoomTitle: " + roomTitle);
 		System.out.println("RoomInfo: " + roomInfo);
-		System.out.println("RoomThumbNail: " + roomThumbNail);
+		
 
 		// 데이터 객체 생성
 		ChallengeVo categoryVo = new ChallengeVo();
 		categoryVo.setRoomNum(roomNum);
 		categoryVo.setRoomTitle(roomTitle);
 		categoryVo.setRoomInfo(roomInfo);
-		categoryVo.setRoomThumbNail(roomThumbNail);
 		categoryVo.setUserNum(userNum); // 생성한 사용자 정보 추가
 
 		// 서비스 호출
-		ChallengeVo isSaved = service.exeRoomUpdateStep3(categoryVo);
+		ChallengeVo isSaved = service.exeRoomUpdateStep3(categoryVo, file);
 		    
 		return JsonResult.success("타이틀,설명,이미지가 성공적으로 저장되었습니다.");
 	}
