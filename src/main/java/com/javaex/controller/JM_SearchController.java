@@ -26,6 +26,15 @@ public class JM_SearchController {
 		return JsonResult.success(roomList);
 	}
 	
+	// 메인페이지 종료 된 방 리스트 가져오기
+	@GetMapping("api/closeRoomList")
+	public JsonResult closeRoomList() {
+		System.out.println("종료 된 방");
+		List<ChallengeVo> roomList = service.closeRoomList();
+			
+		return JsonResult.success(roomList);
+	}
+	
 	// 카테고리별 방리스트 가져오기
 	@GetMapping("api/roomFilter/category")
 	public JsonResult categoryRoomList(@RequestParam String category) {

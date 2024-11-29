@@ -33,6 +33,8 @@ public class ChallengeVo {
 	private int userAuth;         	 // 유저 권한 (관리자, 일반 사용자 등)
 	private String regionName;       // 유저가 속한 지역 이름
 	private int regionNum;       	 // 유저가 속한 지역 번호
+	private double achievementRate;	 // 유저 성실도
+	private int userPoints;			 // 유저 포인트
 
 	// 미션 정보
 	private int missionNum;          // 미션 번호 (고유 식별자)
@@ -92,8 +94,6 @@ public class ChallengeVo {
 	private int point;
     private int pointPurposeNum;
     private String historyInfo;
-    private double achievementRate;
-    private int userPoints;
     private int roomMaker;
     
 

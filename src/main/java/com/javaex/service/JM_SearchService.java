@@ -23,6 +23,15 @@ public class JM_SearchService {
 		return roomList;
 	}
 	
+	// 메인페이지 종료 된 방 리스트 가져오기
+	public List<ChallengeVo> closeRoomList( ) {
+			
+		List<ChallengeVo> roomList = dao.closeRoomList();
+		System.out.println("ChallengeService" + roomList);
+
+		return roomList;
+	}
+	
 	//카테고리별 방리스트 가져오기
 	public List<ChallengeVo> exeCategoryRoomList( String category) {
 		

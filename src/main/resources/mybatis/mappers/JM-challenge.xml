@@ -44,18 +44,57 @@
 			    u.userStatus AS userStatus,
 			    eu.enteredUserAuth AS userAuth,
 			    eu.enteredUserStatusNum AS userStatusNum,
-			    es.enteredUserStatus AS statusDescription
+			    es.enteredUserStatus AS statusDescription,
+			    COALESCE(t2.achievement_rate, 0) AS achievementRate, -- 성실도 (달성률)
+			    COALESCE(t3.totalPoints, 0) AS userPoints -- 보유 포인트
 			FROM 
 			    enteredUser eu
 			JOIN 
 			    users u ON eu.userNum = u.userNum
 			JOIN 
 			    enteredUserStatus es ON eu.enteredUserStatusNum = es.enteredUserStatusNum
+			LEFT JOIN (
+			    -- <<종합 달성률 계산>>
+			    SELECT 
+			        eu.userNum,
+			        ROUND(
+			            (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
+			            NULLIF(COUNT(*), 0), 
+			            2
+			        ) AS achievement_rate
+			    FROM 
+			        challenges c
+			    JOIN 
+			        roomDay rd ON c.roomDayNum = rd.roomDayNum
+			    JOIN 
+			        roomInfo ri ON rd.roomNum = ri.roomNum
+			    JOIN 
+			        enteredUser eu ON ri.roomNum = eu.roomNum
+			    LEFT JOIN 
+			        evaluation e ON c.missionNum = e.missionNum 
+			                    AND e.submitUser = eu.userNum
+			    WHERE 
+			        eu.enteredUserStatusNum = 1
+			    GROUP BY 
+			        eu.userNum
+			) t2 ON eu.userNum = t2.userNum
+			LEFT JOIN (
+			    -- <<포인트 계산>>
+			    SELECT 
+			        userNum,
+			        COALESCE(SUM(CASE WHEN historyInfo = '+' THEN historyPoint ELSE 0 END) - 
+			                 SUM(CASE WHEN historyInfo = '-' THEN historyPoint ELSE 0 END), 0) AS totalPoints
+			    FROM 
+			        pointHistory
+			    GROUP BY 
+			        userNum
+			) t3 ON eu.userNum = t3.userNum
 			WHERE 
 			    eu.roomNum = #{roomNum}
-			AND eu.enteredUserStatusNum = 1 
+			AND 
+			    eu.enteredUserStatusNum = 1 
 			ORDER BY
-				eu.enteredUserNum ASC;
+			    eu.enteredUserNum ASC;
         ]]>
     </select>
     

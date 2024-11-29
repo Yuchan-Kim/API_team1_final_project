@@ -25,6 +25,16 @@ public class JM_SearchDao {
 		return roomList;
 	}
 	
+	// 메인페이지 종료 된 방 리스트 가져오기
+	public List<ChallengeVo> closeRoomList( ) {
+		System.out.println("ChallengeService.exeMissionList");
+				
+		List<ChallengeVo> roomList = session.selectList("jmsearch.getCloseRoomList");
+		System.out.println("ChallengeService" + roomList);
+
+		return roomList;
+	}
+	
 	// 메인페이지 방리스트 가져오기
 	public List<ChallengeVo> categoryRoomList(String category) {
 				

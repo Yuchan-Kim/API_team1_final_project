@@ -48,7 +48,7 @@
     <select id="getUserPoint" parameterType="int" resultType="int">
     	<![CDATA[ 
     		SELECT COALESCE(SUM(CASE WHEN historyInfo = '+' THEN historyPoint ELSE 0 END) - 
-                 SUM(CASE WHEN historyInfo = '-' THEN historyPoint ELSE 0 END), 0) as totalPoints
+                 SUM(CASE WHEN historyInfo = '-' THEN historyPoint ELSE 0 END), 0) as userPoints
 		    FROM pointHistory
 		    WHERE userNum = #{userNum}
     	]]>
