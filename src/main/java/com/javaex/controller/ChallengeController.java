@@ -153,7 +153,7 @@ public class ChallengeController {
 	@PutMapping("/complete-period/{roomNum}")
 	public JsonResult completePeriod(
 	        @PathVariable int roomNum, 
-	        HttpServletRequest request) {
+	        HttpServletRequest request) { 
 	    System.out.println("ChallengeController.completePeriod()");
 
 	    // JWT를 통해 사용자 인증
