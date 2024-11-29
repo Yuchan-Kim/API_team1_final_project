@@ -37,12 +37,22 @@ public class JM_RoomGenerationService {
 	}
 	
 	// 방 이미지, 제목, 설명 업데이트
-	public ChallengeVo exeRoomUpdateStep3(ChallengeVo  challengevo) {
-				
-		ChallengeVo newRoomTitle = dao.roomUpdateStep3(challengevo);
-		System.out.println("새로운 제목+설명+이미지"+ newRoomTitle);
-				
-		return newRoomTitle;
+	public ChallengeVo exeRoomUpdateStep3(ChallengeVo challengevo, MultipartFile file) {
+	    // 파일 업로드 처리
+	    String savedFileName = exeUpload(file);
+
+	    if (savedFileName != null) {
+	        System.out.println("업로드된 파일명: " + savedFileName);
+	        challengevo.setRoomThumbNail(savedFileName); // ChallengeVo에 업로드된 파일명 설정
+	    } else {
+	        System.out.println("파일 업로드 실패, 기본 이미지 유지");
+	    }
+
+	    // DB 업데이트
+	    ChallengeVo updatedRoom = dao.roomUpdateStep3(challengevo);
+	    System.out.println("업데이트된 방 정보: " + updatedRoom);
+
+	    return updatedRoom;
 	}
 	
 	// 방 타입넘버 가져오기
