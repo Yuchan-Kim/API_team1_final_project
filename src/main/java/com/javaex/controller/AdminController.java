@@ -168,7 +168,7 @@ public class AdminController {
             if (image != null && !image.isEmpty()) { 
                 // 이미지 저장 경로 설정 (예: /uploads/items/)
                 String uploadDir = "/app/upload/"; 
-                File dir = new File(uploadDir);
+                File dir = new File(uploadDir); 
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
