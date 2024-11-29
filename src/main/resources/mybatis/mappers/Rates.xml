@@ -414,11 +414,11 @@
     GROUP BY
         c.missionNum, c.missionName, c.missionGoal
 </select>
-    <!-- MyBatis 매퍼 파일에 추가 -->
+    
 <select id="getRoomEnterPoint" parameterType="int" resultType="int">
     SELECT roomEnterPoint FROM roomInfo WHERE roomNum = #{roomNum}
 </select>
-    <!-- MyBatis 매퍼 파일에 추가 -->
+    
 <select id="getChallengeRewardEligibility" parameterType="map" resultType="int">
     SELECT COUNT(*) FROM evaluation e
     JOIN challenges c ON e.missionNum = c.missionNum

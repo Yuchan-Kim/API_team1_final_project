@@ -245,6 +245,7 @@ public class ChallengeService {
 	public boolean reactivateUser(int roomNum, int userNum) {
 	    System.out.println("ChallengeService.reactivateUser() - roomNum: " + roomNum + ", userNum: " + userNum);
 	    boolean result = challengeDao.updateEnteredUserStatus(roomNum, userNum, 1) > 0;
+	    int result02 = challengeDao.updateEnteredUserAuth(roomNum, userNum, 2);
 	    System.out.println("ChallengeService.reactivateUser() - reactivateUser result: " + result);
 	    return result;
 	}
