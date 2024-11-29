@@ -1,9 +1,11 @@
 package com.javaex.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +46,20 @@ public class JM_RoomGenerationController {
 		
 		return JsonResult.success(newRoomNum);
 	}
+	
+	// 방 번호로 방 삭제
+	@DeleteMapping("api/deleteRoom")
+    public JsonResult deleteRoom(@RequestParam int roomNum) {
+        // 방 삭제 로직
+        boolean isDeleted = service.deleteRoom(roomNum); // 서비스 호출
+
+        if (isDeleted) {
+            System.out.println("방 삭제 성공");
+        } else {
+            System.out.println("방 삭제 실패");
+        }
+            return JsonResult.success("방 삭제 완료");
+    }
 	
 	// 방 카테고리 키워드 업데이트
 	@PostMapping("api/roomAddCategory")

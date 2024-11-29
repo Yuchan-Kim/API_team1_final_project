@@ -27,6 +27,12 @@ public class JM_RoomGenerationService {
 		return newRoomNum;
 	}
 	
+	// 방 삭제
+	public boolean deleteRoom(int roomNum) {
+        int deletedRows = dao.deleteRoom(roomNum);
+        return deletedRows > 0; // 삭제된 행이 1개 이상인지 확인
+    }
+	
 	// 방 카테고리 키워드 업데이트
 	public ChallengeVo exeRoomUpdateStep2(ChallengeVo  challengevo) {
 			
