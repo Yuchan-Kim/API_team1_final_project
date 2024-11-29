@@ -12,6 +12,13 @@
     	]]>
     </insert>
     
+    <!-- 방 삭제 -->
+    <delete id="deleteRoom" parameterType="int">
+    	<![CDATA[
+	    	DELETE FROM roomInfo WHERE roomNum = #{roomNum};
+	    ]]>
+	</delete>	
+    
     <!-- 카테고리 등록 -->
     <update id="updateStep2" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
