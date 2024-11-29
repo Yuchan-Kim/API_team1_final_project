@@ -207,7 +207,7 @@ public class AdminController {
 
 	        if (image != null && !image.isEmpty()) {
 	            // 이미지 저장 경로 설정
-	            String uploadDir = "/Users/yuchan/final_project_Team1/team1_final_project/public/images";
+	            String uploadDir = "/app/upload/";
 	            File dir = new File(uploadDir);
 	            if (!dir.exists()) {
 	                dir.mkdirs();
