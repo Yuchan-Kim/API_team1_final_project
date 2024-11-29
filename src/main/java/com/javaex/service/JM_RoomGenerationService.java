@@ -27,7 +27,7 @@ public class JM_RoomGenerationService {
 		return newRoomNum;
 	}
 	
-	// 방 삭제
+	// 방 번호로 방 삭제
 	public boolean deleteRoom(int roomNum) {
         int deletedRows = dao.deleteRoom(roomNum);
         return deletedRows > 0; // 삭제된 행이 1개 이상인지 확인

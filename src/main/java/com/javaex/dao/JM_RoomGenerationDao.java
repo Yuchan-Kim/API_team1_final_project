@@ -22,7 +22,7 @@ public class JM_RoomGenerationDao {
 		return challengevo.getRoomNum();
 	}
 	
-	// 방 삭제
+	// 방 번호로 방 삭제
 	public int deleteRoom(int roomNum) {
         return session.delete("generation.deleteRoom", roomNum);
     }
