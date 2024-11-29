@@ -43,7 +43,7 @@
             ri.roomKeyword AS roomKeyword,
             r.regionName AS regionName,
             ri.roomMinNum AS roomMinNum,
-            COUNT(eu_active.userNum) AS enteredUserNum,
+            COUNT(eu_active.userNum) AS enteredUserCount,
             COALESCE(eu.enteredUserStatusNum, 0) AS enteredUserStatusNum
         FROM roomInfo ri
         JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum

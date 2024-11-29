@@ -1,7 +1,10 @@
 package com.javaex.controller;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -159,27 +162,44 @@ public class AdminController {
             @RequestParam(value = "image", required = false) MultipartFile image
     ) {
         System.out.println("AdminController.addItem()");
-        try {
+        String fileName ="";
+//        try {
             String imagePath = null;
             if (image != null && !image.isEmpty()) { 
                 // 이미지 저장 경로 설정 (예: /uploads/items/)
-                String uploadDir = "/app/upload";
+                String uploadDir = "/app/upload/";
                 File dir = new File(uploadDir);
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
                 // 파일 이름 설정 (중복 방지를 위해 UUID 사용 권장)
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+                
                 String filePath = uploadDir + fileName;
-                image.transferTo(new File(filePath));
-                imagePath = "/" + filePath; // 접근 가능한 경로로 설정
+                
+                
+        		try {
+        			byte[] fileData = image.getBytes();
+        			OutputStream os = new FileOutputStream(filePath);
+        			BufferedOutputStream bos = new BufferedOutputStream(os);
+        			bos.write(fileData);
+        			bos.close();
+        		} catch (Exception e) {
+        			System.out.println("파일 저장 중 오류: " + e.getMessage());
+        			return null;
+        		}
+        		
+//                
+//                image.transferTo(new File(filePath));
+//                imagePath = "/" + filePath; // 접근 가능한 경로로 설정
             }
             
             AdminVo itemVo = new AdminVo();
             itemVo.setItemName(itemName);
             itemVo.setItemCost(price);
             itemVo.setItemBrandNum(itemBrandNum);
-            itemVo.setItemImg(imagePath);
+            itemVo.setItemImg(fileName);
+            
             
             boolean success = service.addItem(itemVo);
             if (success) {
@@ -187,10 +207,10 @@ public class AdminController {
             } else {
                 return JsonResult.fail("상품 추가에 실패했습니다.");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return JsonResult.fail("이미지 업로드 중 오류가 발생했습니다.");
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return JsonResult.fail("이미지 업로드 중 오류가 발생했습니다.");
+//        }
     }
 	
 	@PutMapping("/editItems/{itemNum}")
@@ -207,7 +227,7 @@ public class AdminController {
 
 	        if (image != null && !image.isEmpty()) {
 	            // 이미지 저장 경로 설정
-	            String uploadDir = "/app/upload/";
+	            String uploadDir = "app/upload/";
 	            File dir = new File(uploadDir);
 	            if (!dir.exists()) {
 	                dir.mkdirs();
