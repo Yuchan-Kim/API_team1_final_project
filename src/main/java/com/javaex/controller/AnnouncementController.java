@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/challenge/announcement")
 public class AnnouncementController {
     
-    @Autowired
+    @Autowired 
     private AnnouncementService announcementService;
     
     @Autowired
