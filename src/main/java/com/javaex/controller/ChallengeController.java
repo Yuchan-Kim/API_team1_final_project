@@ -295,30 +295,43 @@ public class ChallengeController {
 	            }
 	        } else if (roomInfo.get(0).getRoomPoint() > 0 && roomInfo.get(0).getRoomRate() > 0) {
 	            System.out.println("Handling 챌린지 방 with roomPoint > 0 and roomRate > 0");
+	            double checkMyRate = challengeService.checkmyRate(userNum);
+	            
 	            if (existingUser != null && existingUser.getEnteredUserStatusNum() == 2) {
 	                System.out.println("Reactivating user participation and deducting roomEnterPoint");
-	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
-	                boolean updateSuccess = challengeService.reactivateUser(roomNum, userNum);
-	                System.out.println("Reactivation success: " + updateSuccess);
-	                if (updateSuccess) {
-	                    return JsonResult.success("참여 상태로 변경되었습니다.");
-	                } else {
-	                    System.out.println("Failed to reactivate user participation");
-	                    return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
+	                if (roomInfo.get(0).getRoomRate() > checkMyRate) {
+	                	 System.out.println("Failed to reactivate user participation");
+		                    return JsonResult.fail("입장 성실도가 낮습니다.");
+	                }else {
+	                	 challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
+	 	                boolean updateSuccess = challengeService.reactivateUser(roomNum, userNum);
+	 	                System.out.println("Reactivation success: " + updateSuccess);
+	 	                if (updateSuccess) {
+	 	                    return JsonResult.success("참여 상태로 변경되었습니다.");
+	 	                } else {
+	 	                    System.out.println("Failed to reactivate user participation");
+	 	                    return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
+	 	                }
 	                }
+	               
 	            } else if (existingUser == null) {
 	                System.out.println("Deducting roomEnterPoint and adding new participant");
-	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
-	                boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
-	                System.out.println("Join room success: " + joinSuccess);
-	                if (joinSuccess) {
-	                    int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
-	                    System.out.println("Entered user auth: " + enteredUserAuth);
-	                   
-	                    return JsonResult.success(enteredUserAuth);
-	                } else {
-	                    System.out.println("Failed to join room");
-	                    return JsonResult.fail("참가에 실패했습니다.");
+	                if (roomInfo.get(0).getRoomRate() > checkMyRate) {
+	                	 System.out.println("Failed to reactivate user participation");
+		                 return JsonResult.fail("입장 성실도가 낮습니다.");
+	                }else {
+	                	 challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
+	 	                boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
+	 	                System.out.println("Join room success: " + joinSuccess);
+	 	                if (joinSuccess) {
+	 	                    int enteredUserAuth = challengeService.getUserAuth(roomNum, userNum);
+	 	                    System.out.println("Entered user auth: " + enteredUserAuth);
+	 	                   
+	 	                    return JsonResult.success(enteredUserAuth);
+	 	                } else {
+	 	                    System.out.println("Failed to join room");
+	 	                    return JsonResult.fail("참가에 실패했습니다.");
+	 	                }
 	                }
 	            }
 	        }

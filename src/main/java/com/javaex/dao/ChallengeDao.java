@@ -394,5 +394,9 @@ public class ChallengeDao {
 		System.out.println("ChallengeDao.roomEnterPoint() - Insert result: " + result);
 		return result;
 	}
+	
+	public int checkmyRate (int userNum) {
+		return sqlSession.selectOne(namespace +".checkmyRate", userNum);
+	}
 
 }

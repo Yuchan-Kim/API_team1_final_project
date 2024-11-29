@@ -447,6 +447,10 @@ public class ChallengeService {
 	    System.out.println("ChallengeService.roomEnterPoint() - roomEnterPoint result: " + result);
 	    return result;
 	}
+	
+	public int checkmyRate (int userNum) {
+		return challengeDao.checkmyRate(userNum);
+	}
 
 
 }

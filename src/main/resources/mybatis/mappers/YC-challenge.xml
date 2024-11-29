@@ -390,7 +390,42 @@
     </insert>
 
 
-
+	<select id ="checkmyRate" parameterType ="int" resultType="int">
+		 SELECT 
+            t1.ongoing_challenges as ongoingChallenges,
+            t1.upcoming_challenges as upcomingChallenges,
+            t1.completed_challenges as completedChallenges,
+            t2.achievement_rate as participationScore
+        FROM (
+            
+            SELECT 
+                SUM(CASE WHEN rs.roomStatusName = '시작' THEN 1 ELSE 0 END) as ongoing_challenges,
+                SUM(CASE WHEN rs.roomStatusName IN ('모집 전', '모집 중') THEN 1 ELSE 0 END) as upcoming_challenges,
+                SUM(CASE WHEN rs.roomStatusName = '종료' THEN 1 ELSE 0 END) as completed_challenges
+            FROM roomInfo ri
+            JOIN roomStatus rs ON ri.roomStatusNum = rs.roomStatusNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            WHERE eu.userNum = #{userNum}
+            AND eu.enteredUserStatusNum = 1
+        ) t1,
+        (
+           
+            SELECT 
+                ROUND(
+                    (COUNT(CASE WHEN e.evalType = '승인완료' THEN 1 END) * 100.0) / 
+                    NULLIF(COUNT(*), 0), 
+                    2
+                ) as achievement_rate
+            FROM challenges c
+            JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
+            JOIN roomInfo ri ON rd.roomNum = ri.roomNum
+            JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+            LEFT JOIN evaluation e ON c.missionNum = e.missionNum 
+                                AND e.submitUser = eu.userNum
+            WHERE eu.userNum = #{userNum}
+            AND eu.enteredUserStatusNum = 1
+        ) t2
+	</select>
 
 
 
