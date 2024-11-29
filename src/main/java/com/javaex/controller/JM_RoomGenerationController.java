@@ -92,6 +92,7 @@ public class JM_RoomGenerationController {
 			@RequestParam String roomInfo, // 요청 데이터 객체
 			@RequestParam("file") MultipartFile file,
 		    HttpServletRequest request) {
+		System.out.println(file);
 		// JWT에서 사용자 번호 추출
 		int userNum = JwtUtil.getNoFromHeader(request);
 		System.out.println("UserNum: " + userNum);
