@@ -38,7 +38,7 @@ public class AnnouncementController {
     private String clientId;
 
     @Value("${naver.client.secret}")
-    private String clientSecret;
+    private String clientSecret; 
 
  // 방 참여 인원 체크
     @GetMapping("/{roomNum}")
