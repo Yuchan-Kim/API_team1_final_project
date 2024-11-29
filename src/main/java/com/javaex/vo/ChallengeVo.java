@@ -21,6 +21,7 @@ public class ChallengeVo {
     private Date createDate;
 	// 로직용
 	private int roomDayNum;			//요일번호
+	private int enteredUserCount;
 	
 	// 필터용
 	private String order;			 // 오름,내림 차순
@@ -903,6 +904,17 @@ public class ChallengeVo {
 	public void setRoomMaker(int roomMaker) {
 		this.roomMaker = roomMaker;
 	}
+	
+
+	public int getEnteredUserCount() {
+		return enteredUserCount;
+	}
+
+
+	public void setEnteredUserCount(int enteredUserCount) {
+		this.enteredUserCount = enteredUserCount;
+	}
+	
 
 
 	@Override
@@ -932,7 +944,8 @@ public class ChallengeVo {
 				+ historyInfo + ", achievementRate=" + achievementRate + ", userPoints=" + userPoints + ", roomMaker="
 				+ roomMaker + "]";
 	}
-	
+
+
 	
 
 

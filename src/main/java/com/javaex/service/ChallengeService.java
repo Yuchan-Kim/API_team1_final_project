@@ -130,7 +130,7 @@ public class ChallengeService {
 	// 챌린지 종료: roomStatusNum을 3으로 변경
 	public boolean endChallenge(int roomNum) {
 		System.out.println("ChallengeService.endChallenge()");
-		return challengeDao.updateRoomStatus(roomNum, 3) > 0;
+		return challengeDao.updateRoomStatus(roomNum, 4) > 0;
 	}
 
 	// 기간 완료: roomStatusNum을 4로 변경
