@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.javaex.vo.DJcsBotVo;
 import com.javaex.vo.DyFAQVo;
 
 @Repository 
@@ -31,5 +32,18 @@ public class DJcsDao {
       
       return FAQList;   
    }
+   
+   public boolean saveChat(DJcsBotVo chatMessage) {
+       //System.out.println("DJcsDao.saveChat()");
+
+       int result = sqlSession.insert("DJcs.insertChat", chatMessage);
+
+       return result > 0;
+   }
 	
+   
+   public List<DJcsBotVo> getRecentChats(int userNum) {
+	    return sqlSession.selectList("DJcs.getRecentChats", userNum);
+	}
+   
 }

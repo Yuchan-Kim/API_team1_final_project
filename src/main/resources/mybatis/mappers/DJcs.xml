@@ -23,6 +23,23 @@
       ]]>
    </select>
    
+   <insert id="insertChat" parameterType="com.javaex.vo.DJcsBotVo">
+       <![CDATA[
+           INSERT INTO csBot (userNum, csbotWriter, csbotAnswer)
+           VALUES (#{userNum}, #{csbotWriter}, #{csbotAnswer})
+       ]]>
+   </insert>
 	
+
+	<select id="getRecentChats" parameterType="int" resultType="com.javaex.vo.DJcsBotVo">
+	    <![CDATA[
+	        SELECT csbotWriter, csbotAnswer
+			FROM csBot
+	        WHERE userNum = #{userNum}
+	        ORDER BY csbotNum DESC
+	        LIMIT 4
+	    ]]>
+	</select>
+
 
 </mapper>
