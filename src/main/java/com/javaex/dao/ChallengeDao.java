@@ -225,15 +225,6 @@ public class ChallengeDao {
 		}
 	}
 
-	public int roomEnterPoint(int userNum, int roomEnterPoint) {
-		System.out.println("ChallengeDao.roomEnterPoint() - userNum: " + userNum + ", roomEnterPoint: " + roomEnterPoint);
-		Map<String, Object> params = new HashMap<>();
-		params.put("userNum", userNum);
-		params.put("roomEnterPoint", roomEnterPoint);
-		int result = sqlSession.insert(namespace + ".roomEnterPoint", params);
-		System.out.println("ChallengeDao.roomEnterPoint() - Insert result: " + result);
-		return result;
-	}
 
 	public int updateEnteredUserStatus(int roomNum, int userNum, int newStatus) {
 		System.out.println("ChallengeDao.updateEnteredUserStatus() - roomNum: " + roomNum + ", userNum: " + userNum + ", newStatus: " + newStatus);
@@ -344,7 +335,7 @@ public class ChallengeDao {
     }
 
     // 7. 방 참가 포인트 수정
-    public int updateRoomEnterPoint(int roomNum, int roomEnterPoint) {
+    public int updateRoomEnterPoint(int roomEnterPoint,int roomNum) {
         Map<String, Object> params = new HashMap<>();
         params.put("roomNum", roomNum);
         params.put("roomEnterPoint", roomEnterPoint);
@@ -392,5 +383,16 @@ public class ChallengeDao {
         params.put("historyInfo", historyInfo);
         return sqlSession.insert(namespace + ".addPointHistory", params);
     }
+    
+
+	public int roomEnterPoint(int userNum, int roomEnterPoint) {
+		System.out.println("ChallengeDao.roomEnterPoint() - userNum: " + userNum + ", roomEnterPoint: " + roomEnterPoint);
+		Map<String, Object> params = new HashMap<>();
+		params.put("userNum", userNum);
+		params.put("roomEnterPoint", roomEnterPoint);
+		int result = sqlSession.insert(namespace + ".roomEnterPoint", params);
+		System.out.println("ChallengeDao.roomEnterPoint() - Insert result: " + result);
+		return result;
+	}
 
 }

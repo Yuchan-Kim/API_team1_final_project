@@ -694,7 +694,7 @@ public class ChallengeController {
             return JsonResult.fail("유효한 방 참가 포인트가 필요합니다.");
         }
 
-        boolean updateSuccess = challengeService.updateRoomEnterPoint(roomNum, roomEnterPoint, userNum);
+        boolean updateSuccess = challengeService.updateRoomEnterPoint(roomEnterPoint,roomNum );
         if (updateSuccess) {
             return JsonResult.success("방 참가 포인트가 성공적으로 업데이트되었습니다.");
         } else {

@@ -241,12 +241,6 @@ public class ChallengeService {
 	    return result;
 	}
 
-	public boolean roomEnterPoint(int userNum, int roomEnterPoint) {
-	    System.out.println("ChallengeService.roomEnterPoint() - userNum: " + userNum + ", roomEnterPoint: " + roomEnterPoint);
-	    boolean result = challengeDao.roomEnterPoint(userNum, roomEnterPoint) > 0;
-	    System.out.println("ChallengeService.roomEnterPoint() - roomEnterPoint result: " + result);
-	    return result;
-	}
 
 	public boolean reactivateUser(int roomNum, int userNum) {
 	    System.out.println("ChallengeService.reactivateUser() - roomNum: " + roomNum + ", userNum: " + userNum);
@@ -387,9 +381,9 @@ public class ChallengeService {
     }
 
     // 7. 방 참가 포인트 수정
-    public boolean updateRoomEnterPoint(int roomNum, int roomEnterPoint) {
+    public boolean updateRoomEnterPoint(int roomEnterPoint,int roomNum) {
         System.out.println("ChallengeService.updateRoomEnterPoint()");
-        return challengeDao.updateRoomEnterPoint(roomNum, roomEnterPoint) > 0;
+        return challengeDao.updateRoomEnterPoint( roomEnterPoint,roomNum) > 0;
     }
 
     // 8. 방 참가 비율 수정
@@ -439,35 +433,19 @@ public class ChallengeService {
         return challengeDao.updateRoomMaxNum(roomNum, roomMaxNum) > 0;
     }
 
-    // 방 참가 포인트 수정
-    @Transactional
-    public boolean updateRoomEnterPoint(int roomNum, int newEnterPoint, int userNum) {
-        ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
-        int originalEnterPoint = roomInfo.getRoomPoint();
-
-        if (newEnterPoint < originalEnterPoint) {
-            int pointDifference = originalEnterPoint - newEnterPoint;
-            // 포인트 반환 로직
-            challengeDao.addPointHistory(userNum, pointDifference, 11, "+");
-        } else if (newEnterPoint > originalEnterPoint) {
-            int pointDifference = newEnterPoint - originalEnterPoint;
-            int userPoints = challengeDao.getUserPoints(userNum);
-
-            if (userPoints < pointDifference) {
-                return false;
-            }
-
-            // 포인트 차감 로직
-            challengeDao.addPointHistory(userNum, pointDifference, 11, "-");
-        }
-
-        return challengeDao.updateRoomEnterPoint(roomNum, newEnterPoint) > 0;
-    }
-
+   
     // 유저 포인트 조회
     public int getUserPoints(int userNum) {
         return challengeDao.getUserPoints(userNum);
     }
+    
+
+	public boolean roomEnterPoint(int userNum, int roomEnterPoint) {
+	    System.out.println("ChallengeService.roomEnterPoint() - userNum: " + userNum + ", roomEnterPoint: " + roomEnterPoint);
+	    boolean result = challengeDao.roomEnterPoint(userNum, roomEnterPoint) > 0;
+	    System.out.println("ChallengeService.roomEnterPoint() - roomEnterPoint result: " + result);
+	    return result;
+	}
 
 
 }
