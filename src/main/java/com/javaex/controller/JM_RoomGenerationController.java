@@ -280,7 +280,23 @@ public class JM_RoomGenerationController {
         return JsonResult.success("미션이 성공적으로 저장되었습니다.");
     }
 
-
+	// 방 참가 + point 차감
+	@PostMapping("api/genebang/joinRoom/{roomNum}")
+    public JsonResult joinRoom(
+    		@PathVariable("roomNum") int roomNum,
+    		HttpServletRequest request) {
+		
+		int userNum = JwtUtil.getNoFromHeader(request);
+        
+        ChallengeVo challengevo = new ChallengeVo();
+        challengevo.setRoomNum(roomNum);
+        challengevo.setUserNum(userNum);
+        
+        // 서비스 호출로 미션 저장
+        service.joinRoom(challengevo);
+        
+        return JsonResult.success("방 참가 성공.");
+    }
 
 
 }
