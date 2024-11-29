@@ -191,11 +191,40 @@ public class JM_RoomGenerationService {
         			}
         		}
             }
-        	return conut;
-        }
-    
-
-            
-
+        return conut;
+	}
+	
+	// 방 참가 + 포인트 차감
+	public ChallengeVo joinRoom(ChallengeVo challengevo) {
+	    // 방 참가
+	    int count = dao.joinRoom(challengevo);
+	    
+	    if (count != 0) {
+	        // 방 참가가 성공한 경우
+	        // 입장 포인트 가져오기
+	        int roomPoint = dao.getRoomPoint(challengevo);
+	        
+	        ChallengeVo cVo = new ChallengeVo();
+	        cVo.setRoomPoint(roomPoint);
+	        
+	        System.out.println(cVo.getUserNum());
+	        System.out.println(cVo.getRoomPoint());
+	        
+	        // 포인트 차감할 사용자 정보 설정
+	        challengevo.setRoomPoint(roomPoint);
+	        
+	        // 포인트 차감
+	        int updateCount = dao.minusPoint(challengevo);
+	        if (updateCount == 0) {
+	            System.out.println("포인트 차감 실패");
+	            // 필요하다면 참가 취소 등 롤백 로직 추가
+	        }
+	        return challengevo;  // 업데이트된 정보 반환
+	        
+	    } else {
+	        System.out.println("방 참가 실패");
+	    }
+	    return null; // 참가 실패 시 null 반환
+	}        
 
 }

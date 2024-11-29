@@ -114,6 +114,24 @@ public class JM_RoomGenerationDao {
         session.update("generation.updateInstruction",challengevo );
         return null;
     }
+    
+    // 방 참가
+    public int joinRoom(ChallengeVo challengevo) {
+        session.insert("generation.joinRoom",challengevo );
+        return challengevo.getCount();
+    }
+    
+    // 방  입장포인트 가져오기
+    public int getRoomPoint(ChallengeVo challengevo) {
+    	int roomPoint = session.selectOne("generation.getRoomPoint",challengevo );
+        return roomPoint;
+    }
+    
+    // point 뺏기
+    public int minusPoint(ChallengeVo challengevo) {
+        int count = session.insert("generation.minusPoint",challengevo );
+        return count;
+    }
 
 
 }
