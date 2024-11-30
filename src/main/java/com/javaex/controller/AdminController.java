@@ -5,8 +5,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,9 +32,20 @@ public class AdminController {
 	@Autowired
 	private AdminService service;
 	
-	private static final List<String> ALLOWED_TABLES = Arrays.asList(
-	        "categories", "roomType", "period", "regions", "missionType", "pointPurpose"
-	    );
+	 private static final Map<String, String> TABLE_PRIMARY_KEYS = new HashMap<>();
+
+	    static {
+	        TABLE_PRIMARY_KEYS.put("categories", "categoryNum");
+	        TABLE_PRIMARY_KEYS.put("roomType", "roomTypeNum");
+	        TABLE_PRIMARY_KEYS.put("period", "periodNum");
+	        TABLE_PRIMARY_KEYS.put("regions", "regionNum");
+	        TABLE_PRIMARY_KEYS.put("missionType", "missionTypeNum");
+	        TABLE_PRIMARY_KEYS.put("pointPurpose", "pointPurposeNum");
+	        TABLE_PRIMARY_KEYS.put("pointHistory", "historyNum");
+	    }
+	    
+	    private static final List<String> ALLOWED_TABLES = List.of("categories", "roomType", "period", "regions", "missionType", "pointPurpose", "pointHistory");
+
 	
 	@GetMapping("/key-stats")
 	public JsonResult getKeyStats() {
