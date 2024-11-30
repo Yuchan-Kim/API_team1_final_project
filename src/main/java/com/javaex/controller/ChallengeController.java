@@ -398,16 +398,13 @@ public class ChallengeController {
 		boolean updateSuccess = challengeService.updateRoomStartDate(roomNum, newStartDate);
 		if (updateSuccess) {
 			// 챌린지가 시작되지 않았으므로 상태 초기화
-			boolean resetStatus = challengeService.resetChallengeStatus(roomNum);
-			if (resetStatus) {
-				return JsonResult.success("시작 시간이 업데이트되었습니다.");
-			} else {
-				return JsonResult.fail("챌린지 상태 초기화에 실패했습니다.");
-			}
+			
+			return JsonResult.success("시작 시간이 업데이트되었습니다.");
 		} else {
-			return JsonResult.fail("시작 시간 업데이트에 실패했습니다.");
+				return JsonResult.fail("챌린지 상태 초기화에 실패했습니다.");
 		}
 	}
+	
 
 	
 	// 방 삭제 엔드포인트 수정 (이미 존재)
