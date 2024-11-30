@@ -196,6 +196,7 @@
     		WITH RankedMissions AS (
 			    SELECT 
 			        u.userNum,
+			        u.usingProfilePic AS userPofile,
 			        u.userName,
 			        e.missionNum,
 			        c.missionName,
