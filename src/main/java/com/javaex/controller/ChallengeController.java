@@ -247,7 +247,7 @@ public class ChallengeController {
 	                System.out.println("Failed to reactivate user participation");
 	                return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
 	            }
-	        } else if (existingUser == null) {
+	        } else{
 	            System.out.println("Adding new participant");
 	            // 새로운 참가자 추가
 	            boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
@@ -263,9 +263,8 @@ public class ChallengeController {
 	            }
 	        }
 	    } else {
-	        System.out.println("Room type: " + roomInfo.get(0).getRoomTypeName());
 	        // 챌린지 방 처리
-	        if (roomInfo.get(0).getRoomPoint() > 0 && roomInfo.get(0).getRoomRate() < 0) {
+	        if (roomInfo.get(0).getRoomPoint() >= 0 && roomInfo.get(0).getRoomRate() < 0) {
 	            System.out.println("Handling 챌린지 방 with roomPoint > 0 and roomRate >= 0");
 	            if (existingUser != null && existingUser.getEnteredUserStatusNum() == 2) {
 	                System.out.println("Reactivating user participation and deducting roomEnterPoint");
@@ -278,7 +277,7 @@ public class ChallengeController {
 	                    System.out.println("Failed to reactivate user participation");
 	                    return JsonResult.fail("참여 상태를 변경하는 데 실패했습니다.");
 	                }
-	            } else if (existingUser == null) {
+	            } else{
 	                System.out.println("Deducting roomEnterPoint and adding new participant");
 	                challengeService.roomEnterPoint(userNum, roomInfo.get(0).getRoomPoint());
 	                boolean joinSuccess = challengeService.joinRoom(roomNum, userNum);
@@ -293,7 +292,7 @@ public class ChallengeController {
 	                    return JsonResult.fail("참가에 실패했습니다.");
 	                }
 	            }
-	        } else if (roomInfo.get(0).getRoomPoint() > 0 && roomInfo.get(0).getRoomRate() > 0) {
+	        } else if (roomInfo.get(0).getRoomPoint() >= 0 && roomInfo.get(0).getRoomRate() >= 0) {
 	            System.out.println("Handling 챌린지 방 with roomPoint > 0 and roomRate > 0");
 	            double checkMyRate = challengeService.checkmyRate(userNum);
 	            
