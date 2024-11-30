@@ -323,16 +323,19 @@ public class AdminController {
 
     // 테이블 데이터 수정
     @PutMapping("/{tableName}/{id}")
-    public JsonResult updateTableData(
-        @PathVariable String tableName,
-        @PathVariable int id,
-        @RequestBody AdminVo adminVo
-    ) {
+    public JsonResult updateTableData(@PathVariable String tableName, @PathVariable int id, @RequestBody AdminVo adminVo) {
         System.out.println("AdminController.updateTableData() - Table: " + tableName);
         if (!ALLOWED_TABLES.contains(tableName)) {
             return JsonResult.fail("허용되지 않은 테이블입니다.");
         }
-        adminVo.setId(id); // ID 설정
+
+        String primaryKey = TABLE_PRIMARY_KEYS.get(tableName);
+        if (primaryKey == null) {
+            return JsonResult.fail("PrimaryKey 정보가 없습니다.");
+        }
+
+        // AdminVo에 primaryKey 설정
+        adminVo.setId(id);  // id는 각 테이블의 기본 키로 설정
         boolean success = service.updateTableData(tableName, adminVo);
         if (success) {
             return JsonResult.success(tableName + " 데이터가 성공적으로 수정되었습니다.");
@@ -340,6 +343,7 @@ public class AdminController {
             return JsonResult.fail(tableName + " 데이터 수정에 실패했습니다.");
         }
     }
+
 
     // 테이블 데이터 삭제
     @DeleteMapping("/{tableName}/{id}")
