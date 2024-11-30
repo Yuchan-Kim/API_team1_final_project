@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -153,7 +155,28 @@ public class RatesController {
             return JsonResult.fail("사용자 정보를 불러오는 데 실패했습니다.");
         }
     }
+    
+    
+    @PostMapping("/insertPointHistory")
+    public JsonResult insertPointHistory(@RequestBody Map<String, Object> payload, HttpServletRequest request) {
+        // JWT에서 사용자 인증 확인 (선택사항)
+        // int authUserNum = JwtUtil.getNoFromHeader(request);
+        // if (authUserNum != (int) payload.get("userNum")) {
+        //     return JsonResult.fail("인증된 사용자와 일치하지 않습니다.");
+        // }
 
+        try {
+            int userNum = (int) payload.get("userNum");
+            int historyPoint = (int) (payload.get("historyPoint"));
+            int pointPurposeNum = (int) payload.get("pointPurposeNum");
+
+            ratesservice.insertPointHistory(userNum, historyPoint, pointPurposeNum, "+");
+            return JsonResult.success("포인트 기록이 성공적으로 삽입되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return JsonResult.fail("포인트 기록 삽입에 실패했습니다.");
+        }
+    }
 
    
 }

@@ -156,11 +156,6 @@ public class ChallengeService {
 		return challengeDao.updateRoomStatus(roomNum, 2) > 0;
 	}
 
-	// 챌린지 상태 초기화: roomStatusNum을 1으로 변경
-	public boolean resetChallengeStatus(int roomNum) {
-		System.out.println("ChallengeService.resetChallengeStatus()");
-		return challengeDao.updateRoomStatus(roomNum, 1) > 0;
-	}
 
 	public boolean leaveRoom(int roomNum, int userNum) {
 		System.out.println("ChallengeService.leaveRoom()");

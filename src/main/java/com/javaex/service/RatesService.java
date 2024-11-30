@@ -86,5 +86,10 @@ public class RatesService {
     public boolean isEligibleForChallengeReward(int roomNum, int userNum) {
         return ratesdao.isEligibleForChallengeReward(roomNum, userNum);
     }
+    
+ // 포인트 기록 삽입 메서드
+    public void insertPointHistory(int userNum, double historyPoint, int pointPurposeNum, String historyInfo) {
+        ratesdao.insertPointHistory(userNum, historyPoint, pointPurposeNum, historyInfo);
+    }
 
 }

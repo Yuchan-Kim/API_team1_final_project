@@ -124,6 +124,16 @@ public class RatesDao {
         Integer count = sqlSession.selectOne(namespace + ".getChallengeRewardEligibility", params);
         return count != null && count > 0;
     }
-
+    
+ // 포인트 기록 삽입 메서드
+    public void insertPointHistory(int userNum, double historyPoint, int pointPurposeNum, String historyInfo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userNum", userNum);
+        params.put("historyPoint", historyPoint);
+        params.put("pointPurposeNum", pointPurposeNum);
+        params.put("historyInfo", historyInfo);
+        
+        sqlSession.insert(namespace + ".insertPointHistory", params);
+    }
 
 }

@@ -104,7 +104,7 @@
 		    ON e.missionNum = c.missionNum 
 		    AND e.evalType = '승인' 
 		    AND e.submitUser = u.userNum
-		WHERE r.roomNum = #{roonNum}
+		WHERE r.roomNum = #{roomNum}
 		GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum, p.periodType
 		ORDER BY achievementRate DESC;
         ]]>
@@ -464,6 +464,10 @@ LEFT JOIN evaluation e
 WHERE r.roomNum = #{roomNum}
   AND u.userNum = #{userNum}  -- 특정 userNum 조건 추가 
 </select>
-    
+     <!-- 포인트 기록 삽입 쿼리 -->
+    <insert id="insertPointHistory" parameterType="map">
+        INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
+        VALUES (#{userNum}, #{historyPoint}, #{pointPurposeNum}, #{historyInfo},NOW())
+    </insert>
 
 </mapper>
