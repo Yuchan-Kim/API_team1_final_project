@@ -355,6 +355,22 @@ public class AdminController {
             return JsonResult.fail("알림 발송에 실패했습니다.");
         }
     }
-	
-	
+
+    	
+    	
+    	@PutMapping("/user-status")
+    	public JsonResult changeUserStatus(@RequestBody AdminVo adminVo) {
+    	    System.out.println("AdminController.changeUserStatus()");
+    	    boolean success = service.changeUserStatus(adminVo.getUserNum(), adminVo.getUserStatus());
+    	    if (success) {
+    	        return JsonResult.success("유저 상태가 성공적으로 변경되었습니다.");
+    	    } else {
+    	        return JsonResult.fail("유저 상태 변경에 실패했습니다.");
+    	    }
+    	}
+
+    	
+    	
+    	
+    	
 }

@@ -21,6 +21,14 @@
         ]]>
     </select>
     
+    <update id="updateUserStatus">
+	    <![CDATA[
+	        UPDATE users
+	        SET userStatus = #{newStatus}
+	        WHERE userNum = #{userNum}
+	    ]]>
+	</update>
+
     <!-- 사용자 등록 추이 가져오기 -->
     <select id="getSignupRate" resultType="com.javaex.vo.AdminVo">
         <![CDATA[

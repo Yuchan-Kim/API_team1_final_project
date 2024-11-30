@@ -41,6 +41,11 @@ public class AdminService {
         return admindao.getKeyStats();
     }
     
+    public boolean changeUserStatus(int userNum, int newStatus) {
+        return admindao.updateUserStatus(userNum, newStatus) > 0;
+    }
+
+    
     public boolean addItem(AdminVo itemVo) {
         return admindao.insertItem(itemVo) > 0;
     }

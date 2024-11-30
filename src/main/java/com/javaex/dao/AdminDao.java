@@ -38,6 +38,15 @@ public class AdminDao {
         return sqlSession.selectList(namespace + ".getSalesData");
     }
     
+    public int updateUserStatus(int userNum, int newStatus) {
+        System.out.println("AdminDao.updateUserStatus()");
+        Map<String, Object> params = new HashMap<>();
+        params.put("userNum", userNum);
+        params.put("newStatus", newStatus);
+        return sqlSession.update(namespace + ".updateUserStatus", params);
+    }
+
+    
     public List<AdminVo> getCategoryDistribution(){
         System.out.println("AdminDao.getCategoryDistribution()");
         return sqlSession.selectList(namespace + ".getCategoryDistribution");
