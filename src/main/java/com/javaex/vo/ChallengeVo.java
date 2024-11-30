@@ -28,6 +28,7 @@ public class ChallengeVo {
 	
 	// 유저 정보
 	private int userNum;             // 유저 번호 (고유 식별자)
+	private String userPofile;		 // 유저 프로필 사진
 	private String userName;         // 유저 이름
 	private String userEmail;        // 유저 이메일
 	private String userStatus;       // 유저 상태 (활성, 비활성 등)
@@ -103,6 +104,16 @@ public class ChallengeVo {
 	}
 	
 	
+	public String getUserPofile() {
+		return userPofile;
+	}
+
+
+	public void setUserPofile(String userPofile) {
+		this.userPofile = userPofile;
+	}
+
+
 	public int getUserPoints() {
 		return userPoints;
 	}

@@ -54,7 +54,7 @@ public class JM_RoomGenerationController {
         } else {
             System.out.println("방 삭제 실패");
         }
-            return JsonResult.success("방 삭제 완료");
+            return JsonResult.success(isDeleted);
     }
 	
 	// 방 카테고리 키워드 업데이트
