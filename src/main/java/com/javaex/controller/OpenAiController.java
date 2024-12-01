@@ -26,6 +26,7 @@ public class OpenAiController {
     @PostMapping("/generatePlaceholder/{roomNum}")
     public JsonResult generatePlaceholder(
     		@PathVariable int roomNum) {
+    	System.out.println("ai 추천미션 생성");
         
     	List<ChallengeVo> placeholder = openAiService.generatePlaceholder(roomNum);
     	System.out.println("플레이스 데이터 확인"+placeholder);
@@ -36,6 +37,7 @@ public class OpenAiController {
     @PostMapping("/generateChallenges/{roomNum}")
     public JsonResult generateChallenges(
     		@PathVariable int roomNum) {
+    	System.out.println("ai 추천미션 생성");
         
     	List<ChallengeVo> challenges = openAiService.generateChallenges(roomNum);
     	System.out.println("컨트롤러 데이터 확인"+challenges);
