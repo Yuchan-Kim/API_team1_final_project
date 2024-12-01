@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.javaex.service.RatesService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
+import com.javaex.vo.ChallengeVo;
 import com.javaex.vo.RatesVo;
 import com.javaex.vo.UserProfileVo;
 
@@ -53,7 +54,17 @@ public class RatesController {
     @GetMapping("/overall/{roomNum}")
     public JsonResult getOverallStats(@PathVariable int roomNum) {
         try {
-            List<RatesVo> stats = ratesservice.getOverallStats(roomNum);
+        	List<ChallengeVo> stats = ratesservice.getOverallStats(roomNum);
+            return JsonResult.success(stats);
+        } catch (Exception e) {
+            return JsonResult.fail("전체 달성률 통계를 불러오는 데 실패했습니다.");
+        }
+    }
+    
+    @GetMapping("/roomoverall/{roomNum}")
+    public JsonResult getRoomAchievement(@PathVariable int roomNum) {
+        try {
+        	List<RatesVo> stats = ratesservice.getRoomAchievement(roomNum);
             return JsonResult.success(stats);
         } catch (Exception e) {
             return JsonResult.fail("전체 달성률 통계를 불러오는 데 실패했습니다.");

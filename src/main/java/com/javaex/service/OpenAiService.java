@@ -179,14 +179,15 @@ public class OpenAiService {
 
         prompt.append("키워드랑 가장 연관성 있는 일반 미션을 하나를 선택해서 **\"총인원의 미션 달성 기준으로\"**, \n")
             .append("기간, 일수, 총 인원들을 고려해 \n")
-            .append("‘난이도상은 일수 × 총 인원 x 0.95’, ‘난이도중은 일수 × 총 인원 x 0.80’, ‘난이도하는 일수 × 총 인원 x 0.70’로 \n")
+            .append("‘난이도상은 일 수 × 참여 인원 x 0.95’, ‘난이도중은 일 수 × 참여 인원 x 0.80’, ‘난이도하는 일 수 × 참여 인원 x 0.70’로 \n")
             .append("**총인원의 목표 횟수**를 계산하여 추천 챌린지를 ‘상’, ‘중’, ‘하’ 각 1개씩 만들어주세요.\n\n")
-            .append("다음 형식으로 응답해주세요:\n")
+            .append("부가 설명 없이 다음 형식으로만 응답해주세요:\n")
             .append("[\n")
             .append("  {\"title\": \"관련된 미션 X회 달성하기 (상)\", \"count\": X, \"selectedMission\": \"선택된 미션\"},\n")
             .append("  {\"title\": \"관련된 미션 X회 달성하기 (중)\", \"count\": X, \"selectedMission\": \"선택된 미션\"},\n")
             .append("  {\"title\": \"관련된 미션 X회 달성하기 (하)\", \"count\": X, \"selectedMission\": \"선택된 미션\"}\n")
             .append("]\n");
+        
 
         return prompt.toString();
     }
@@ -230,6 +231,9 @@ public class OpenAiService {
         } catch (Exception e) {
             System.err.println("Unexpected Error: " + e.getMessage());
         }
+        System.out.println("Request URL: " + OPENAI_API_URL);
+        System.out.println("Request Headers: " + headers);
+        System.out.println("Request Body: " + requestBody);
 
         return List.of();
     }
