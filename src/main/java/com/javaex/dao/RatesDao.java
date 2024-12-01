@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.javaex.vo.ChallengeVo;
 import com.javaex.vo.RatesVo;
 import com.javaex.vo.UserProfileVo;
 
@@ -28,7 +29,7 @@ public class RatesDao {
     }
     
     // 전체 달성률 통계 쿼리
-    public List<RatesVo> getOverallStats(int roomNum) { // 반환 타입 수정
+    public List<ChallengeVo> getOverallStats(int roomNum) { // 반환 타입 수정
         return sqlSession.selectList(namespace + ".getOverallStatsbyDates", roomNum);
     }
     

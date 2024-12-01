@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.javaex.dao.RatesDao;
+import com.javaex.vo.ChallengeVo;
 import com.javaex.vo.RatesVo;
 import com.javaex.vo.UserProfileVo;
 
@@ -25,7 +26,7 @@ public class RatesService {
     }
     
     // 전체 달성률 통계 가져오기
-    public List<RatesVo> getOverallStats(int roomNum) { 
+    public List<ChallengeVo> getOverallStats(int roomNum) { 
         return ratesdao.getOverallStats(roomNum);
     }
 

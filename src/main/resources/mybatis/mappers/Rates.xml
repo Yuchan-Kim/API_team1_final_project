@@ -158,7 +158,7 @@
 	</select>
     
     <!-- 특정 방 전체 유저의 달성률 평균 -->
-    <select id="getOverallStatsbyDates" parameterType="int" resultType="com.javaex.vo.RatesVo">
+    <select id="getOverallStatsbyDates" parameterType="int" resultType="com.javaex.vo.ChallengeVo">
         <![CDATA[
         -- 1. 분모 계산: 해당 방의 총 roomDays, 고유 missionNames, periodType, 참여 유저 수
 			WITH denominator AS (
@@ -201,17 +201,17 @@
 			
 			-- 4. 날짜별 평균 achievementRate 계산
 			SELECT
-			    ce.submitDate,
+			    ce.submitDate as submitDate,
 			    ROUND(
 			        (ce.cumulative_evals / NULLIF(
 			            d.totalRoomDays * d.totalMissions * (d.periodType / 7) * d.totalUsers,
 			            0
 			        )) * 100,
 			        2
-			    ) AS averageAchievementRate
+			    ) AS achievementRate
 			FROM cumulative_evals ce
 			CROSS JOIN denominator d
-			ORDER BY ce.submitDate;
+			ORDER BY submitDate;
         ]]>
     </select>
     
