@@ -21,7 +21,8 @@
             ri.roomMinNum AS roomMinNum,
             ri.roomMaxNum AS roomMaxNum,
             ri.roomEnterPoint AS roomPoint,
-            ri.roomEnterRate AS roomRate
+            ri.roomEnterRate AS roomRate,
+            ri.roomThumbnail as roomThumbNail
         FROM roomInfo ri
         JOIN roomType rt ON ri.roomTypeNum = rt.roomTypeNum
         JOIN categories c ON ri.categoryNum = c.categoryNum
