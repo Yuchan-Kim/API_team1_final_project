@@ -10,6 +10,7 @@ public class HmkNoticeVo {
 	private String createDate;
 	private int msgSender;
 	private String senderNickname;
+	private Integer roomNum;
 
 	// 생성자
 	public HmkNoticeVo() {
@@ -17,7 +18,7 @@ public class HmkNoticeVo {
 	}
 
 	public HmkNoticeVo(int noticeNum, int userNum, String noticeTitle, String noticeMsg, Boolean isCheck,
-			String createDate, int msgSender, String senderNickname) {
+			String createDate, int msgSender, String senderNickname, Integer roomNum) {
 		super();
 		this.noticeNum = noticeNum;
 		this.userNum = userNum;
@@ -27,8 +28,9 @@ public class HmkNoticeVo {
 		this.createDate = createDate;
 		this.msgSender = msgSender;
 		this.senderNickname = senderNickname;
+		this.roomNum = roomNum;
 	}
-	
+
 	//getter - setter
 
 	public int getNoticeNum() {
@@ -95,11 +97,20 @@ public class HmkNoticeVo {
 		this.senderNickname = senderNickname;
 	}
 
+	public Integer getRoomNum() {
+		return roomNum;
+	}
+
+	public void setRoomNum(Integer roomNum) {
+		this.roomNum = roomNum;
+	}
+
 	@Override
 	public String toString() {
 		return "HmkNoticeVo [noticeNum=" + noticeNum + ", userNum=" + userNum + ", noticeTitle=" + noticeTitle
 				+ ", noticeMsg=" + noticeMsg + ", isCheck=" + isCheck + ", createDate=" + createDate + ", msgSender="
-				+ msgSender + ", senderNickname=" + senderNickname + "]";
+				+ msgSender + ", senderNickname=" + senderNickname + ", roomNum=" + roomNum + "]";
 	}
+
 
 }

@@ -16,7 +16,7 @@
 	        #{userNum},
 	        (SELECT pointPurposeNum FROM pointPurpose WHERE purposeName = '회원가입 축하금'),
 	        DATE(NOW()),  
-	        10000,
+	        1000,
 	        '+'
 	    )
 	]]>
