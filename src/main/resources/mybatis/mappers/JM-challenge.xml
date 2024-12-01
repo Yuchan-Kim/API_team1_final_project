@@ -196,7 +196,7 @@
     		WITH RankedMissions AS (
 			    SELECT 
 			        u.userNum,
-			        u.usingProfilePic AS userPofile,
+			        u.usingProfilePic AS userProfile,
 			        u.userName,
 			        e.missionNum,
 			        c.missionName,
@@ -204,11 +204,11 @@
 			        e.evalType,
 			        e.submitComment,
 			        e.submitDate,
-			        u2.userNum AS evalUserNum,
-			        u2.userName AS evalUserName,
+			        u2.userNum AS evalUserNum,          -- 평가자 번호
+			        u2.userName AS evalUserName,        -- 평가자 이름
 			        e.evalDate,
 			        GROUP_CONCAT(ei.evalImgRoute SEPARATOR ', ') AS evalImgRoutes,  -- 이미지 경로 연결
-			        GROUP_CONCAT(ei.evalImgName SEPARATOR ', ') AS evalImgName,    -- 이미지 이름 연결
+			        GROUP_CONCAT(ei.evalImgName SEPARATOR ', ') AS evalImgName,     -- 이미지 이름 연결
 			        ROW_NUMBER() OVER (
 			            PARTITION BY u.userNum, e.submitDate, e.missionNum 
 			            ORDER BY e.evalDate DESC
@@ -218,7 +218,7 @@
 			    JOIN 
 			        users u ON e.submitUser = u.userNum
 			    LEFT JOIN 
-			        users u2 ON e.evalUser = u2.userNum
+			        users u2 ON e.evalUser = u2.userNum  -- 평가자 정보 추가
 			    JOIN 
 			        challenges c ON e.missionNum = c.missionNum
 			    JOIN 
@@ -231,15 +231,22 @@
 			        roomInfo ri ON rd.roomNum = ri.roomNum
 			    WHERE 
 			        ri.roomNum = #{roomNum}  -- 특정 방 번호 필터링
-			      AND 
-			        mt.missionType = '일반'
+			        AND mt.missionType = '일반'
 			    GROUP BY 
-			        e.evalNum  -- 평가 번호별로 그룹화하여 각 평가의 모든 이미지를 가져옴
+			        e.evalNum,  -- 평가 번호별로 그룹화하여 각 평가의 모든 이미지를 가져옴
+			        u.userNum,
+			        u2.userNum,
+			        c.missionName,
+			        e.submitComment,
+			        e.submitDate,
+			        e.evalDate,
+			        e.evalNum,
+			        e.evalType
 			)
 			SELECT *
 			FROM RankedMissions
 			WHERE rn = 1  -- 최신 평가만 가져오기
-			ORDER BY submitDate ${order}, userNum ASC, missionNum ASC;
+			ORDER BY submitDate DESC, userNum ASC, missionNum ASC;
     	]]>	
     </select>
     
