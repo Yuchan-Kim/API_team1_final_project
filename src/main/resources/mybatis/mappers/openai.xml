@@ -63,12 +63,12 @@
 			    (SELECT COUNT(DISTINCT d.dateName)
 			     FROM roomDay rd
 			     JOIN day d ON rd.dateNum = d.dateNum
-			     WHERE rd.roomNum = 74
+			     WHERE rd.roomNum = #{roomNum}
 			     AND rd.dateNum != 8) 
 			    * 
 			    (SELECT periodNum
 			     FROM roomInfo
-			     WHERE roomNum = 74) AS count;
+			     WHERE roomNum = #{roomNum}) AS count;
     	]]>
     </select>
 

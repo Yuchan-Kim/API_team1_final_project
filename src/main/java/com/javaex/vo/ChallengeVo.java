@@ -59,6 +59,7 @@ public class ChallengeVo {
 	private int evalNum; 			 // 평가 번호
 	private String evalType;         // 평가 유형 (예: 승인, 거절 등)
 	private int evalUser;			 // 평가 유저
+	private String evalUserName;		 // 평가 유저이름
 	private String evalDate;         // 평가 날짜
 
 	// 평가 이미지 정보
@@ -128,6 +129,16 @@ public class ChallengeVo {
 		return count;
 	}
 
+
+
+	public String getEvalUserName() {
+		return evalUserName;
+	}
+
+
+	public void setEvalUserName(String evalUserName) {
+		this.evalUserName = evalUserName;
+	}
 
 
 	public int getNoticeNum() {
