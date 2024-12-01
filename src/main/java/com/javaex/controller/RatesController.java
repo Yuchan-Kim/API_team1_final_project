@@ -60,6 +60,16 @@ public class RatesController {
         }
     }
     
+    @GetMapping("/roomoverall/{roomNum}")
+    public JsonResult getRoomAchievement(@PathVariable int roomNum) {
+        try {
+        	List<RatesVo> stats = ratesservice.getRoomAchievement(roomNum);
+            return JsonResult.success(stats);
+        } catch (Exception e) {
+            return JsonResult.fail("전체 달성률 통계를 불러오는 데 실패했습니다.");
+        }
+    }
+    
     // 전체 유저 목록 가져오기 (달성률 순)
     @GetMapping("/users/{roomNum}")
     public JsonResult getAllUsers(@PathVariable int roomNum) {

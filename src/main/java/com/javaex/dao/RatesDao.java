@@ -36,6 +36,9 @@ public class RatesDao {
     public List<RatesVo> getAllUsers(int roomNum) {
         return sqlSession.selectList(namespace + ".getAllUsers", roomNum);
     }
+    public List<RatesVo> getRoomAchievement(int roomNum) {
+    	return sqlSession.selectList(namespace +".getroomAchievementRate",roomNum);
+    }
     
  // 전체 유저 목록 가져오기 
     public RatesVo getMyInfo(int roomNum,int userNum) {

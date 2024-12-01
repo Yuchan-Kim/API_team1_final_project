@@ -10,7 +10,7 @@
         <![CDATA[
         SELECT
             c.missionName,
-            IFNULL(SUM(CASE WHEN e.evalType = '승인' THEN 1 ELSE 0 END), 0) / c.missionGoal * 100 AS achievementRate
+            IFNULL(SUM(CASE WHEN e.evalType = '승인완료' THEN 1 ELSE 0 END), 0) / c.missionGoal * 100 AS achievementRate
         FROM
             roomInfo ri
         JOIN
@@ -59,7 +59,7 @@
 		LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
 		LEFT JOIN evaluation e 
 		    ON e.missionNum = c.missionNum 
-		    AND e.evalType = '승인' 
+		    AND e.evalType = '승인완료' 
 		    AND e.submitUser = u.userNum
 		WHERE r.roomNum = #{roomNum}
 		GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum, p.periodType
@@ -102,7 +102,7 @@
 		LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
 		LEFT JOIN evaluation e 
 		    ON e.missionNum = c.missionNum 
-		    AND e.evalType = '승인' 
+		    AND e.evalType = '승인완료' 
 		    AND e.submitUser = u.userNum
 		WHERE r.roomNum = #{roomNum}
 		GROUP BY u.userNum, u.usingProfilePic, u.userName, r.roomNum, p.periodType
@@ -148,7 +148,7 @@
 				LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
 				LEFT JOIN evaluation e 
 				    ON e.missionNum = c.missionNum 
-				    AND e.evalType = '승인' 
+				    AND e.evalType = '승인완료' 
 				    AND e.submitUser = u.userNum
 				WHERE r.roomNum = #{roomNum}  -- 특정 방 번호로 변경
 				  AND u.userNum = #{userNum}  -- 특정 사용자 번호로 변경
@@ -186,8 +186,8 @@
 			    JOIN challenges c ON e.missionNum = c.missionNum
 			    JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
 			    JOIN roomInfo r ON rd.roomNum = r.roomNum
-			    WHERE r.roomNum = 1
-			        AND e.evalType = '승인'
+			    WHERE r.roomNum = #{roomNum}
+			        AND e.evalType = '승인완료'
 			    GROUP BY e.submitDate
 			),
 			
@@ -223,7 +223,7 @@
        SELECT c.missionName, COUNT(e.evalNum) AS approvalCount
 			FROM challenges c
 			JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
-			LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.evalType = '승인'
+			LEFT JOIN evaluation e ON c.missionNum = e.missionNum AND e.evalType = '승인완료'
 			WHERE rd.roomNum = #{roomNum} AND c.missionTypeNum = 1
 			GROUP BY c.missionName
 			ORDER BY approvalCount DESC;
@@ -311,7 +311,7 @@
 		    LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
 		    LEFT JOIN evaluation e 
 		        ON e.missionNum = c.missionNum 
-		        AND e.evalType = '승인' 
+		        AND e.evalType = '승인완료' 
 		        AND e.submitUser = eu.userNum
 		    WHERE rs.roomStatusName = '종료'  -- 방 상태가 '종료'인 방만 선택
 		    GROUP BY eu.userNum, eu.roomNum
@@ -377,7 +377,7 @@
     JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
     LEFT JOIN evaluation e 
         ON c.missionNum = e.missionNum 
-        AND e.evalType = '승인' 
+        AND e.evalType = '승인완료' 
         AND e.submitUser = #{userNum}
     WHERE rd.roomNum = #{roomNum} AND c.missionTypeNum = 1
     GROUP BY c.missionName
@@ -391,7 +391,7 @@
     JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
     LEFT JOIN evaluation e 
         ON c.missionNum = e.missionNum 
-        AND e.evalType = '승인' 
+        AND e.evalType = '승인완료' 
         AND e.submitUser = #{userNum}
     WHERE rd.roomNum = #{roomNum} AND c.missionTypeNum = 1
 </select>
@@ -399,7 +399,7 @@
 <select id="getGroupChallengeAchievement" parameterType="int" resultType="map">
     SELECT
         c.missionName,
-        IFNULL(SUM(CASE WHEN e.evalType = '승인' THEN 1 ELSE 0 END), 0) / c.missionGoal * 100 AS achievementRate
+        IFNULL(SUM(CASE WHEN e.evalType = '승인완료' THEN 1 ELSE 0 END), 0) / c.missionGoal * 100 AS achievementRate
     FROM
         roomInfo ri
     JOIN
@@ -425,7 +425,7 @@
     JOIN roomDay rd ON c.roomDayNum = rd.roomDayNum
     WHERE rd.roomNum = #{roomNum}
       AND c.missionTypeNum = 2
-      AND e.evalType = '승인'
+      AND e.evalType = '승인완료'
       AND e.submitUser = #{userNum}
 </select>
 
@@ -459,7 +459,7 @@ LEFT JOIN roomDay rd ON rd.roomNum = r.roomNum
 LEFT JOIN challenges c ON c.roomDayNum = rd.roomDayNum
 LEFT JOIN evaluation e 
     ON e.missionNum = c.missionNum 
-    AND e.evalType = '승인' 
+    AND e.evalType = '승인완료' 
     AND e.submitUser = u.userNum
 WHERE r.roomNum = #{roomNum}
   AND u.userNum = #{userNum}  -- 특정 userNum 조건 추가 
@@ -469,5 +469,52 @@ WHERE r.roomNum = #{roomNum}
         INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
         VALUES (#{userNum}, #{historyPoint}, #{pointPurposeNum}, #{historyInfo},NOW())
     </insert>
-
+<select id ="getroomAchievementRate" resultType = "int">
+SELECT 
+    r.roomNum,
+    ROUND(AVG(user_stats.achievementRate), 2) AS averageAchievementRate
+FROM roomInfo r
+JOIN enteredUser eu ON r.roomNum = eu.roomNum
+JOIN users u ON eu.userNum = u.userNum
+LEFT JOIN (
+    SELECT 
+        u_inner.userNum,
+        ROUND(
+            COALESCE(COUNT(e.evalNum), 0) / NULLIF(
+                (
+                    SELECT COUNT(*) 
+                    FROM roomDay rd 
+                    WHERE rd.roomNum = r_inner.roomNum
+                ) *
+                (
+                    SELECT COUNT(DISTINCT c.missionName)
+                    FROM challenges c
+                    JOIN roomDay rd2 ON c.roomDayNum = rd2.roomDayNum
+                    WHERE rd2.roomNum = r_inner.roomNum
+                ) *
+                (
+                    SELECT p.periodType / 7
+                    FROM roomInfo r2
+                    JOIN period p ON r2.periodNum = p.periodNum
+                    WHERE r2.roomNum = r_inner.roomNum
+                ),
+                0
+            ) * 100, 
+            2
+        ) AS achievementRate
+    FROM users u_inner
+    JOIN enteredUser eu_inner ON u_inner.userNum = eu_inner.userNum
+    JOIN roomInfo r_inner ON eu_inner.roomNum = r_inner.roomNum
+    LEFT JOIN roomDay rd_inner ON rd_inner.roomNum = r_inner.roomNum
+    LEFT JOIN challenges c_inner ON c_inner.roomDayNum = rd_inner.roomDayNum
+    LEFT JOIN evaluation e 
+        ON e.missionNum = c_inner.missionNum 
+        AND e.evalType = '승인완료' 
+        AND e.submitUser = u_inner.userNum
+    WHERE r_inner.roomNum = #{roomNum}
+    GROUP BY u_inner.userNum
+) AS user_stats ON u.userNum = user_stats.userNum
+WHERE r.roomNum = #{roomNum}
+GROUP BY r.roomNum;
+</select>
 </mapper>

@@ -47,7 +47,9 @@ public class RatesService {
         return ratesdao.getmyMissionApprovals(roomNum,userNum);
     }
     
-   
+   public List<RatesVo> getRoomAchievement(int roomNum) {
+	   return ratesdao.getRoomAchievement(roomNum);
+   }
     
     // Get User Achievement Details
     public RatesVo getUserAchievementDetails(int roomNum, int userNum) {
