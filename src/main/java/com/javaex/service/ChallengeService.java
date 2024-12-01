@@ -337,31 +337,13 @@ public class ChallengeService {
 
     // 4. 방 썸네일 수정
     @Transactional
-    public boolean updateRoomThumbnail(int roomNum, MultipartFile roomThumbnail) {
+    public boolean updateRoomThumbnail(int roomNum, String roomThumbnail) {
         System.out.println("ChallengeService.updateRoomThumbnail()");
-        try {
-            // 파일 저장 로직 (예: 로컬 파일 시스템)
-            String uploadDir = "/path/to/your/uploads/room_thumbnails/"; // 실제 경로로 변경
-            String originalFilename = roomThumbnail.getOriginalFilename();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
-            String newFilename = "room_" + roomNum + "_" + System.currentTimeMillis() + fileExtension;
-            Path filePath = Paths.get(uploadDir, newFilename);
-            Files.createDirectories(filePath.getParent());
-            roomThumbnail.transferTo(filePath.toFile());
-
-            // 기존 썸네일 파일 삭제 (선택 사항)
-            ChallengeVo roomInfo = challengeDao.getRoomInfoByRoomNum(roomNum);
-            if (roomInfo != null && roomInfo.getRoomThumbNail() != null) {
-                Path oldFilePath = Paths.get(uploadDir, roomInfo.getRoomThumbNail());
-                Files.deleteIfExists(oldFilePath);
-            }
+        
 
             // DB 업데이트
-            return challengeDao.updateRoomThumbnail(roomNum, newFilename) > 0;
-        } catch (IOException e) {
-            System.err.println("방 썸네일 업데이트 중 오류 발생: " + e.getMessage());
-            return false;
-        }
+            return challengeDao.updateRoomThumbnail(roomNum, roomThumbnail) > 0;
+        
     }
 
     // 5. 최소 참가 인원 수정

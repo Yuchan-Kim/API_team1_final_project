@@ -1,6 +1,10 @@
  // ChallengeController.java
 package com.javaex.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +149,7 @@ public class ChallengeController {
 	    String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
 
 	    // 알림 생성 (msgSender는 서비스 계층에서 처리됨)
-	    challengeService.createNotices(roomNum, roomTitle, "챌린지 종료 알림", roomTitle + "의 챌린지가 종료되었습니다.");
+	    challengeService.createNotices(roomNum, roomTitle, "챌린지 종료 알림", roomTitle + roomInfo.getRoomNum() + " 번방"+ "의 챌린지가 종료되었습니다.");
 
 	    return JsonResult.success("챌린지가 성공적으로 종료되었습니다.");
 	}
@@ -176,7 +180,7 @@ public class ChallengeController {
 	        String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
 
 	        // 알림 생성 (msgSender는 서비스 계층에서 처리됨)
-	        challengeService.createNotices(roomNum, roomTitle, "챌린지 기간 완료 알림", roomTitle + "의 챌린지 기간이 완료되었습니다.");
+	        challengeService.createNotices(roomNum, roomTitle, "챌린지 기간 완료 알림", roomTitle + roomInfo.getRoomNum() + " 번방"+ "의 챌린지 기간이 완료되었습니다.");
 
 	        return JsonResult.success("챌린지 기간이 완료되었습니다.");
 	    } else {
@@ -578,8 +582,24 @@ public class ChallengeController {
         if (roomThumbnail.isEmpty()) {
             return JsonResult.fail("방 썸네일 파일을 업로드해주세요.");
         }
+        
+        String fileName ="";
+        String uploadDir = "/app/upload/"; 
+        File dir = new File(uploadDir); 
+        fileName = System.currentTimeMillis() + "_" + roomThumbnail.getOriginalFilename();
+        String filePath = uploadDir + fileName;
 
-        boolean updateSuccess = challengeService.updateRoomThumbnail(roomNum, roomThumbnail);
+        try {
+			byte[] fileData = roomThumbnail.getBytes();
+			OutputStream os = new FileOutputStream(filePath);
+			BufferedOutputStream bos = new BufferedOutputStream(os);
+			bos.write(fileData);
+			bos.close();
+		} catch (Exception e) {
+			System.out.println("파일 저장 중 오류: " + e.getMessage());
+			return null;
+		}
+        boolean updateSuccess = challengeService.updateRoomThumbnail(roomNum, fileName);
         if (updateSuccess) {
             return JsonResult.success("방 썸네일이 성공적으로 업데이트되었습니다.");
         } else {
