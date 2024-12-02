@@ -31,7 +31,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/challenge")
-public class ChallengeController {
+public class ChallengeController { 
 
 	@Autowired
 	private ChallengeService challengeService;
