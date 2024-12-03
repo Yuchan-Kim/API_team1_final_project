@@ -46,6 +46,7 @@
             ri.roomEnterPoint AS roomPoint,
             ri.roomEnterRate AS roomRate,
             ri.roomMinNum AS roomMinNum,
+            ri.roomNum as roomNum,
             COUNT(eu_active.userNum) AS enteredUserCount,
             COALESCE(eu.enteredUserStatusNum, 0) AS enteredUserStatusNum
         FROM roomInfo ri
