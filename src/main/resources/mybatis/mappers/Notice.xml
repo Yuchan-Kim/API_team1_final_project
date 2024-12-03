@@ -16,7 +16,7 @@
 	]]>
 	</insert>
 
-	<!-- 방 생성 알림 추가 -->
+	<!-- 방 생성 알림 추가
 	<insert id="insertRoomCreationNotice" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
@@ -27,9 +27,21 @@
             #{roomMaker}
         )
     ]]>
-    </insert>
+    </insert>-->
+    <!-- 방 생성 알림 추가 -->
+<insert id="insertRoomCreationNotice" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        VALUES (
+            #{roomMaker},
+            CONCAT('[방 생성 알림] ', #{roomTitle}),
+            CONCAT(#{roomNum}, '번 방 "', #{roomTitle}, '" 이(가) 성공적으로 생성되었습니다.'),
+            #{roomMaker}
+        )
+    ]]>
+</insert>
 
-	<!-- 방 참가 알림 추가 (방장에게) -->
+	<!-- 방 참가 알림 추가 (방장에게)
 	<insert id="insertRoomEnterNoticeToMaker" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
@@ -40,9 +52,22 @@
             #{newUserNum}
         )
     ]]>
-    </insert>
+    </insert>-->
+    
+    <!-- 방 참가 알림 추가 (방장에게) -->
+<insert id="insertRoomEnterNoticeToMaker" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        VALUES (
+            #{roomMaker},
+            CONCAT('[방 참가 알림] ', #{roomTitle}),
+            CONCAT('"', #{userName}, '"님이 ', #{roomNum}, '번 방 "', #{roomTitle}, '"에 참여하였습니다.'),
+            #{newUserNum}
+        )
+    ]]>
+</insert>
 
-	<!-- 방 참가 알림 추가 (참가자에게) -->
+	<!-- 방 참가 알림 추가 (참가자에게) 
 	<insert id="insertRoomEnterNoticeToUser" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
@@ -53,9 +78,22 @@
             #{roomMaker}
         )
     ]]>
-    </insert>
+    </insert>-->
+    
+    <!-- 방 참가 알림 추가 (참가자에게) -->
+<insert id="insertRoomEnterNoticeToUser" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        VALUES (
+            #{newUserNum},
+            CONCAT('[방 참가 알림] ', #{roomTitle}),
+            CONCAT(#{roomNum}, '번 방 "', #{roomTitle}, '"에 참가하였습니다.'),
+            #{roomMaker}
+        )
+    ]]>
+</insert>
 
-	<!-- 방 시작 알림 추가 (모든 참가자에게) -->
+	<!-- 방 시작 알림 추가 (모든 참가자에게)
 	<insert id="insertRoomStartNotice" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
@@ -67,9 +105,23 @@
         FROM enteredUser eu
         WHERE eu.roomNum = #{roomNum}
     ]]>
-    </insert>
+    </insert>-->
+    
+    <!-- 방 시작 알림 추가 (모든 참가자에게) -->
+<insert id="insertRoomStartNotice" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        SELECT 
+            eu.userNum,
+            CONCAT('[방 시작 알림] ', #{roomTitle}),
+            CONCAT(#{roomNum}, '번 방 "', #{roomTitle}, '"이(가) 시작되었습니다. 함께 목표를 달성해보세요!'),
+            #{roomMaker}
+        FROM enteredUser eu
+        WHERE eu.roomNum = #{roomNum}
+    ]]>
+</insert>
 
-	<!-- 방 종료 알림 추가 (모든 참가자에게) -->
+	<!-- 방 종료 알림 추가 (모든 참가자에게)
 	<insert id="insertRoomEndNotice" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
@@ -81,7 +133,21 @@
         FROM enteredUser eu
         WHERE eu.roomNum = #{roomNum}
     ]]>
-    </insert>
+    </insert>-->
+
+	<!-- 방 종료 알림 추가 (모든 참가자에게) -->
+<insert id="insertRoomEndNotice" parameterType="map">
+    <![CDATA[
+        INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
+        SELECT 
+            eu.userNum,
+            CONCAT('[방 종료 알림] ', #{roomTitle}),
+            CONCAT(#{roomNum}, '번 방 "', #{roomTitle}, '"이(가) 종료되었습니다. 수고하셨습니다!'),
+            #{roomMaker}
+        FROM enteredUser eu
+        WHERE eu.roomNum = #{roomNum}
+    ]]>
+</insert>
 
 	<!-- 방 상태 조회 -->
 	<select id="getRoomStatus" parameterType="int" resultType="int">
