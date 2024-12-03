@@ -230,7 +230,7 @@
 		    END as roomNum
 		FROM notice n
 		JOIN users u ON n.msgSender = u.userNum
-		WHERE n.userNum = 1
+		WHERE n.userNum = #{userNum}
 		ORDER BY n.createDate DESC;
 	]]>
 	</select>
