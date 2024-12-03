@@ -105,9 +105,10 @@ public class ChallengeController {
 	        // 방 정보 조회
 	        ChallengeVo roomInfo = challengeService.getRoomHeaderInfo(roomNum, userNum);
 	        String roomTitle = roomInfo != null ? roomInfo.getRoomTitle() : "챌린지";
-
+	        System.out.println(roomInfo.getRoomNum());
+	        
 	        // 알림 생성 (msgSender는 서비스 계층에서 처리됨)
-	        challengeService.createNotices(roomNum, roomTitle, "챌린지 시작 알림", roomTitle + " "+ roomInfo.getRoomNum() + "번 방" + "의 챌린지가 시작되었습니다.");
+	        challengeService.createNotices(roomNum, roomTitle, "챌린지 시작 알림", roomTitle + " "+ roomInfo.getRoomNum() + "번 방의 챌린지가 시작되었습니다.");
 
 	        return JsonResult.success("챌린지가 시작되었습니다.");
 	    } else {
