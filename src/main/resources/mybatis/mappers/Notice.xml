@@ -28,8 +28,8 @@
         )
     ]]>
     </insert>-->
-    <!-- 방 생성 알림 추가 -->
-<insert id="insertRoomCreationNotice" parameterType="map">
+	<!-- 방 생성 알림 추가 -->
+	<insert id="insertRoomCreationNotice" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
         VALUES (
@@ -53,9 +53,9 @@
         )
     ]]>
     </insert>-->
-    
-    <!-- 방 참가 알림 추가 (방장에게) -->
-<insert id="insertRoomEnterNoticeToMaker" parameterType="map">
+
+	<!-- 방 참가 알림 추가 (방장에게) -->
+	<insert id="insertRoomEnterNoticeToMaker" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
         VALUES (
@@ -79,9 +79,9 @@
         )
     ]]>
     </insert>-->
-    
-    <!-- 방 참가 알림 추가 (참가자에게) -->
-<insert id="insertRoomEnterNoticeToUser" parameterType="map">
+
+	<!-- 방 참가 알림 추가 (참가자에게) -->
+	<insert id="insertRoomEnterNoticeToUser" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
         VALUES (
@@ -106,9 +106,9 @@
         WHERE eu.roomNum = #{roomNum}
     ]]>
     </insert>-->
-    
-    <!-- 방 시작 알림 추가 (모든 참가자에게) -->
-<insert id="insertRoomStartNotice" parameterType="map">
+
+	<!-- 방 시작 알림 추가 (모든 참가자에게) -->
+	<insert id="insertRoomStartNotice" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
         SELECT 
@@ -136,7 +136,7 @@
     </insert>-->
 
 	<!-- 방 종료 알림 추가 (모든 참가자에게) -->
-<insert id="insertRoomEndNotice" parameterType="map">
+	<insert id="insertRoomEndNotice" parameterType="map">
     <![CDATA[
         INSERT INTO notice (userNum, noticeTitle, noticeMsg, msgSender)
         SELECT 
@@ -196,42 +196,42 @@
 		resultType="com.javaex.vo.HmkNoticeVo">
 	<![CDATA[
 	    SELECT 
-	        n.noticeNum,
-	        n.userNum, 
-	        n.noticeTitle,
-	        n.noticeMsg,
-	        n.isCheck,
-	        DATE_FORMAT(n.createDate, '%Y-%m-%d') AS createDate,
-	        n.msgSender,
-	        u.userName AS senderNickname,
-	        CASE 
-	            WHEN n.noticeTitle LIKE '%방%' THEN (
-	                -- 메시지에서 방 번호 추출 시도
-	                CASE 
-	                    WHEN n.noticeMsg REGEXP '[0-9]+번 방' THEN 
-	                        CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(n.noticeMsg, '번 방', 1), ' ', -1) AS UNSIGNED)
-	                    ELSE (
-	                        -- 기존 roomInfo 조회 로직
-	                        SELECT DISTINCT ri.roomNum 
-	                        FROM roomInfo ri
-	                        JOIN enteredUser eu ON ri.roomNum = eu.roomNum
-	                        WHERE eu.userNum = n.userNum
-	                        AND eu.enteredUserStatusNum = 1
-	                        AND (
-	                            ri.roomStartDate <= n.createDate
-	                            OR ri.roomStartDate IS NULL
-	                        )
-	                        ORDER BY ABS(TIMESTAMPDIFF(SECOND, ri.roomStartDate, n.createDate))
-	                        LIMIT 1
-	                    )
-	                END
-	            )
-	            ELSE NULL
-	        END as roomNum
-	    FROM notice n
-	    JOIN users u ON n.msgSender = u.userNum
-	    WHERE n.userNum = #{userNum}
-	    ORDER BY n.createDate DESC
+		    n.noticeNum,
+		    n.userNum, 
+		    n.noticeTitle,
+		    n.noticeMsg,
+		    n.isCheck,
+		    DATE_FORMAT(n.createDate, '%Y-%m-%d') AS createDate,
+		    n.msgSender,
+		    u.userName AS senderNickname,
+		    CASE 
+		        WHEN n.noticeTitle LIKE '%방%' OR n.noticeMsg LIKE '%방%' THEN (
+		            
+		            CASE 
+		                WHEN n.noticeMsg REGEXP '[0-9]+번 방' THEN 
+		                    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(n.noticeMsg, '번 방', 1), ' ', -1) AS UNSIGNED)
+		                ELSE (
+		                    
+		                    SELECT DISTINCT ri.roomNum 
+		                    FROM roomInfo ri
+		                    JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+		                    WHERE eu.userNum = n.userNum
+		                    AND eu.enteredUserStatusNum = 1
+		                    AND (
+		                        ri.roomStartDate <= n.createDate
+		                        OR ri.roomStartDate IS NULL
+		                    )
+		                    ORDER BY ABS(TIMESTAMPDIFF(SECOND, ri.roomStartDate, n.createDate))
+		                    LIMIT 1
+		                )
+		            END
+		        )
+		        ELSE NULL
+		    END as roomNum
+		FROM notice n
+		JOIN users u ON n.msgSender = u.userNum
+		WHERE n.userNum = 1
+		ORDER BY n.createDate DESC;
 	]]>
 	</select>
 
