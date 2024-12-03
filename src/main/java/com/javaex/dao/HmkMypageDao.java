@@ -2,6 +2,7 @@
 
 package com.javaex.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,15 @@ public class HmkMypageDao {
 	// 사용자의 완료된 챌린지 리스트
 	public List<HmkChallengeVo> getCompletedChallenges(int userNum) {
 		return sqlSession.selectList("Mypage.getCompletedChallenges", userNum);
+	}
+	
+	// 오늘의 미션이 있는 진행중인 방 목록 조회
+	public List<HmkChallengeVo> getTodayMissionRooms(int userNum) {
+	    List<HmkChallengeVo> rooms = sqlSession.selectList("Mypage.getTodayMissionRooms", userNum);
+	    if (rooms == null) {
+	        return new ArrayList<>();
+	    }
+	    return rooms;
 	}
 
 	// 프로필 이미지 업데이트

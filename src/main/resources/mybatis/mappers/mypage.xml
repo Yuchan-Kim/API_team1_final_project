@@ -448,6 +448,51 @@
         ]]>
 	</select>
 
+	<!-- 오늘의 미션이 있는 진행중인 방 조회 -->
+	<select id="getTodayMissionRooms" parameterType="int"
+		resultType="com.javaex.vo.HmkChallengeVo">
+		<![CDATA[
+		    SELECT DISTINCT
+		        ri.roomNum,
+		        ri.roomTitle,
+		        ri.roomThumbNail,
+		        DATE_FORMAT(ri.roomStartDate, '%Y-%m-%d') as roomStartDate,
+		        c.missionNum,
+		        c.missionName,
+		        c.missionGoal,
+		        c.missionMethod,
+		        mt.missionType,
+		        mt.missionPoint,
+		        d.dateName as dayNumber
+		    FROM roomInfo ri
+		    JOIN enteredUser eu ON ri.roomNum = eu.roomNum
+		    JOIN roomDay rd ON ri.roomNum = rd.roomNum
+		    JOIN day d ON rd.dateNum = d.dateNum
+		    JOIN challenges c ON rd.roomDayNum = c.roomDayNum
+		    JOIN missionType mt ON c.missionTypeNum = mt.missionTypeNum
+		    WHERE ri.roomStatusNum = 3  
+		    AND eu.userNum = #{userNum}  
+		    AND eu.enteredUserStatusNum = 1  
+		    AND d.dateName = CASE DAYOFWEEK(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 9 HOUR))
+		        WHEN 1 THEN 7    -- 일요일
+		        WHEN 2 THEN 1    -- 월요일
+		        WHEN 3 THEN 2    -- 화요일
+		        WHEN 4 THEN 3    -- 수요일
+		        WHEN 5 THEN 4    -- 목요일
+		        WHEN 6 THEN 5    -- 금요일
+		        WHEN 7 THEN 6    -- 토요일
+		    END
+		    AND NOT EXISTS (  
+		        SELECT 1 
+		        FROM evaluation e 
+		        WHERE e.missionNum = c.missionNum 
+		        AND e.submitUser = eu.userNum
+		        AND e.submitDate = DATE(DATE_ADD(UTC_TIMESTAMP(), INTERVAL 9 HOUR))
+		    )
+		    ORDER BY ri.roomStartDate DESC
+		]]>
+	</select>
+
 	<!-- 포인트 요약 정보 조회 -->
 	<select id="getPointSummary" parameterType="int"
 		resultType="com.javaex.vo.HmkPointSummaryVo">

@@ -60,6 +60,11 @@ public class HmkMypageService {
 	public List<HmkChallengeVo> getCompletedChallenges(int userNum) {
 		return mypageDao.getCompletedChallenges(userNum);
 	}
+	
+	// 오늘의 미션이 있는 방 목록 조회
+	public List<HmkChallengeVo> getTodayMissionRooms(int userNum) {
+	    return mypageDao.getTodayMissionRooms(userNum);
+	}
 
 	// 차트 데이터 조회
 	public List<HmkChartDataVo> getCharts(int userNum) {

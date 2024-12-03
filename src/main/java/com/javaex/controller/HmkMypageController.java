@@ -86,6 +86,27 @@ public class HmkMypageController {
 
 		return JsonResult.success(responseData);
 	}
+	
+	// 오늘의 미션이 있는 방 목록 조회
+	@GetMapping("/{userNum}/todayMissions")
+	public JsonResult getTodayMissionRooms(@PathVariable int userNum, HttpServletRequest request) {
+	    // JWT 토큰에서 사용자 번호 추출 (보안 강화)
+	    Integer jwtUserNum = JwtUtil.getNoFromHeader(request);
+	    if (jwtUserNum == null || jwtUserNum != userNum) {
+	        return JsonResult.fail("권한이 없는 사용자입니다.");
+	    }
+
+	    try {
+	        List<HmkChallengeVo> todayMissionRooms = mypageService.getTodayMissionRooms(userNum);
+	        System.out.println("오늘 미션 있는 방: " + todayMissionRooms);
+	        return JsonResult.success(todayMissionRooms);
+	        
+	    } catch (Exception e) {
+	        logger.error("오늘의 미션 조회 중 오류 발생 - userNum: {}", userNum, e);
+	        return JsonResult.fail("오늘의 미션 조회 중 오류가 발생했습니다.");
+	    }
+	    
+	}
 
 	// 차트 데이터 조회
 	@GetMapping("/{userNum}/charts")
