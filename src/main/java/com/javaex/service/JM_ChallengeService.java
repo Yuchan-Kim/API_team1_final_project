@@ -167,6 +167,7 @@ public class JM_ChallengeService {
 		System.out.println("ChallengeDao.updateEval");
 		
 		dao.updateEval(challengevo); 
+		int updateCount = dao.plusPoint(challengevo);
 		return  null;
 	}
 

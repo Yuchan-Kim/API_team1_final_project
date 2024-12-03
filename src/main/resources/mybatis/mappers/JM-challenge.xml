@@ -286,4 +286,12 @@
     	]]>
     </update>
     
+     <!-- 포인트 히스토리 삽입 -->
+    <insert id="plusPoint" parameterType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[
+        	INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
+        	VALUES (#{userNum}, 5, 13, "+", NOW());
+        ]]>
+    </insert>
+    
 </mapper>

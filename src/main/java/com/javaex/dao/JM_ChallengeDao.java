@@ -138,4 +138,11 @@ public class JM_ChallengeDao {
 		return  null;
 	}
 	
+	// 포인트 차감
+    public int plusPoint(ChallengeVo challengevo) {
+        int result = session.update("JM-challenge.plusPoint", challengevo);
+        System.out.println("minusPoint 실행 결과: " + result);
+        return result;
+    }
+	
 }
