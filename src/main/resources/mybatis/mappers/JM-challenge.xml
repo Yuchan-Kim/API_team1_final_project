@@ -139,8 +139,9 @@
     <select id="getMissionByRoomNum2" resultType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
     		SELECT 
+			    c.missionNum AS missionNum,
 			    c.missionName AS missionName,
-			    GROUP_CONCAT(DISTINCT mi.missionImgName ORDER BY mi.missionImgName SEPARATOR ', ') AS missionImgName, -- 중복 제거된 이미지 이름들
+			    GROUP_CONCAT(DISTINCT mi.missionImgName ORDER BY mi.missionImgNum SEPARATOR ', ') AS missionImgName, -- 미션 이미지 묶음
 			    c.missionMethod AS missionMethod
 			FROM 
 			    challenges c
@@ -151,14 +152,17 @@
 			JOIN 
 			    missionType m ON c.missionTypeNum = m.missionTypeNum
 			WHERE 
-			    rd.roomNum = 100 -- 방 번호 100번
-			AND 
-			    m.missionType = '일반'
+			    rd.roomNum = #{roomNum}
+			    AND rd.dateNum = (
+			        SELECT MIN(dateNum) 
+			        FROM roomDay
+			        WHERE roomNum = #{roomNum}
+			    )
+			    AND m.missionType = '일반'
 			GROUP BY 
+			    c.missionNum, 
 			    c.missionName, 
-			    c.missionMethod -- 미션 이름과 인증 방법으로 그룹화
-			ORDER BY 
-			    c.missionName; -- 미션 이름 기준 정렬
+			    c.missionMethod;
 		]]>
 	 </select>
     
