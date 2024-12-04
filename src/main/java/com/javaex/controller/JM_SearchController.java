@@ -20,7 +20,7 @@ public class JM_SearchController {
 	// 메인페이지 방리스트 가져오기
 	@GetMapping("api/roomList")
 	public JsonResult roomList() {
-		
+	System.out.println("박지민 뭘보냐? ");
 		List<ChallengeVo> roomList = service.exeRoomList();
 		
 		return JsonResult.success(roomList);
