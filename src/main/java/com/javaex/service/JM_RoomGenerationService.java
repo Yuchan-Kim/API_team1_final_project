@@ -200,9 +200,11 @@ public class JM_RoomGenerationService {
 
         				if (savedFileName != null) {
         					// unionVo에 저장된 파일명 및 이미지 순서 설정
-        					challengevo.setEvalImgName(savedFileName);
+        					challengevo.setMissionImgName(savedFileName);
         					dao.insertMissionImage(challengevo); // 이미지 정보 삽입
         					fileCount++;
+        				}else {
+        					System.err.println("파일 저장 실패: " + file.getOriginalFilename());
         				}
         			}
         		}
