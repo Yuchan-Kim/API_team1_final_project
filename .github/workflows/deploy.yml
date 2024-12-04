@@ -56,6 +56,6 @@ jobs: # 작업을 정의
             sudo docker rm api-donkey || true
             sudo docker run -d \
               --name api-donkey \
-              -p 9000:9000 \
+              -p 80:9000 \
               -v /home/ec2-user/upload:/app/upload \
               yuchankim/api-donkey:latest
