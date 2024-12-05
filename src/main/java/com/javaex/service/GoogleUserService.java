@@ -23,7 +23,7 @@ public class GoogleUserService {
 		if (existingUser == null) {
 			// 새 회원으로 가입
 			userVo.setRegionNum(1);
-			userVo.setSocialLogin("google"); // "naver"에서 "google"로 수정
+			userVo.setSocialLogin("google"); 
 			userDao.insertGoogleUser(userVo);
 
 			// 새로 가입한 사용자 정보 조회

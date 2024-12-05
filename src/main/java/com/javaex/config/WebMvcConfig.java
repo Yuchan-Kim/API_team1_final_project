@@ -1,11 +1,11 @@
 package com.javaex.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -13,13 +13,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/api/**") // 경로
-				.allowedMethods("GET", "POST", "PUT", "DELETE")
+				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 				.allowedOrigins("http://localhost:3000", "http://localhost:9000", 
-						"http://13.125.216.39:3000/", "http://13.125.216.39:7000", 
+						"http://13.125.216.39:3000", "http://13.125.216.39:7000", 
 						"http://13.125.216.39:8000", "http://13.125.216.39:9000", 
 						"https://challengedonkey.com")
 				.allowedHeaders("*") // 모든 요청해더
-                .exposedHeaders("Authorization", "Cross-Origin-Opener-Policy")  //노출시킬헤더, // COOP 헤더 추가
+                .exposedHeaders("Authorization", "Cross-Origin-Opener-Policy", "Set-Cookie")  //노출시킬헤더, // COOP 헤더 추가, //Set-Cookie 헤더 추가
 			    .allowCredentials(true); // 쿠키허용
 	}
 	
