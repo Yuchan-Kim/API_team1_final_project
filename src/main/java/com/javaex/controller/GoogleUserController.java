@@ -79,46 +79,42 @@ public class GoogleUserController {
 	// 콜백용 GET 엔드포인트 추가
 	@GetMapping("/api/users/google/login")
 	public JsonResult googleCallback(@RequestParam("code") String code, HttpServletResponse response) {
-		System.out.println("Google OAuth 콜백 - 인증 코드: " + code);
+	    System.out.println("Google OAuth 콜백 - 인증 코드: " + code);
+	    
+	    try {
+	        GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+	            new NetHttpTransport(),
+	            GsonFactory.getDefaultInstance(), 
+	            "https://oauth2.googleapis.com/token",
+	            googleClientId,
+	            googleClientSecret,
+	            code,
+	        		"https://challengedonkey.com/api/users/google/login")
+	            .execute();
 
-		try {
-			// 받은 인증 코드로 Google Access Token 얻기
-			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(),
-					GsonFactory.getDefaultInstance(), "https://oauth2.googleapis.com/token", googleClientId,
-					googleClientSecret, code, "https://challengedonkey.com/api/users/google/login") // redirect_uri는
-																									// Google Console에
-																									// 등록된 URI와 일치해야 함
-					.execute();
-
-			// ID 토큰 검증
-			GoogleIdToken idToken = verifier.verify(tokenResponse.getIdToken());
-			if (idToken != null) {
-				GoogleIdToken.Payload payload = idToken.getPayload();
-
-				String email = payload.getEmail();
-				String name = (String) payload.get("name");
-
-				HmkSocialUserVo userVo = new HmkSocialUserVo();
-				userVo.setUserEmail(email);
-				userVo.setUserName(name);
-				userVo.setSocialLogin("google");
-
-				HmkSocialUserVo authUser = userService.SetGoogleUser(userVo);
-				if (authUser != null) {
-					JwtUtil.createTokenAndSetHeader(response, "" + authUser.getUserNum());
-					// 프론트엔드로 리다이렉트
-					response.sendRedirect("/");
-					return JsonResult.success(authUser);
-				}
-			}
-			// 실패시 로그인 페이지로 리다이렉트
-			response.sendRedirect("/user/loginform");
-			return JsonResult.fail("Google 로그인 처리 실패");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return JsonResult.fail("Google 로그인 처리 중 오류 발생: " + e.getMessage());
-		}
+	        GoogleIdToken idToken = verifier.verify(tokenResponse.getIdToken());
+	        if (idToken != null) {
+	            GoogleIdToken.Payload payload = idToken.getPayload();
+	            
+	            HmkSocialUserVo userVo = new HmkSocialUserVo();
+	            userVo.setUserEmail(payload.getEmail());
+	            userVo.setUserName((String) payload.get("name"));
+	            userVo.setSocialLogin("google");
+	            
+	            HmkSocialUserVo authUser = userService.SetGoogleUser(userVo);
+	            if (authUser != null) {
+	                JwtUtil.createTokenAndSetHeader(response, "" + authUser.getUserNum());
+	                // JsonResult로 성공 응답
+	                return JsonResult.success(authUser);
+	            }
+	        }
+	        // JsonResult로 실패 응답
+	        return JsonResult.fail("Google 로그인 처리 실패");
+	        
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return JsonResult.fail("Google 로그인 처리 중 오류 발생: " + e.getMessage());
+	    }
 	}
 
 }
