@@ -39,33 +39,44 @@
 	
 	<!-- 종료 된 방 전체 리스트 가져오기 -->
 	<select id="getCloseRoomList" resultType="com.javaex.vo.ChallengeVo">
-		<![CDATA[ 
-			SELECT
-			    r.roomNum AS roomNum, -- 룸 넘버
-			    rs.roomStatusNum AS roomStatusNum, -- 방 상태 넘버
-			    rt.roomTypeName AS roomTypeName, -- 룸 유형
-			    r.roomThumbNail AS roomThumbNail, -- 룸 대표 이미지
-			    r.roomTitle AS roomTitle, -- 룸 제목
-			    r.roomStartDate AS roomStartDate, -- 시작 날짜
-			    p.periodNum AS periodType, -- 기간
-			    r.roomMinNum AS roomMinNum, -- 최소 인원
-			    r.roomMaxNum AS roomMaxNum, -- 최대 인원
-			    r.roomEnterPoint AS roomPoint, -- 입장 포인트
-			    r.roomEnterRate AS roomRate, -- 입장 성실도
-			    c.categoryName AS categoryName, -- 카테고리
-			    r.roomKEyword AS roomKeyword, -- 키워드
-			    re.regionName AS regionName -- 지역
-			FROM roomInfo r
-			JOIN roomStatus rs ON rs.roomStatusNum = r.roomStatusNum
-			JOIN roomType rt ON r.roomTypeNum = rt.roomTypeNum
-			JOIN period p ON p.periodNum = r.periodNum
-			JOIN categories c ON c.categoryNum = r.categoryNum
-			JOIN regions re ON re.regionNum = r.regionNum
-			WHERE rs.roomStatusNum = 4 -- 방 상태가 종료된 상태
-			ORDER BY r.roomStartDate DESC -- 종료 날짜를 기준으로 내림차순 정렬
-			LIMIT 3; -- 상위 3개의 레코드만 선택
-		]]>
-	</select>
+		
+    <![CDATA[ 
+        SELECT
+            r.roomNum AS roomNum,
+            rs.roomStatusNum AS roomStatusNum,
+            rt.roomTypeName AS roomTypeName,
+            r.roomThumbNail AS roomThumbNail,
+            r.roomTitle AS roomTitle,
+            r.roomStartDate AS roomStartDate,
+            p.periodNum AS periodType,
+            r.roomMinNum AS roomMinNum,
+            r.roomMaxNum AS roomMaxNum,
+            r.roomEnterPoint AS roomPoint,
+            r.roomEnterRate AS roomRate,
+            c.categoryName AS categoryName,
+            r.roomKeyword AS roomKeyword,
+            re.regionName AS regionName,
+            COUNT(eu.userNum) AS currentParticipants -- 현재 참가 중인 유저 수
+        FROM roomInfo r
+        JOIN roomStatus rs ON rs.roomStatusNum = r.roomStatusNum
+        JOIN roomType rt ON r.roomTypeNum = rt.roomTypeNum
+        JOIN period p ON p.periodNum = r.periodNum
+        JOIN categories c ON c.categoryNum = r.categoryNum
+        JOIN regions re ON re.regionNum = r.regionNum
+        LEFT JOIN enteredUser eu ON eu.roomNum = r.roomNum AND eu.enteredUserStatusNum = 1
+        WHERE rs.roomStatusNum = 2 -- 방 상태가 종료된 상태
+          AND r.roomTitle LIKE '%이벤트%'
+        GROUP BY
+            r.roomNum, rs.roomStatusNum, rt.roomTypeName, r.roomThumbNail, r.roomTitle,
+            r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
+            r.roomEnterRate, c.categoryName, r.roomKeyword, re.regionName
+        ORDER BY r.roomStartDate DESC
+        LIMIT 3;
+    ]]>
+</select>
+
+		
+
 	
 	<!-- 카테고리별 방 리스트 가져오기 -->
 	<select id="getCategoryRoomList" parameterType="String" resultType="com.javaex.vo.ChallengeVo">
