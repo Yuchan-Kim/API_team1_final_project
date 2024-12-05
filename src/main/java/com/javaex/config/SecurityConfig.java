@@ -25,7 +25,7 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults())
+		http.csrf(csrf -> csrf.disable()).cors(Customizer.withDefaults()) // 기존 WebMvcConfig의 CORS 설정 사용
 				.authorizeHttpRequests(
 						authorize -> authorize.requestMatchers("/**").permitAll().anyRequest().permitAll())
 				.httpBasic(basic -> basic.disable());
