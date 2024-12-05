@@ -17,7 +17,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				.allowedOrigins("http://localhost:3000", "http://localhost:9000", 
 						"http://13.125.216.39:3000/", "http://13.125.216.39:7000", 
 						"http://13.125.216.39:8000", "http://13.125.216.39:9000", 
-						"https://challengedonkey.com/")
+						"https://challengedonkey.com")
 				.allowedHeaders("*") // 모든 요청해더
                 .exposedHeaders("Authorization", "Cross-Origin-Opener-Policy")  //노출시킬헤더, // COOP 헤더 추가
 			    .allowCredentials(true); // 쿠키허용
