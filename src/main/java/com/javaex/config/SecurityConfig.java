@@ -5,10 +5,10 @@ import java.io.IOException;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.Filter;
@@ -27,10 +27,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/users/google/login").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/**").permitAll()  // 모든 요청 허용
+                .anyRequest().permitAll()
             );
 
         return http.build();
