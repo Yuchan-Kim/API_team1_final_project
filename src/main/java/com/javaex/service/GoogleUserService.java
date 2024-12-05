@@ -2,6 +2,7 @@ package com.javaex.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.javaex.dao.GoogleUserDao;
 import com.javaex.vo.HmkSocialUserVo;
@@ -16,25 +17,28 @@ public class GoogleUserService {
 	private HmkWelcomService welcomeService; // 가입 축하 처리를 위해 추가
 
 	/* 구글 회원 가입 및 로그인 */
+	@Transactional
 	public HmkSocialUserVo SetGoogleUser(HmkSocialUserVo userVo) {
-		HmkSocialUserVo existingUser = userDao.selectUserByEmail(userVo.getUserEmail());
-		System.out.println("서비스가 받은거: " + userVo);
+	    System.out.println("구글 로그인 시도 - 이메일: " + userVo.getUserEmail());
+	    
+	    HmkSocialUserVo existingUser = userDao.selectUserByEmail(userVo.getUserEmail());
+	    System.out.println("기존 사용자 조회 결과: " + existingUser);
 
-		if (existingUser == null) {
-			// 새 회원으로 가입
-			userVo.setRegionNum(1);
-			userVo.setSocialLogin("google"); 
-			userDao.insertGoogleUser(userVo);
+	    if (existingUser == null) {
+	        System.out.println("새 사용자 등록 시작");
+	        userVo.setRegionNum(1);
+	        userVo.setSocialLogin("google");
+	        int insertResult = userDao.insertGoogleUser(userVo);
+	        System.out.println("새 사용자 등록 결과: " + insertResult);
 
-			// 새로 가입한 사용자 정보 조회
-			HmkSocialUserVo newUser = userDao.selectUserByEmail(userVo.getUserEmail());
+	        HmkSocialUserVo newUser = userDao.selectUserByEmail(userVo.getUserEmail());
+	        System.out.println("새로 등록된 사용자 정보: " + newUser);
 
-			// 가입 축하 처리
-			welcomeService.celebrateNewUser(newUser.getUserNum());
+	        welcomeService.celebrateNewUser(newUser.getUserNum());
+	        return newUser;
+	    }
 
-			return newUser;
-		}
-
-		return existingUser;
+	    System.out.println("기존 사용자 반환: " + existingUser);
+	    return existingUser;
 	}
 }

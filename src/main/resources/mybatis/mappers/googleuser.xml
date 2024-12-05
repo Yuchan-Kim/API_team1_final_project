@@ -11,13 +11,13 @@
 	</insert>
 
 	<!-- 구글 회원 정보 찾기 -->
-	<select id="selectByEmailOnly" parameterType="String"
-		resultType="com.javaex.vo.HmkSocialUserVo">
-		<![CDATA[
-		SELECT userNum, regionNum, userName, userEmail, socialLogin
-		FROM users
-		WHERE userEmail = #{userEmail}
-		]]>
+	<select id="selectByEmailOnly" parameterType="String" resultType="com.javaex.vo.HmkSocialUserVo">
+	<![CDATA[
+	    SELECT userNum, regionNum, userName, userEmail, socialLogin
+	    FROM users
+	    WHERE LOWER(userEmail) = LOWER(#{userEmail})
+	    LIMIT 1
+	]]>
 	</select>
 
 </mapper>
