@@ -85,12 +85,14 @@
 			    c.categoryName AS categoryName, -- 카테고리
 			    r.roomKEyword AS roomKeyword, -- 키워드
 			    re.regionName AS regionName -- 지역
+			    COUNT(eu.userNum) AS roomMinNum -- 현재 참가 중인 유저 수
 			from roomInfo r
 			join roomStatus rs on rs.roomStatusNum = r.roomStatusNum
 			join roomType rt on r.roomTypeNum = rt.roomTypeNum
 			join period p on p.periodNum = r.periodNum
 			join categories c on c.categoryNum = r.categoryNum
 			join regions re on re.regionNum = r.regionNum
+			LEFT JOIN enteredUser eu ON eu.roomNum = r.roomNum AND eu.enteredUserStatusNum = 1 -- 참가 중인 유저만 카운트
 			where rs.roomStatusNum = 2
 			and c.categoryName = #{category}
 		]]>
