@@ -3,15 +3,17 @@ package com.javaex.controller;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
-import java.net.URI;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.javaex.service.HmkWelcomService;
 import com.javaex.service.NaverUserService;
 import com.javaex.util.JsonResult;
 import com.javaex.util.JwtUtil;
@@ -23,6 +25,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class NaverUserController {
     @Autowired
     private NaverUserService userService;
+    
+    @Autowired
+	private HmkWelcomService welcomeService;
     
     @PostMapping("/api/users/naver/login")
     public JsonResult naverLogin(@RequestBody Map<String, String> request, HttpServletResponse response) {
@@ -43,6 +48,10 @@ public class NaverUserController {
         HmkSocialUserVo authUser = userService.SetNaverUser(userVo);
         
         if(authUser != null) {
+            // 환영 메시지 및 포인트 지급
+            welcomeService.celebrateNewUser(authUser.getUserNum());
+            
+            // JWT 생성 및 설정
             JwtUtil.createTokenAndSetHeader(response, ""+authUser.getUserNum());
             return JsonResult.success(authUser);
         }
