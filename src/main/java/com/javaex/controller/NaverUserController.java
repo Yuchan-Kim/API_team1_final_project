@@ -26,9 +26,6 @@ public class NaverUserController {
     @Autowired
     private NaverUserService userService;
     
-    @Autowired
-	private HmkWelcomService welcomeService;
-    
     @PostMapping("/api/users/naver/login")
     public JsonResult naverLogin(@RequestBody Map<String, String> request, HttpServletResponse response) {
         String accessToken = request.get("accessToken");
@@ -44,15 +41,12 @@ public class NaverUserController {
         userVo.setUserName(naverResponse.getString("nickname"));
         userVo.setSocialLogin("naver");
         
-        // DB 처리
+        // DB 처리 및 환영 메시지/포인트 지급
         HmkSocialUserVo authUser = userService.SetNaverUser(userVo);
         
         if(authUser != null) {
-            // 환영 메시지 및 포인트 지급
-            welcomeService.celebrateNewUser(authUser.getUserNum());
-            
             // JWT 생성 및 설정
-            JwtUtil.createTokenAndSetHeader(response, ""+authUser.getUserNum());
+            JwtUtil.createTokenAndSetHeader(response, "" + authUser.getUserNum());
             return JsonResult.success(authUser);
         }
         return JsonResult.fail("네이버 로그인 처리 실패");

@@ -18,7 +18,7 @@
     <![CDATA[
         SELECT userNum, userName, userEmail
         FROM users
-        WHERE userEmail = #{userEmail}
+        WHERE userEmail = #{value}
     ]]>
      
 	</select>
