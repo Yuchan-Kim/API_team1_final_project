@@ -4,6 +4,11 @@ import java.io.IOException;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.Filter;
@@ -12,15 +17,32 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
-	// SecurityConfig나 별도의 설정 클래스에 추가
+    
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/api/users/google/login").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/users/**").permitAll()
+                .anyRequest().authenticated()
+            );
+
+        return http.build();
+    }
+
     @Bean
     public FilterRegistrationBean<Filter> headerFilter() {
         FilterRegistrationBean<Filter> filterRegBean = new FilterRegistrationBean<>();
         filterRegBean.setFilter(new OncePerRequestFilter() {
             @Override
-            protected void doFilterInternal(HttpServletRequest request, 
-                                          HttpServletResponse response, 
+            protected void doFilterInternal(HttpServletRequest request,
+                                          HttpServletResponse response,
                                           FilterChain filterChain) throws ServletException, IOException {
                 response.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
                 response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
