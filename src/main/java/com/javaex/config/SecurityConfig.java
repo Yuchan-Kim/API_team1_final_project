@@ -45,8 +45,8 @@ public class SecurityConfig {
 			@Override
 			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 					FilterChain filterChain) throws ServletException, IOException {
-				response.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
-				response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+//				response.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+//				response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
 				filterChain.doFilter(request, response);
 			}
 		});
