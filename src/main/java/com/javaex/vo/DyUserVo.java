@@ -15,7 +15,7 @@ public class DyUserVo {
 	
 	
 	
-	//생성자
+	//생성자 
 	public DyUserVo() {
 		super();
 	}
