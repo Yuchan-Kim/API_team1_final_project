@@ -132,6 +132,8 @@
     		SELECT rd.dateNum AS roomDayNum
 			FROM roomDay rd
 			WHERE rd.roomNum = #{roomNum}
+			ORDER BY
+				roomDayNum ASC;
     	]]>
     </select>
     
