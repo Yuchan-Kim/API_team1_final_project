@@ -3,23 +3,21 @@
 
 <mapper namespace="googleuser">
 	<!-- 구글 회원 가입 -->
-	<insert id="insertGoogle"
-		parameterType="com.javaex.vo.HmkSocialUserVo">
-    <![CDATA[
-        INSERT INTO users (regionNum, userEmail, userName, socialLogin, joinDate))
-        VALUES (1, #{userEmail}, #{userName}, #{socialLogin}, now())
-    ]]>
+	<insert id="insertGoogle" parameterType="com.javaex.vo.HmkSocialUserVo">
+		<![CDATA[
+		INSERT INTO users (regionNum, userEmail, userName, socialLogin, joinDate)
+		VALUES (1, #{userEmail}, #{userName}, #{socialLogin}, now())
+		]]>
 	</insert>
 
 	<!-- 구글 회원 정보 찾기 -->
 	<select id="selectByEmailOnly" parameterType="String"
 		resultType="com.javaex.vo.HmkSocialUserVo">
-    <![CDATA[
-        SELECT userNum, userName, userEmail
-        FROM users
-        WHERE userEmail = #{userEmail}
-    ]]>
+		<![CDATA[
+		SELECT userNum, regionNum, userName, userEmail, socialLogin
+		FROM users
+		WHERE userEmail = #{userEmail}
+		]]>
 	</select>
-
 
 </mapper>
