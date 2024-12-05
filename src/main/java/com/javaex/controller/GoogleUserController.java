@@ -24,52 +24,46 @@ import com.javaex.vo.HmkSocialUserVo;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
 public class GoogleUserController {
 	@Value("${google.client.id}")
-    private String googleClientId;  // 클래스 변수로 선언
+	private String googleClientId; // 클래스 변수로 선언
 	@Value("${google.client.secret}")
 	private String googleClientSecret;
-	
+
 	@Autowired
 	private GoogleUserService userService;
 
 	private GoogleIdTokenVerifier verifier;
 
-	
-	@PostConstruct  // 추가
-    public void init() {
-        NetHttpTransport transport = new NetHttpTransport();
-        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+	@PostConstruct // 추가
+	public void init() {
+		NetHttpTransport transport = new NetHttpTransport();
+		GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
-        verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-            .setAudience(Collections.singletonList(googleClientId))
-            .build();
-    }
+		verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+				.setAudience(Collections.singletonList(googleClientId)).build();
+	}
 
 	@PostMapping("/api/users/google/login")
 	public JsonResult googleLogin(@RequestBody Map<String, String> request, HttpServletResponse response) {
-		System.out.println("구글은 뭐 보냄? " + response);
 		try {
 			String credential = request.get("credential");
-
-			// Google ID 토큰 검증
 			GoogleIdToken idToken = verifier.verify(credential);
+
 			if (idToken != null) {
 				GoogleIdToken.Payload payload = idToken.getPayload();
-
-				// 사용자 정보 추출
 				String email = payload.getEmail();
 				String name = (String) payload.get("name");
 
 				HmkSocialUserVo userVo = new HmkSocialUserVo();
 				userVo.setUserEmail(email);
 				userVo.setUserName(name);
-				userVo.setSocialLogin("google");
+				userVo.setSocialLogin("google"); // socialLogin 값 설정
 
 				// DB 처리
 				HmkSocialUserVo authUser = userService.SetGoogleUser(userVo);
-
 				if (authUser != null) {
 					JwtUtil.createTokenAndSetHeader(response, "" + authUser.getUserNum());
 					return JsonResult.success(authUser);
@@ -81,49 +75,43 @@ public class GoogleUserController {
 			return JsonResult.fail("Google 로그인 처리 중 오류 발생: " + e.getMessage());
 		}
 	}
-	
-	// 콜백용 GET 엔드포인트 추가
-    @GetMapping("/api/users/google/login")
-    public JsonResult googleCallback(@RequestParam("code") String code, HttpServletResponse response) {
-        System.out.println("Google OAuth 콜백 - 인증 코드: " + code);
-        
-        try {
-            // 받은 인증 코드로 Google Access Token 얻기
-            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                new NetHttpTransport(),
-                GsonFactory.getDefaultInstance(),
-                "https://oauth2.googleapis.com/token",
-                googleClientId,
-                googleClientSecret,
-                code,
-                "https://challengedonkey.com/api/users/google/login")
-                .execute();
 
-            // ID 토큰 검증
-            GoogleIdToken idToken = verifier.verify(tokenResponse.getIdToken());
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-                
-                String email = payload.getEmail();
-                String name = (String) payload.get("name");
-                
-                HmkSocialUserVo userVo = new HmkSocialUserVo();
-                userVo.setUserEmail(email);
-                userVo.setUserName(name);
-                userVo.setSocialLogin("google");
-                
-                HmkSocialUserVo authUser = userService.SetGoogleUser(userVo);
-                if (authUser != null) {
-                    JwtUtil.createTokenAndSetHeader(response, "" + authUser.getUserNum());
-                    return JsonResult.success(authUser);
-                }
-            }
-            return JsonResult.fail("Google 로그인 처리 실패");
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            return JsonResult.fail("Google 로그인 처리 중 오류 발생: " + e.getMessage());
-        }
-    }
-	
+	// 콜백용 GET 엔드포인트 추가
+	/*@GetMapping("/api/users/google/login")
+	public JsonResult googleCallback(@RequestParam("code") String code, HttpServletResponse response) {
+		System.out.println("Google OAuth 콜백 - 인증 코드: " + code);
+
+		try {
+			// 받은 인증 코드로 Google Access Token 얻기
+			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(),
+					GsonFactory.getDefaultInstance(), "https://oauth2.googleapis.com/token", googleClientId,
+					googleClientSecret, code, "https://challengedonkey.com/api/users/google/login").execute();
+
+			// ID 토큰 검증
+			GoogleIdToken idToken = verifier.verify(tokenResponse.getIdToken());
+			if (idToken != null) {
+				GoogleIdToken.Payload payload = idToken.getPayload();
+
+				String email = payload.getEmail();
+				String name = (String) payload.get("name");
+
+				HmkSocialUserVo userVo = new HmkSocialUserVo();
+				userVo.setUserEmail(email);
+				userVo.setUserName(name);
+				userVo.setSocialLogin("google");
+
+				HmkSocialUserVo authUser = userService.SetGoogleUser(userVo);
+				if (authUser != null) {
+					JwtUtil.createTokenAndSetHeader(response, "" + authUser.getUserNum());
+					return JsonResult.success(authUser);
+				}
+			}
+			return JsonResult.fail("Google 로그인 처리 실패");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return JsonResult.fail("Google 로그인 처리 중 오류 발생: " + e.getMessage());
+		}
+	}*/
+
 }
