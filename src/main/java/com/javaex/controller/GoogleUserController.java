@@ -1,6 +1,8 @@
 package com.javaex.controller;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.gson.Gson;
 import com.javaex.service.GoogleUserService;
 import com.javaex.service.HmkWelcomService;
 import com.javaex.util.JwtUtil;
@@ -34,7 +37,7 @@ public class GoogleUserController {
 
 	@Autowired
 	private HmkWelcomService welcomeService;
-	
+
 	@Autowired
 	private GoogleUserService userService;
 
@@ -60,8 +63,7 @@ public class GoogleUserController {
 			// Google OAuth 토큰 요청
 			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(),
 					GsonFactory.getDefaultInstance(), "https://oauth2.googleapis.com/token", googleClientId,
-					googleClientSecret, code, "https://challengedonkey.com/api/users/google/login" // Redirect URI
-			).execute();
+					googleClientSecret, code, "https://challengedonkey.com/api/users/google/login").execute();
 
 			// ID 토큰 검증
 			GoogleIdToken idToken = verifier.verify(tokenResponse.getIdToken());
@@ -88,14 +90,17 @@ public class GoogleUserController {
 
 					// 쿠키 설정 (HttpOnly, Secure, SameSite=Lax)
 					String authHeader = response.getHeader("Authorization");
+					String token = null;
+
 					if (authHeader != null && authHeader.startsWith("Bearer ")) {
-						String token = authHeader.substring(7);
+						token = authHeader.substring(7);
 						String cookie = String.format("token=%s; HttpOnly; Secure; SameSite=Lax; Path=/;", token);
 						response.addHeader("Set-Cookie", cookie);
 					}
 
 					// 메인 페이지로 리다이렉트
-					response.sendRedirect("https://challengedonkey.com");
+					response.sendRedirect("https://challengedonkey.com?token=" + token + "&authUser="
+							+ URLEncoder.encode(new Gson().toJson(authUser), StandardCharsets.UTF_8.toString()));
 					return;
 				}
 			}
