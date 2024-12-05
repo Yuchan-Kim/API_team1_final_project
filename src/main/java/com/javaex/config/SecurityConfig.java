@@ -47,7 +47,7 @@ public class SecurityConfig {
 					FilterChain filterChain) throws ServletException, IOException {
 //				response.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
 //				response.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-				filterChain.doFilter(request, response);
+				filterChain.doFilter(request, response); 
 			}
 		});
 		return filterRegBean;
