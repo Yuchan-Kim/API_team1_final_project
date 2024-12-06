@@ -34,7 +34,9 @@
 			GROUP BY
 			    r.roomNum, rs.roomStatusNum, rt.roomTypeName, r.roomThumbNail, r.roomTitle,
 			    r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
-			    r.roomEnterRate, c.categoryName, r.roomKEyword, re.regionName;
+			    r.roomEnterRate, c.categoryName, r.roomKEyword, re.regionName
+			ORDER BY
+				r.roomNum DESC
 		]]>
 	</select>
 	
@@ -105,7 +107,9 @@
 			GROUP BY
 			    r.roomNum, rs.roomStatusNum, rt.roomTypeName, r.roomThumbNail, r.roomTitle,
 			    r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
-			    r.roomEnterRate, c.categoryName, r.roomKEyword, re.regionName;
+			    r.roomEnterRate, c.categoryName, r.roomKEyword, re.regionName
+			ORDER BY
+				r.roomNum DESC
 		]]>
 	</select>
 	
@@ -144,6 +148,8 @@
 			  )
 			  AND r.roomTitle NOT LIKE '%이벤트%'
 			GROUP BY r.roomNum; -- 각 방에 대해 그룹화
+			ORDER BY
+				r.roomNum DESC
 
 		]]>
 	</select>
