@@ -85,7 +85,6 @@
 			    r.roomTitle AS roomTitle,  -- 룸 제목
 			    r.roomStartDate AS roomStartDate, -- 시작날짜
 				p.periodNum AS periodType,  -- 기간
-			    r.roomMinNum AS roomMinNum,  -- 최소인원
 			    r.roomMaxNum AS roomMaxNum,  -- 최대인원
 			    r.roomEnterPoint AS roomPoint, -- 입장포인트
 			    r.roomEnterRate AS roomRate, -- 입장성실도
