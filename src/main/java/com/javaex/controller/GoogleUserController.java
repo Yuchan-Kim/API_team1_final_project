@@ -56,9 +56,8 @@ public class GoogleUserController {
 	 * GET 요청을 처리하는 엔드포인트 (OAuth 리다이렉트 URI)
 	 */
 	@GetMapping("/api/users/google/login")
-	public void googleCallback(@RequestParam("code") String code, HttpServletResponse response) {
-		System.out.println("Google OAuth 콜백 - 인증 코드: " + code);
-
+	public void googleCallback(@RequestParam("code") String code,
+			@RequestParam(value = "redirect", required = false) String redirect, HttpServletResponse response) {
 		try {
 			// Google OAuth 토큰 요청
 			GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(new NetHttpTransport(),
@@ -99,14 +98,23 @@ public class GoogleUserController {
 					}
 
 					// 메인 페이지로 리다이렉트
-					response.sendRedirect("https://challengedonkey.com?token=" + token + "&authUser="
-							+ URLEncoder.encode(new Gson().toJson(authUser), StandardCharsets.UTF_8.toString()));
-					return;
-				}
+					// 리다이렉트 URL 결정
+		            String baseUrl = "https://challengedonkey.com";
+		            String redirectPath = redirect != null ? redirect : "";
+		            String redirectUrl = baseUrl + redirectPath + "?token=" + token + "&authUser=" 
+		                + URLEncoder.encode(new Gson().toJson(authUser), StandardCharsets.UTF_8.toString());
+		            
+		            response.sendRedirect(redirectUrl);
+		            return;
+		        }
 			}
 			// 인증 실패 시 리다이렉트
-			response.sendRedirect("https://challengedonkey.com/user/loginform?error=google");
-		} catch (Exception e) {
+			// 실패 시 모바일 여부에 따른 리다이렉트
+	        String failureRedirect = redirect != null && redirect.startsWith("/mobile") 
+	            ? "https://challengedonkey.com/mobile?error=google"
+	            : "https://challengedonkey.com/user/loginform?error=google";
+	        response.sendRedirect(failureRedirect);
+	    } catch (Exception e) {
 			e.printStackTrace();
 			try {
 				response.sendRedirect("https://challengedonkey.com/user/loginform?error=exception");
