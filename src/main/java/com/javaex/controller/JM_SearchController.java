@@ -38,6 +38,7 @@ public class JM_SearchController {
 	// 카테고리별 방리스트 가져오기
 	@GetMapping("api/roomFilter/category")
 	public JsonResult categoryRoomList(@RequestParam String category) {
+		System.out.println(category);
 			
 		List<ChallengeVo> roomList = service.exeCategoryRoomList(category);
 			
