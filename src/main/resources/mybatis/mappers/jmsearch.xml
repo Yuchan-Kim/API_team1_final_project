@@ -48,14 +48,13 @@
             r.roomTitle AS roomTitle,
             r.roomStartDate AS roomStartDate,
             p.periodNum AS periodType,
-            r.roomMinNum AS roomMinNum,
             r.roomMaxNum AS roomMaxNum,
             r.roomEnterPoint AS roomPoint,
             r.roomEnterRate AS roomRate,
             c.categoryName AS categoryName,
             r.roomKeyword AS roomKeyword,
             re.regionName AS regionName,
-            COUNT(eu.userNum) AS currentParticipants -- 현재 참가 중인 유저 수
+            COUNT(eu.userNum) AS roomMinNum -- 현재 참가 중인 유저 수
         FROM roomInfo r
         JOIN roomStatus rs ON rs.roomStatusNum = r.roomStatusNum
         JOIN roomType rt ON r.roomTypeNum = rt.roomTypeNum
@@ -70,7 +69,7 @@
             r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
             r.roomEnterRate, c.categoryName, r.roomKeyword, re.regionName
         ORDER BY r.roomStartDate DESC
-        LIMIT 3;
+        LIMIT 2;
 		]]>
 	</select>
 	
