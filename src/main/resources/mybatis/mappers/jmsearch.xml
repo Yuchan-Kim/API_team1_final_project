@@ -30,6 +30,7 @@
 			JOIN regions re ON re.regionNum = r.regionNum
 			LEFT JOIN enteredUser eu ON eu.roomNum = r.roomNum AND eu.enteredUserStatusNum = 1 -- 참가 중인 유저만 카운트
 			WHERE rs.roomStatusNum = 2
+			AND r.roomTitle NOT LIKE '%이벤트%'
 			GROUP BY
 			    r.roomNum, rs.roomStatusNum, rt.roomTypeName, r.roomThumbNail, r.roomTitle,
 			    r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
@@ -99,8 +100,9 @@
 			join categories c on c.categoryNum = r.categoryNum
 			join regions re on re.regionNum = r.regionNum
 			LEFT JOIN enteredUser eu ON eu.roomNum = r.roomNum AND eu.enteredUserStatusNum = 1 -- 참가 중인 유저만 카운트
-			where rs.roomStatusNum = 2
-			and c.categoryName = #{category}
+			WHERE rs.roomStatusNum = 2
+			AND c.categoryName = #{category}
+			AND r.roomTitle NOT LIKE '%이벤트%'
 			GROUP BY
 			    r.roomNum, rs.roomStatusNum, rt.roomTypeName, r.roomThumbNail, r.roomTitle,
 			    r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
@@ -141,6 +143,7 @@
 			      OR c.categoryName LIKE CONCAT('%', #{query}, '%') -- 카테고리 검색
 			      OR re.regionName LIKE CONCAT('%', #{query}, '%') -- 지역 검색
 			  )
+			  AND r.roomTitle NOT LIKE '%이벤트%'
 			GROUP BY r.roomNum; -- 각 방에 대해 그룹화
 
 		]]>
