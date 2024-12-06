@@ -16,8 +16,8 @@
 			    r.roomStartDate AS roomStartDate, -- 시작 날짜
 			    p.periodNum AS periodType, -- 기간
 			    r.roomMaxNum AS roomMaxNum, -- 최대 인원
-			    r.roomEnterPoint AS roomPoint, -- 입장 포인트
 			    r.roomEnterRate AS roomRate, -- 입장 성실도
+			    r.roomEnterPoint AS roomPoint, -- 입장 포인트
 			    c.categoryName AS categoryName, -- 카테고리
 			    r.roomKEyword AS roomKeyword, -- 키워드
 			    re.regionName AS regionName, -- 지역
@@ -51,7 +51,7 @@
             p.periodNum AS periodType,
             r.roomMaxNum AS roomMaxNum,
             r.roomEnterPoint AS roomPoint,
-            r.roomEnterRate AS roomRate,
+            r.roomEnterRate AS roomRate, -- 입장 성실도
             c.categoryName AS categoryName,
             r.roomKeyword AS roomKeyword,
             re.regionName AS regionName,
