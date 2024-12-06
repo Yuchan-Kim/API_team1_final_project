@@ -39,9 +39,8 @@
 	
 	<!-- 종료 된 방 전체 리스트 가져오기 -->
 	<select id="getCloseRoomList" resultType="com.javaex.vo.ChallengeVo">
-		
-    <![CDATA[ 
-        SELECT
+		<![CDATA[ 
+			SELECT
             r.roomNum AS roomNum,
             rs.roomStatusNum AS roomStatusNum,
             rt.roomTypeName AS roomTypeName,
@@ -72,11 +71,8 @@
             r.roomEnterRate, c.categoryName, r.roomKeyword, re.regionName
         ORDER BY r.roomStartDate DESC
         LIMIT 3;
-    ]]>
-</select>
-
-		
-
+		]]>
+	</select>
 	
 	<!-- 카테고리별 방 리스트 가져오기 -->
 	<select id="getCategoryRoomList" parameterType="String" resultType="com.javaex.vo.ChallengeVo">
@@ -95,7 +91,7 @@
 			    r.roomEnterRate AS roomRate, -- 입장성실도
 			    c.categoryName AS categoryName, -- 카테고리
 			    r.roomKEyword AS roomKeyword, -- 키워드
-			    re.regionName AS regionName -- 지역
+			    re.regionName AS regionName, -- 지역
 			    COUNT(eu.userNum) AS roomMinNum -- 현재 참가 중인 유저 수
 			from roomInfo r
 			join roomStatus rs on rs.roomStatusNum = r.roomStatusNum

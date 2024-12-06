@@ -98,10 +98,20 @@ public class ChallengeVo {
     private int pointPurposeNum;
     private String historyInfo;
     private int roomMaker;
+	private int currentParticipants; // 현재 참가 중인 유저 수
+
     
 
 	public ChallengeVo() {
 
+	}
+
+	public int getCurrentParticipants() {
+	    return currentParticipants;
+	}
+
+	public void setCurrentParticipants(int currentParticipants) {
+	    this.currentParticipants = currentParticipants;
 	}
 	
 	
