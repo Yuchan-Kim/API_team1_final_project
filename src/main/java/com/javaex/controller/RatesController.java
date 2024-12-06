@@ -165,7 +165,7 @@ public class RatesController {
             e.printStackTrace();
             return JsonResult.fail("사용자 정보를 불러오는 데 실패했습니다.");
         }
-    } 
+    }  
     
     
     @PostMapping("/insertPointHistory")
