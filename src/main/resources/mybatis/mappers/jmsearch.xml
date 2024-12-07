@@ -36,7 +36,7 @@
 			    r.roomStartDate, p.periodNum, r.roomMinNum, r.roomMaxNum, r.roomEnterPoint,
 			    r.roomEnterRate, c.categoryName, r.roomKEyword, re.regionName
 			ORDER BY
-				r.roomNum DESC
+				r.roomNum ASC
 		]]>
 	</select>
 	
