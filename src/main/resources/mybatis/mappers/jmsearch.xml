@@ -147,10 +147,9 @@
 			      OR re.regionName LIKE CONCAT('%', #{query}, '%') -- 지역 검색
 			  )
 			  AND r.roomTitle NOT LIKE '%이벤트%'
-			GROUP BY r.roomNum; -- 각 방에 대해 그룹화
+			GROUP BY r.roomNum -- 각 방에 대해 그룹화
 			ORDER BY
 				r.roomNum DESC
-
 		]]>
 	</select>
 	
