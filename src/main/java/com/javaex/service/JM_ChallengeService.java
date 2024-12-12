@@ -138,28 +138,39 @@ public class JM_ChallengeService {
 	
 	// 미션 제출
 	public int exeAddMissionWithImages(ChallengeVo challengevo, List<MultipartFile> files) {
-		// Step 1: 평가 테이블에 평가 정보 삽입 (자동 생성된 evalNum이 userVo에 설정됨)
-		int evalNum = dao.insertMission(challengevo);
-		System.out.println("@@evalNum@@"+evalNum);
+		// 해당 미션에 제출 여부가 있는지 확인
+	    Integer evalcount = dao.missionList2(challengevo);
+	    System.out.println("이벤트 서비스");
+	    
+	    // evalcount가 null일 때만 로직 실행
+	    if (evalcount == null || evalcount == 0) {
+	        
+	        // Step 1: 평가 테이블에 평가 정보 삽입 (자동 생성된 evalNum이 userVo에 설정됨)
+	        int evalNum = dao.insertMission(challengevo);
+	        System.out.println("@@evalNum@@"+evalNum);
 
-		// Step 2: InfoImage 테이블에 파일 정보 삽입
-		int fileCount = 0;
-		for (int i = 0; i < files.size(); i++) {
-			MultipartFile file = files.get(i);
-			if (!file.isEmpty()) {
-				// 파일 저장 후 저장된 파일명 반환
-				String savedFileName = exeUpload(file);
-				System.out.println("사진이름###"+savedFileName);
+	        // Step 2: InfoImage 테이블에 파일 정보 삽입
+	        int fileCount = 0;
+	        for (int i = 0; i < files.size(); i++) {
+	            MultipartFile file = files.get(i);
+	            if (!file.isEmpty()) {
+	                // 파일 저장 후 저장된 파일명 반환
+	                String savedFileName = exeUpload(file);
+	                System.out.println("사진이름###" + savedFileName);
 
-				if (savedFileName != null) {
-					// unionVo에 저장된 파일명 및 이미지 순서 설정
-					challengevo.setEvalImgName(savedFileName);
-					dao.insertImageInfo(challengevo); // 이미지 정보 삽입
-					fileCount++;
-				}
-			}
-		}
-		return fileCount; // 성공적으로 처리된 파일 수 반환
+	                if (savedFileName != null) {
+	                    // unionVo에 저장된 파일명 및 이미지 순서 설정
+	                    challengevo.setEvalImgName(savedFileName);
+	                    dao.insertImageInfo(challengevo); // 이미지 정보 삽입
+	                    fileCount++;
+	                }
+	            }
+	        }
+	        return fileCount; // 성공적으로 처리된 파일 수 반환
+	    } else {
+	        System.out.println("이미 제출된 미션입니다.");
+	        return 0; // 이미 제출된 경우 파일 수 0 반환
+	    }
 	}
 	
 	// 평가 업데이트
@@ -176,6 +187,7 @@ public class JM_ChallengeService {
 	    
 	    // 해당 미션에 제출 여부가 있는지 확인
 	    Integer evalcount = dao.missionList2(challengevo);
+	    System.out.println("이벤트 서비스");
 	    
 	    // evalcount가 null일 때만 로직 실행
 	    if (evalcount == null || evalcount == 0) {

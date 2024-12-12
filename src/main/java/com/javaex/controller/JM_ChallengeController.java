@@ -203,7 +203,7 @@ public class JM_ChallengeController {
 		    HttpServletRequest request) 
 		{
 			int userNum = JwtUtil.getNoFromHeader(request);
-			System.out.println(request);
+			System.out.println(request+"이벤트 컨트롤러");
 			
 			// unionVo 객체 생성
 			ChallengeVo challengevo = new ChallengeVo();
