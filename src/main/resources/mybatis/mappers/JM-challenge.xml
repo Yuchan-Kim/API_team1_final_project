@@ -296,8 +296,21 @@
     <insert id="plusPoint" parameterType="com.javaex.vo.ChallengeVo">
     	<![CDATA[
         	INSERT INTO pointHistory (userNum, historyPoint, pointPurposeNum, historyInfo, historyDate)
-        	VALUES (#{userNum}, 5, 13, "+", NOW());
+        	VALUES (#{userNum}, 5, 13, "+", NOW())
         ]]>
     </insert>
+    
+    <!-- 이벤트 미션 유저 제출여부 -->
+    <select id="getMissionByRoomNum3" parameterType="com.javaex.vo.ChallengeVo" resultType="com.javaex.vo.ChallengeVo">
+    	<![CDATA[ 
+    		SELECT 
+			    evalNum AS evalNum 
+			FROM 
+			    `evaluation` 
+			WHERE 
+			    `missionNum` = #{missionNum}
+			AND `submitUser` = #{userNum}
+    	]]>
+    </select>
     
 </mapper>

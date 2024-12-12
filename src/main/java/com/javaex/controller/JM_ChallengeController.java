@@ -193,5 +193,32 @@ public class JM_ChallengeController {
         service.exeUpdateEval(challengevo);
         return JsonResult.success("평가 등록 성공.");
     }
+	
+	// (이벤트) 미션 제출
+		@PostMapping("/api/eventMissionWithFiles")
+		public JsonResult eventMissionWithFiles(
+		    @RequestParam("missionNumber") int missionNum,
+		    @RequestParam("comment") String comment,
+		    @RequestParam("files") List<MultipartFile> files,
+		    HttpServletRequest request) 
+		{
+			int userNum = JwtUtil.getNoFromHeader(request);
+			System.out.println(request);
+			
+			// unionVo 객체 생성
+			ChallengeVo challengevo = new ChallengeVo();
+			challengevo.setSubmitUser(userNum);
+			challengevo.setMissionNum(missionNum);
+			challengevo.setSubmitComment(comment);
+			System.out.println("@@@@@@"+challengevo);
+			int count = service.exeAddEventMissionWithImages(challengevo, files);
+
+		    // 파일 저장 로직 및 DB 저장 로직 추가
+			if (count > 0) {
+				return JsonResult.success("미션 이미지가 성공적으로 등록되었습니다.");
+			} else {
+				return JsonResult.fail("미션 이미지 등록 실패");
+			}
+		}
 
 }

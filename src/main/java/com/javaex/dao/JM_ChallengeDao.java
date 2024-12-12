@@ -144,5 +144,15 @@ public class JM_ChallengeDao {
         System.out.println("minusPoint 실행 결과: " + result);
         return result;
     }
+    
+ // 미션번호로 이벤트미션 유저 제출여부 가져오기
+ 	public int missionList2(ChallengeVo challengevo) {
+ 		System.out.println("ChallengeDao.missionList");
+
+ 		int evalcount = session.selectOne("JM-challenge.getMissionByRoomNum3", challengevo);
+ 		System.out.println("ChallengeDao" + evalcount);
+
+ 		return evalcount;
+ 	}
 	
 }
