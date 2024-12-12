@@ -340,7 +340,7 @@ public class ChallengeDao {
         params.put("roomNum", roomNum);
         params.put("roomEnterPoint", roomEnterPoint);
         return sqlSession.update(namespace + ".updateRoomEnterPoint", params);
-    }
+    } 
 
     // 8. 방 참가 비율 수정
     public int updateRoomEnterRate(int roomNum, int roomEnterRate) {
